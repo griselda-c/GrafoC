@@ -32,6 +32,13 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="EdgeIterator.h" />
+		<Unit filename="Graph.cpp" />
+		<Unit filename="Graph.h" />
+		<Unit filename="NeighborDescriptor.h" />
+		<Unit filename="Vertex.h" />
+		<Unit filename="VertexDescriptor.h" />
+		<Unit filename="VertexIterator.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

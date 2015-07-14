@@ -3,7 +3,10 @@
 #include <list>
 using namespace std;
 
-Graph::Graph int vertexCount(){
-    this.
+ int Graph::vertexCount(){
+   return  this->vertexs.size();
 };
+
+
+
 
