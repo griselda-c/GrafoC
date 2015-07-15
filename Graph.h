@@ -67,7 +67,7 @@ int vertexCount() ;
 * @param v
 * @return grado de un vertex
 */
-int degree(Vertex v);
+int* degree(Vertex *v);
 
 /**
 	 * Pertenencia de la arista vw

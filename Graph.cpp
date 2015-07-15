@@ -7,6 +7,11 @@ using namespace std;
    return  this->vertexs.size();
 };
 
+int* Graph::degree(Vertex *v){
+  return &v->vertexPointer->degree;
+
+};
+
 
 
 
