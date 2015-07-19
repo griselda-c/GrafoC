@@ -6,13 +6,13 @@
 #define GRAPH_H
 
 namespace tip {
-
     class Graph {
     private:
         //forward declarations
+        struct Neighbor;
         struct Vertex;
         using Vertices = std::list<Vertex>;
-        
+
     public:
         /**
          * Iterador de los vertices del grafo
@@ -20,111 +20,178 @@ namespace tip {
         class const_vertex_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
         {
         public:
-            /** 
+            /**
              * Construye un iterador que no apunta a nada y es invalido.
              * Se usa simplemente para poder declarar iteradores sin definir
              */
             const_vertex_iterator();
-            
+
             //constructores y destructores
-            
+
             bool operator==(const_vertex_iterator other) const {
                 return it == other.it;
             }
-            
+
             bool operator!=(const_vertex_iterator other) const {
                 return it != other.it;
             }
-            
-            
+
+
             int operator*() const {
                 return it->elem;
             }
-            
-//             T* operator->() {
+
+           int degree() const{
+                return it->degree;
+            }
+
+
+
+
+
+
+//            template <class T> T* operator->() {
 //                 return it.operator->();
 //             }
 
             void swap(const_vertex_iterator& other) {
                 std::swap(it, other.it);
             }
-            
+
             const_vertex_iterator& operator++() {
                 ++it;
                 return *this;
             }
-            
+
             const_vertex_iterator operator++(int) {
                 const_vertex_iterator temp = *this;
                 ++it;
                 return temp;
             }
-            
+
             const_vertex_iterator& operator--() {
                 --it;
                 return *this;
             }
-            
+
             const_vertex_iterator operator--(int) {
                 const_vertex_iterator temp = *this;
                 --it;
                 return temp;
             }
-            
-            
+
+
+
         private:
             const_vertex_iterator(Vertices::const_iterator it) : it(it) {};
             friend class Graph;
-            
+
             Vertices::const_iterator it;
         };
-        
-        
+
+
         /**
          * Iterador de las aristas
          */
         class const_edge_iterator {
         public:
-            
+
         private:
         };
-        
-        
+
+
+
         /**
-         * Iterador de los vecinos de un vertice
+         * Iterador de los vecinos
          */
-        class const_neighbor_iterator {
-            
+        class const_neighbor_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+        {
+
         public:
-            
+            /**
+             * Construye un iterador que no apunta a nada y es invalido.
+             * Se usa simplemente para poder declarar iteradores sin definir
+             */
+            const_neighbor_iterator();
+
+            //constructores y destructores
+
+            bool operator==(const_neighbor_iterator other) const {
+                return it == other.it;
+            }
+
+            bool operator!=(const_neighbor_iterator other) const {
+                return it != other.it;
+            }
+
+
+            int operator*() const {
+                return it->neighbor;
+            }
+
+//             T* operator->() {
+//                 return it.operator->();
+//             }
+
+            void swap(const_neighbor_iterator & other) {
+                std::swap(it, other.it);
+            }
+
+            const_neighbor_iterator & operator++() {
+                ++it;
+                return *this;
+            }
+
+            const_neighbor_iterator  operator++(int) {
+                const_neighbor_iterator temp = *this;
+                ++it;
+                return temp;
+            }
+
+            const_neighbor_iterator & operator--() {
+                --it;
+                return *this;
+            }
+
+            const_neighbor_iterator operator--(int) {
+                const_neighbor_iterator temp = *this;
+                --it;
+                return temp;
+            }
+
+
         private:
+            const_neighbor_iterator (std::list<Neighbor>::const_iterator it) : it(it) {};
+            friend class Graph;
+
+            std::list<Neighbor>::const_iterator it;
         };
 
         //Constructor por defecto
         //Graph() { }
-            
+
         //Destructor.  Libera todos los recursos.
         //~Graph() {}
-        
+
         //Constructor por copia
         //Graph(const Graph& other);
         //Graph H; //constructor por defecto
         //Graph G(H); constructor por copia
         //Graph G{H}; constructor por copia
         //Graph G = H; constructor por copia.
-        
+
         //operador de asignacion
         //Graph& operator=(const Graph& graph);
         //G = H;
-        
+
         //Move constructor
         //Graph(Graph&& other);
         //Graph G = f() donde f() retorna un grafo por copia (evita la copia)
-            
+
         //Asignacion por movimiento
         //Graph& operator=(Graph&& other)
         //G = f() donde f() retorna un grafo por copia (evita la copia)
-        //G = std::move(H); 
+        //G = std::move(H);
 
         /**
          * Inserta un nuevo vertice al grafo y retorna el numero del indice agregado.
@@ -166,8 +233,8 @@ namespace tip {
     * @return cantidad de vertices del grafo
     */
     int vertexCount() const;
-    
-    
+
+
     int size() const;
 
     /**
@@ -175,7 +242,7 @@ namespace tip {
     * @param v
     * @return grado de un vertex
     */
-//     int* degree(Vertex *v);
+     int degree(const_vertex_iterator v) const;
 
     /**
             * Pertenencia de la arista vw
@@ -185,7 +252,7 @@ namespace tip {
             * @return true si la arista pertenece al grafo.
             */
     const_edge_iterator find_edge(const_vertex_iterator v, const_vertex_iterator w) const;
-    
+
     /**
     * Retorna un iterador a los vecinos de v
     *
@@ -218,23 +285,24 @@ namespace tip {
 
     private:
         Vertices vertices;
-  
+
         struct Neighbor;
-        
+
         using Neighborhood = std::list<Neighbor>;
-        
+
         struct Vertex{
             explicit Vertex(int elem, size_t degree = 0):
             elem(elem), degree(degree)
             {}
-            
+
             int elem;
             size_t degree;
             Neighborhood highNeighborhood;
             std::list<Neighborhood> lowNeighborhood;
         };
-        
+
         struct Neighbor {
+
         /**
             * Los objetos de esta clase se van a almacenar en listas que juntas representan el vecindario N(v) de un vertice v.
             * El vecindario de N(v) se divide en dos.  Por una parte, esta la lista H(v) de los vecinos mayores o iguales a v
@@ -248,22 +316,22 @@ namespace tip {
             */
             Neighbor(){}
             int  neighbor;
-            
+
             /**
              * Es un puntero directo a la posicion de v en la lista de N(w) que lo contiene.
              */
             Neighbor *self_pointer;
-            
+
             /**
              * Es un puntero directo a la lista de N(w) que contiene a v.
              */
             Neighborhood* list_pointer;
         };
-        
-        
+
+
     };
 
-    
+
 }
 
 #endif //GRAPH_H

@@ -36,10 +36,9 @@
 		<Unit filename="Graph.cpp" />
 		<Unit filename="Graph.h" />
 		<Unit filename="NeighborDescriptor.h" />
-		<Unit filename="Vertex.h" />
 		<Unit filename="VertexDescriptor.h" />
 		<Unit filename="VertexIterator.h" />
-		<Unit filename="main.cpp" />
+		<Unit filename="test.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
