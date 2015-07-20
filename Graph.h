@@ -186,6 +186,8 @@ namespace tip {
         //G = std::move(H
         bool is_greater_degree(const_vertex_iterator v1,const_vertex_iterator v2);
 
+        bool is_equal_degree(const_vertex_iterator v1,const_vertex_iterator v2);
+
         const_vertex_iterator cambiarDegree(const_vertex_iterator v);
 
         /**
@@ -260,6 +262,8 @@ namespace tip {
     const_vertex_iterator end() const;
     const_vertex_iterator cend() const;
 
+
+
     /**
             * Retorna un iterador a los vecinos de v que tienen grado al menos d(v)
             *
@@ -322,12 +326,12 @@ namespace tip {
             /**
              * Es un puntero directo a la posicion de v en la lista de N(w) que lo contiene.
              */
-            Neighbor* self_pointer;
+             Neighborhood::iterator self_pointer;
 
             /**
              * Es un puntero directo a la lista de N(w) que contiene a v.
              */
-            Neighborhood* list_pointer;
+            std::list<Neighborhood>::iterator list_pointer;
         };
 
 
