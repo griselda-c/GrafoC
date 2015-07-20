@@ -15,7 +15,7 @@ namespace tip {
 
     public:
         /**
-         * Iterador de los vertices del grafo
+         * Iterador de los vertices del grafo const
          */
         class const_vertex_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
         {
@@ -40,15 +40,6 @@ namespace tip {
             int operator*() const {
                 return it->elem;
             }
-
-           int degree() const{
-                return it->degree;
-            }
-
-
-
-
-
 
 //            template <class T> T* operator->() {
 //                 return it.operator->();
@@ -87,7 +78,8 @@ namespace tip {
             friend class Graph;
 
             Vertices::const_iterator it;
-        };
+        };// fin iterator vertex const
+
 
 
         /**
@@ -191,7 +183,10 @@ namespace tip {
         //Asignacion por movimiento
         //Graph& operator=(Graph&& other)
         //G = f() donde f() retorna un grafo por copia (evita la copia)
-        //G = std::move(H);
+        //G = std::move(H
+        bool is_greater_degree(const_vertex_iterator v1,const_vertex_iterator v2);
+
+        const_vertex_iterator cambiarDegree(const_vertex_iterator v);
 
         /**
          * Inserta un nuevo vertice al grafo y retorna el numero del indice agregado.
@@ -218,7 +213,8 @@ namespace tip {
          * @param v uno de los vertices de la arista
          * @param w el otro vertice de la arista
          */
-//         edge_iterator addEdge(const_vertex_iterator v, const_vertex_iterator w);
+//        edge_iterator addEdge(const_vertex_iterator v, const_vertex_iterator w);
+        void addEdge(const_vertex_iterator v, const_vertex_iterator w);
 
     /**
             * Elimina la arista vw del grafo.  Si no pertenece al grafo, no hace nada
@@ -263,6 +259,7 @@ namespace tip {
 
     const_vertex_iterator end() const;
     const_vertex_iterator cend() const;
+
     /**
             * Retorna un iterador a los vecinos de v que tienen grado al menos d(v)
             *
@@ -299,6 +296,11 @@ namespace tip {
             size_t degree;
             Neighborhood highNeighborhood;
             std::list<Neighborhood> lowNeighborhood;
+
+            bool is_degree_greater(const_vertex_iterator w){
+                    return (w.it->degree > this->degree);
+            }
+
         };
 
         struct Neighbor {
@@ -320,7 +322,7 @@ namespace tip {
             /**
              * Es un puntero directo a la posicion de v en la lista de N(w) que lo contiene.
              */
-            Neighbor *self_pointer;
+            Neighbor* self_pointer;
 
             /**
              * Es un puntero directo a la lista de N(w) que contiene a v.
