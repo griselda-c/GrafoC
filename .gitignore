@@ -1,6 +1,5 @@
 Graph.cbp
 Graph.depend
 Graph.layout
-bin/Debug/Graph
-obj/Debug/Graph.o
-obj/Debug/main.o
+bin/*
+obj/*
