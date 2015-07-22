@@ -184,11 +184,14 @@ namespace tip {
         //Graph& operator=(Graph&& other)
         //G = f() donde f() retorna un grafo por copia (evita la copia)
         //G = std::move(H
+        
+        void deleteNeighbor(Graph::const_vertex_iterator v,Graph::const_vertex_iterator w);
         bool is_greater_degree(const_vertex_iterator v1,const_vertex_iterator v2);
 
         bool is_equal_degree(const_vertex_iterator v1,const_vertex_iterator v2);
 
-        const_vertex_iterator change_degree(const_vertex_iterator v);
+        const_vertex_iterator increaseDegree(const_vertex_iterator v);
+        const_vertex_iterator decreaseDegree(const_vertex_iterator v);
 
         /**
          * Inserta un nuevo vertice al grafo y retorna el numero del indice agregado.
