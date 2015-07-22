@@ -7,69 +7,66 @@ using namespace std;
 
 namespace tip {
 
-    void Graph::add_edge(Graph::const_vertex_iterator v, Graph::const_vertex_iterator w){
+    void Graph::add_edge(Graph::const_vertex_iterator iter_v, Graph::const_vertex_iterator iter_w){
 
-        if(is_greater_degree(v,w)){
-            create_relationship(v,w, false);
+        auto v = to_iterator(iter_v);
+        auto w = to_iterator(iter_w);
+
+        //queremos que v tenga menor o igual grado a w
+        if(v->degree > w->degree){
+            std::swap(v,w);
         }
-        else if(is_equal_degree(v,w)) {
-                create_relationship(v,w, true);
-            }
-            else {
-                create_relationship(w,v, false);
-            }
+
+        //PHASE 1: Algoritmo 1 del paper.
+        update_neighborhood(v);
+        update_neighborhood(w);
+
+        //PHASE 2:
+        //Tener cuidado con que v y w tengan el mismo grado.
+        auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
+        if(pos_v_in_low_w == w->low_neghborhood.end() || pos_v_in_low_w->degree > v->degree + 1) {
+            pos_v_in_low_w  = low_neighbhood.insert(pos_v_in_low_w, Neighborhood());
+        }
+        
+        auto& v_list_in_w = *pos_v_in_low_w;
+        auto& w_list_in_v = v->high_neighborhood;
+        
+        v_list_in_w.push_front(Neighbhor(v));
+        w_list_in_v.push_front(Neighbhor(w));
+        
+        v_list_in_w.back().self_pointer = w_list_in_v.begin();
+        v_list_in_w.back().list_pointer = v->low_neighborhood.end();
+        
+        w_list_in_v.back().self_pointer = v_list_in_w.begin();
+        w_list_in_v.back().list_pointer = pos_v_in_low_n;
 
         //cambiarGrado
 
-        //actualizar punteros
-
     };
 
-    void Graph::create_relationship(Graph::const_vertex_iterator greater_v, Graph::const_vertex_iterator lower_w, bool equally) {
-        // El nuevo Neighbor de v
-        Graph::Neighbor v_neighbor = Neighbor();
-        v_neighbor.neighbor = lower_w.it->elem;
-
-        // El nuevo Neighbor de w
-        Graph::Neighbor w_neighbor = Neighbor();
-        w_neighbor.neighbor = greater_v.it->elem;
-
-        insert_in_highn(lower_w, greater_v, v_neighbor);
-
-        // Si tienen el mismo grado los dos van al H(N) de cada uno
-        // por lo tanto se actualiza el H(N) de v agregando el Neighbor de w
-        if (equally) {
-            insert_in_highn(greater_v, lower_w, w_neighbor);
-        }
-        // En caso contrario el Neighbor de w se agrega al L(N) de v
-        else {
-            int w_new_degree = lower_w.it->degree + 1;
-            std::list<Graph::Neighborhood> low_n = greater_v.it->lowNeighborhood;
-            for (auto it = low_n.begin(); it != low_n.end(); ++it) {
-                if (it->front().degree == w_new_degree) {
-                    it->push_back(w_neighbor);
-                    w_neighbor.self_pointer = it;
-                    //w_neighbor.list_pointer = low_n.begin();
-                }
-            }
-        }
-
-    }
-
-    void Graph::insert_in_highn(Graph::const_vertex_iterator v, Graph::const_vertex_iterator w, Graph::Neighbor nv) {
-        // Se actualiza el H(N) de v agregando el Neighbor de w
-        Graph::Neighborhood high_v = v.it->highNeighborhood;
-        high_v.push_back(nv);
-
-        // Se actualiza el Neighbor de w indicandole donde se encuentra dentro de v
-        for (auto it = high_v.begin(); it != high_v.end(); ++it) {
-            if (it->elem == nv) {
-                nv.self_pointer = it;
-                nv.list_pointer = high_v.begin();
-            }
-        }
+    /**
+     * Retorna un puntero a la primer lista del low_neighbhood de w que tiene grado al menos degree.
+     */
+    std::list<Graph::Neighborhood>::iterator find_neighborhood_with_degree(Vertices::iterator w, int degree)
+    {
+        return find_neighborhood_with_degree(w->low_neighbhood.begin(), w->low_neighbhood.end(), degree);
     }
     
+    /**
+     *
+     */
+    std::list<Graph::Neighborhood>::iterator find_neighborhood_with_degree(
+       std::list<Graph::Neighborhood>::iterator first,
+       std::list<Graph::Neighborhood>::iterator last,
+       int degree)
+    {
+        auto it = first
+        while(it != last && it->front().degree < degree) {
+            ++it;
+        }
+        return it;
+    }
+
      void Graph::removeEdge(Graph::const_vertex_iterator  v, Graph::const_vertex_iterator  w){
         decreaseDegree(v);
         decreaseDegree(w);
@@ -79,7 +76,7 @@ namespace tip {
          //update_after_delete();
 
         }
-        
+
         void Graph::deleteNeighbor(Graph::const_vertex_iterator v,Graph::const_vertex_iterator w){
         auto v1 = vertices.erase(v.it,v.it);
         auto w1= vertices.erase(w.it,w.it);
@@ -129,29 +126,7 @@ namespace tip {
         return v.it->degree;
      };
 
-    bool Graph::is_greater_degree(Graph::const_vertex_iterator v1,Graph::const_vertex_iterator v2){
-        return v1.it->degree > v2.it->degree;
-//             return v1.it.is_degree_greater(v2);
-    }
 
-    bool Graph::is_equal_degree(Graph::const_vertex_iterator v1,Graph::const_vertex_iterator v2){
-        return v1.it->degree == v2.it->degree;
-//             return v1.it.is_degree_greater(v2);
-    }
-    
-    Graph::const_vertex_iterator Graph::increaseDegree(const_vertex_iterator v1){
-        auto ptr2 = vertices.erase(v1.it,v1.it);
-        ptr2->degree+=1;
-        return v1;
-     };
-
-     Graph::const_vertex_iterator Graph::decreaseDegree(const_vertex_iterator v1){
-        auto ptr2 = vertices.erase(v1.it,v1.it);
-        ptr2->degree-=1;
-        return v1;
-     };
-
-    
     Graph::const_vertex_iterator Graph::insertVertex(unsigned int elem) {
         vertices.push_front(Vertex(elem));
         return begin();

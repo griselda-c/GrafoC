@@ -184,7 +184,7 @@ namespace tip {
         //Graph& operator=(Graph&& other)
         //G = f() donde f() retorna un grafo por copia (evita la copia)
         //G = std::move(H
-        
+
         void deleteNeighbor(Graph::const_vertex_iterator v,Graph::const_vertex_iterator w);
         bool is_greater_degree(const_vertex_iterator v1,const_vertex_iterator v2);
 
@@ -328,8 +328,9 @@ namespace tip {
             * el nombre de cada w en N(v), la ubicacion de v en la lista de N(w) que lo contiene y la ubicacion de la lista
             * de N(w) que lo contiene.
             */
-            Neighbor(){}
-            int  neighbor;
+            Neighbor() = default;
+            Neighbor(Vertices::iterator neighbor) : neighbor(neighbor) {}
+            Vertices::iterator neighbor;
 
             /**
              * Es un puntero directo a la posicion de v en la lista de N(w) que lo contiene.
@@ -337,12 +338,18 @@ namespace tip {
              Neighborhood::iterator self_pointer;
 
             /**
-             * Es un puntero directo a la lista de N(w) que contiene a v.
+             * Es un puntero directo a la lista de L(w) que contiene a v. (Solo tiene en cuenta los low_neighborhood;
+             * cuando v esta en high_neighborhood de w, dejamos low_neighborhood.end())
              */
             std::list<Neighborhood>::iterator list_pointer;
         };
 
-
+        /**
+         * Esto es un hack para transformar const_iterator en iterator
+         */
+        Vertices::iterator to_iterator(Vertices::const_iterator it) {
+            return vertices.erase(it, it);
+        };
     };
 
 
