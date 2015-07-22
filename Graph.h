@@ -188,7 +188,7 @@ namespace tip {
 
         bool is_equal_degree(const_vertex_iterator v1,const_vertex_iterator v2);
 
-        const_vertex_iterator cambiarDegree(const_vertex_iterator v);
+        const_vertex_iterator change_degree(const_vertex_iterator v);
 
         /**
          * Inserta un nuevo vertice al grafo y retorna el numero del indice agregado.
@@ -216,15 +216,20 @@ namespace tip {
          * @param w el otro vertice de la arista
          */
 //        edge_iterator addEdge(const_vertex_iterator v, const_vertex_iterator w);
-        void addEdge(const_vertex_iterator v, const_vertex_iterator w);
+        void add_edge(const_vertex_iterator v, const_vertex_iterator w);
 
-    /**
+        /**
             * Elimina la arista vw del grafo.  Si no pertenece al grafo, no hace nada
             *
             * @param v uno de los vertices de la arista
             * @param w el otro vertice de la arista
             */
-//     void removeEdge(unsigned int v, unsigned int w);
+//      void removeEdge(unsigned int v, unsigned int w);
+
+
+        void create_relationship(const_vertex_iterator greater_v, const_vertex_iterator lower_w, bool equally);
+
+        void insert_in_highn(const_vertex_iterator v, const_vertex_iterator w, Neighbor nv);
 
 
     /**
