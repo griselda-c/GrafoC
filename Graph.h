@@ -227,7 +227,7 @@ namespace tip {
             * @param v uno de los vertices de la arista
             * @param w el otro vertice de la arista
             */
-//      void removeEdge(unsigned int v, unsigned int w);
+       void removeEdge(const_vertex_iterator  v, const_vertex_iterator  w);
 
 
         void create_relationship(const_vertex_iterator greater_v, const_vertex_iterator lower_w, bool equally);
