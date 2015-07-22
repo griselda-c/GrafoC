@@ -8,7 +8,7 @@ using namespace tip;
 
 void print_vertices( Graph& G) {
     for(auto it = G.begin(); it != G.end(); ++it) {
-        G.change_degree(it);
+        G.increaseDegree(it);
         cout << G.degree(it)<< endl;
     }
 }
@@ -16,7 +16,7 @@ void print_vertices( Graph& G) {
 int main() {
     Graph G;
     auto v1 =  G.insertVertex(1);
-    G.change_degree(v1);
+    G.increaseDegree(v1);
     auto v2 =  G.insertVertex(2);
     G.insertVertex(3);
     G.insertVertex(4);
