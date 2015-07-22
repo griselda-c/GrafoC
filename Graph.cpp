@@ -69,6 +69,57 @@ namespace tip {
             }
         }
     }
+    
+     void Graph::removeEdge(Graph::const_vertex_iterator  v, Graph::const_vertex_iterator  w){
+        decreaseDegree(v);
+        decreaseDegree(w);
+
+        //if existe edge(v,w)
+         deleteNeighbor(v,w); //w es vecino de v
+         //update_after_delete();
+
+        }
+        
+        void Graph::deleteNeighbor(Graph::const_vertex_iterator v,Graph::const_vertex_iterator w){
+        auto v1 = vertices.erase(v.it,v.it);
+        auto w1= vertices.erase(w.it,w.it);
+
+    if(is_greater_degree(v,w)){ // w esta en low
+           auto list_low= v.it->lowNeighborhood;
+        //borrar w de low
+         for(auto it = list_low.begin(); it != list_low.end(); ++it) {//lista de listas
+
+             for(auto it_neighbor = it->begin(); it_neighbor != it->end(); ++it_neighbor ){//lista
+                if(it_neighbor->neighbor == w.it->elem){
+                    //borra a v en w
+                    w1->highNeighborhood.erase(it_neighbor->self_pointer);
+                    v1->lowNeighborhood;
+                 }
+             }//for de lista
+         } // for de listas de listas
+     }else if(is_equal_degree(v,w)){ // borrar w de high
+         auto list_high = v.it->highNeighborhood;
+          for(auto it2 = list_high.begin(); it2 != list_high.end(); it2++){
+                if(it2->neighbor == w.it->elem){
+                  w1->highNeighborhood.erase(it2->self_pointer);
+                  v1->highNeighborhood;
+               }
+        }
+
+     }else{
+        auto list_high = v.it->highNeighborhood;
+          for(auto it2 = list_high.begin(); it2 != list_high.end(); it2++){
+                if(it2->neighbor == w.it->elem){
+
+                  it2->list_pointer->erase(it2->self_pointer);
+                  //w1->lowNeighborhood.erase(it2->self_pointer);
+                  v1->highNeighborhood;
+               }
+        }
+     }//else
+
+  }
+
 
     int Graph::vertexCount() const {
         return  this->vertices.size();
@@ -87,13 +138,20 @@ namespace tip {
         return v1.it->degree == v2.it->degree;
 //             return v1.it.is_degree_greater(v2);
     }
-
-    Graph::const_vertex_iterator Graph::change_degree(const_vertex_iterator v1){
+    
+    Graph::const_vertex_iterator Graph::increaseDegree(const_vertex_iterator v1){
         auto ptr2 = vertices.erase(v1.it,v1.it);
         ptr2->degree+=1;
         return v1;
-    }
+     };
 
+     Graph::const_vertex_iterator Graph::decreaseDegree(const_vertex_iterator v1){
+        auto ptr2 = vertices.erase(v1.it,v1.it);
+        ptr2->degree-=1;
+        return v1;
+     };
+
+    
     Graph::const_vertex_iterator Graph::insertVertex(unsigned int elem) {
         vertices.push_front(Vertex(elem));
         return begin();
@@ -115,24 +173,5 @@ namespace tip {
         return end();
     }
 
-
-    ///////////////////////////*******************************//////////////////////
-//    Graph::vertex_iterator Graph::begin()  {
-//        return vertex_iterator(vertices.begin());
-//    }
-//
-//    Graph::vertex_iterator Graph::cbegin()  {
-//        return begin();
-//    }
-//
-//    Graph::vertex_iterator Graph::end()  {
-//        return vertex_iterator(vertices.end());
-//    }
-//
-//    Graph::vertex_iterator Graph::cend()  {
-//        return end();
-//    }
-//
-
-}
+};
 
