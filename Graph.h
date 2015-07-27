@@ -8,25 +8,27 @@
 namespace tip {
     class Graph {
     private:
-        //forward declarations
-        struct Neighbor;
-        struct Vertex;
-        using Vertices = std::list<Vertex>;
+    //forward declarations
+    struct Neighbor;
+    struct Vertex;
+    using Vertices = std::list<Vertex>;
+    using Neighborhood = std::list<Neighbor>;
+
+
 
     public:
-        /**
-         * Iterador de los vertices del grafo const
-         */
-        class const_vertex_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
-        {
+    /**
+    * Iterador de los vertices del grafo const
+    */
+    class const_vertex_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+    {
         public:
-            /**
-             * Construye un iterador que no apunta a nada y es invalido.
-             * Se usa simplemente para poder declarar iteradores sin definir
-             */
-            const_vertex_iterator();
-
-            //constructores y destructores
+        /**
+        * Construye un iterador que no apunta a nada y es invalido.
+        * Se usa simplemente para poder declarar iteradores sin definir
+        */
+        const_vertex_iterator();
+        //constructores y destructores
 
             bool operator==(const_vertex_iterator other) const {
                 return it == other.it;
@@ -117,7 +119,7 @@ namespace tip {
             }
 
 
-            int operator*() const {
+            Vertices::iterator operator*() const {
                 return it->neighbor;
             }
 
@@ -186,12 +188,6 @@ namespace tip {
         //G = std::move(H
 
         void deleteNeighbor(Graph::const_vertex_iterator v,Graph::const_vertex_iterator w);
-        bool is_greater_degree(const_vertex_iterator v1,const_vertex_iterator v2);
-
-        bool is_equal_degree(const_vertex_iterator v1,const_vertex_iterator v2);
-
-        const_vertex_iterator increaseDegree(const_vertex_iterator v);
-        const_vertex_iterator decreaseDegree(const_vertex_iterator v);
 
         /**
          * Inserta un nuevo vertice al grafo y retorna el numero del indice agregado.
@@ -297,7 +293,7 @@ namespace tip {
 
         struct Neighbor;
 
-        using Neighborhood = std::list<Neighbor>;
+        //using Neighborhood = std::list<Neighbor>;
 
         struct Vertex{
             explicit Vertex(int elem, size_t degree = 0):
@@ -312,10 +308,10 @@ namespace tip {
             bool is_degree_greater(const_vertex_iterator w){
                     return (w.it->degree > this->degree);
             }
-
         };
 
         struct Neighbor {
+
 
         /**
             * Los objetos de esta clase se van a almacenar en listas que juntas representan el vecindario N(v) de un vertice v.
@@ -342,16 +338,16 @@ namespace tip {
              * cuando v esta en high_neighborhood de w, dejamos low_neighborhood.end())
              */
             std::list<Neighborhood>::iterator list_pointer;
+            friend class Graph;
         };
 
         /**
          * Esto es un hack para transformar const_iterator en iterator
          */
-        Vertices::iterator to_iterator(Vertices::const_iterator it) {
-            return vertices.erase(it, it);
+        Vertices::iterator to_iterator(const_vertex_iterator it) {
+            return vertices.erase(it.it, it.it);
         };
     };
-
 
 }
 

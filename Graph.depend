@@ -16,3 +16,17 @@
 	<iostream>
 	"Graph.h"
 
+1437954814 source:/home/griselda/Escritorio/GrafoC/Graph.cpp
+	<iostream>
+	<list>
+	"Graph.h"
+
+1438013266 /home/griselda/Escritorio/GrafoC/Graph.h
+	<iostream>
+	<list>
+	<iterator>
+
+1437944234 source:/home/griselda/Escritorio/GrafoC/test.cpp
+	<iostream>
+	"Graph.h"
+
