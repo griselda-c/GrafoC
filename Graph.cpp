@@ -106,7 +106,15 @@ namespace tip {
 
         }
 
-        void Graph::deleteNeighbor(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
+       std::list<Graph::Neighbor>::iterator Graph::find_neighbor_in_high(Graph::Vertices::iterator v,int elem){
+        auto it = v->highNeighborhood.begin();
+        while(it != v->highNeighborhood.end() && it->neighbor->elem == elem){
+            ++it;
+        }
+            return it;
+        }
+
+    void Graph::deleteNeighbor(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
         auto v = to_iterator(iter_v);
         auto w = to_iterator(iter_w);
         if(v->degree > w->degree){
@@ -114,30 +122,23 @@ namespace tip {
         }
 
         if(v->degree == w->degree){
-        // v esta en hig_w
-        auto it = w->highNeighborhood.begin();
-        while(it != w->highNeighborhood.end() && it->neighbor->elem == v->elem){
-            ++it;
-            }
-        //borrar a w de v
-        v->highNeighborhood.erase(it->self_pointer);
+        // w esta en high_v
+        auto neighbor = find_neighbor_in_high(v,w->elem);
         //borrar a v de w
-        w->highNeighborhood.erase(it);
+        w->highNeighborhood.erase(neighbor->self_pointer);
+        //borrar a w de v
+        v->highNeighborhood.erase(neighbor);
 
         }else{
 
-        auto it = v->highNeighborhood.begin();
-        while(it != v->highNeighborhood.end() && it->neighbor->elem == w->elem){
-            ++it;
-            }
+        auto neighbor = find_neighbor_in_high(v,w->elem);
         //buscar a v en low_w
-        *it->list_pointer->erase(it->self_pointer);
+        *neighbor->list_pointer->erase(neighbor->self_pointer);
         //borrar a w en v
-        v->highNeighborhood.erase(it);
+        v->highNeighborhood.erase(neighbor);
 
         }
-
-  }
+    }
 
 
     int Graph::vertexCount() const {
