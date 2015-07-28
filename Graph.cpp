@@ -97,22 +97,22 @@ namespace tip {
     }
 
 
-     void Graph::removeEdge(Graph::const_vertex_iterator  v, Graph::const_vertex_iterator  w){
+    void Graph::removeEdge(Graph::const_vertex_iterator  v, Graph::const_vertex_iterator  w){
 
 
         //if existe edge(v,w)
          deleteNeighbor(v,w); //w es vecino de v
         //update_after_delete();
 
-        }
+    }
 
-       std::list<Graph::Neighbor>::iterator Graph::find_neighbor_in_high(Graph::Vertices::iterator v,int elem){
+    std::list<Graph::Neighbor>::iterator Graph::find_neighbor_in_high(Graph::Vertices::iterator v,int elem){
         auto it = v->highNeighborhood.begin();
         while(it != v->highNeighborhood.end() && it->neighbor->elem == elem){
             ++it;
         }
             return it;
-        }
+    }
 
     void Graph::deleteNeighbor(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
         auto v = to_iterator(iter_v);
