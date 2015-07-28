@@ -340,6 +340,10 @@ namespace tip {
             std::list<Neighborhood>::iterator list_pointer;
             friend class Graph;
         };
+        // FUNCIONES PRIVADAS
+    
+        std::list<Neighborhood>::iterator  find_neighborhood_with_degree(Vertices::iterator w, int degree);
+        std::list<Neighborhood>::iterator  find_neighborhood_with_degree(std::list<Neighborhood>::iterator first, std::list<Neighborhood>::iterator last,  int degree);
 
         /**
          * Esto es un hack para transformar const_iterator en iterator
