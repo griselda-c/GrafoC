@@ -38,56 +38,56 @@ namespace tip {
         const_vertex_iterator();
         //constructores y destructores
 
-            bool operator==(const_vertex_iterator other) const {
-                return it == other.it;
-            }
+        bool operator==(const_vertex_iterator other) const {
+            return it == other.it;
+        }
 
-            bool operator!=(const_vertex_iterator other) const {
-                return it != other.it;
-            }
+        bool operator!=(const_vertex_iterator other) const {
+            return it != other.it;
+        }
 
 
-            int operator*() const {
-                return it->elem;
-            }
+        int operator*() const {
+            return it->elem;
+        }
 
-//            template <class T> T* operator->() {
-//                 return it.operator->();
-//             }
+//      template <class T> T* operator->() {
+//          return it.operator->();
+//      }
 
-            void swap(const_vertex_iterator& other) {
-                std::swap(it, other.it);
-            }
+         void swap(const_vertex_iterator& other) {
+            std::swap(it, other.it);
+        }
 
-            const_vertex_iterator& operator++() {
-                ++it;
-                return *this;
-            }
+        const_vertex_iterator& operator++() {
+            ++it;
+            return *this;
+        }
 
-            const_vertex_iterator operator++(int) {
-                const_vertex_iterator temp = *this;
-                ++it;
-                return temp;
-            }
+        const_vertex_iterator operator++(int) {
+            const_vertex_iterator temp = *this;
+            ++it;
+            return temp;
+        }
 
-            const_vertex_iterator& operator--() {
-                --it;
-                return *this;
-            }
+        const_vertex_iterator& operator--() {
+            --it;
+            return *this;
+        }
 
-            const_vertex_iterator operator--(int) {
-                const_vertex_iterator temp = *this;
-                --it;
-                return temp;
-            }
+        const_vertex_iterator operator--(int) {
+            const_vertex_iterator temp = *this;
+            --it;
+            return temp;
+        }
 
 
 
         private:
-            const_vertex_iterator(Vertices::const_iterator it) : it(it) {};
-            friend class Graph;
+        const_vertex_iterator(Vertices::const_iterator it) : it(it) {};
+        friend class Graph;
 
-            Vertices::const_iterator it;
+        Vertices::const_iterator it;
         };// fin iterator vertex const
 
 
@@ -114,88 +114,87 @@ namespace tip {
              * Construye un iterador que no apunta a nada y es invalido.
              * Se usa simplemente para poder declarar iteradores sin definir
              */
-            const_neighbor_iterator();
+        const_neighbor_iterator();
 
             //constructores y destructores
 
-            bool operator==(const_neighbor_iterator other) const {
-                return it == other.it;
-            }
+        bool operator==(const_neighbor_iterator other) const {
+            return it == other.it;
+        }
 
-            bool operator!=(const_neighbor_iterator other) const {
-                return it != other.it;
-            }
+        bool operator!=(const_neighbor_iterator other) const {
+            return it != other.it;
+        }
 
 
-            Vertices::iterator operator*() const {
-                return it->neighbor;
-            }
+        Vertices::iterator operator*() const {
+            return it->neighbor;
+        }
 
-//             T* operator->() {
-//                 return it.operator->();
-//             }
+//      T* operator->() {
+//          return it.operator->();
+//      }
 
-            void swap(const_neighbor_iterator & other) {
-                std::swap(it, other.it);
-            }
+        void swap(const_neighbor_iterator & other) {
+            std::swap(it, other.it);
+        }
 
-            const_neighbor_iterator & operator++() {
-                ++it;
-                return *this;
-            }
+        const_neighbor_iterator & operator++() {
+            ++it;
+            return *this;
+        }
 
-            const_neighbor_iterator  operator++(int) {
-                const_neighbor_iterator temp = *this;
-                ++it;
-                return temp;
-            }
+        const_neighbor_iterator  operator++(int) {
+            const_neighbor_iterator temp = *this;
+            ++it;
+            return temp;
+        }
 
-            const_neighbor_iterator & operator--() {
-                --it;
-                return *this;
-            }
+        const_neighbor_iterator & operator--() {
+            --it;
+            return *this;
+        }
 
-            const_neighbor_iterator operator--(int) {
-                const_neighbor_iterator temp = *this;
-                --it;
-                return temp;
-            }
+        const_neighbor_iterator operator--(int) {
+            const_neighbor_iterator temp = *this;
+            --it;
+            return temp;
+        }
 
 
         private:
-            const_neighbor_iterator (std::list<Neighbor>::const_iterator it) : it(it) {};
-            friend class Graph;
+        const_neighbor_iterator (std::list<Neighbor>::const_iterator it) : it(it) {};
+        friend class Graph;
+        std::list<Neighbor>::const_iterator it;
+    };
 
-            std::list<Neighbor>::const_iterator it;
-        };
+    //Constructor por defecto
+    //Graph() { }
 
-        //Constructor por defecto
-        //Graph() { }
+    //Destructor.  Libera todos los recursos.
+    //~Graph() {}
 
-        //Destructor.  Libera todos los recursos.
-        //~Graph() {}
+    //Constructor por copia
+    //Graph(const Graph& other);
+    //Graph H; //constructor por defecto
+    //Graph G(H); constructor por copia
+    //Graph G{H}; constructor por copia
+    //Graph G = H; constructor por copia.
 
-        //Constructor por copia
-        //Graph(const Graph& other);
-        //Graph H; //constructor por defecto
-        //Graph G(H); constructor por copia
-        //Graph G{H}; constructor por copia
-        //Graph G = H; constructor por copia.
+    //operador de asignacion
+    //Graph& operator=(const Graph& graph);
+    //G = H;
 
-        //operador de asignacion
-        //Graph& operator=(const Graph& graph);
-        //G = H;
+    //Move constructor
+    //Graph(Graph&& other);
+    //Graph G = f() donde f() retorna un grafo por copia (evita la copia)
 
-        //Move constructor
-        //Graph(Graph&& other);
-        //Graph G = f() donde f() retorna un grafo por copia (evita la copia)
+    //Asignacion por movimiento
+    //Graph& operator=(Graph&& other)
+    //G = f() donde f() retorna un grafo por copia (evita la copia)
+    //G = std::move(H
 
-        //Asignacion por movimiento
-        //Graph& operator=(Graph&& other)
-        //G = f() donde f() retorna un grafo por copia (evita la copia)
-        //G = std::move(H
-
-        void deleteNeighbor(Graph::const_vertex_iterator v,Graph::const_vertex_iterator w);
+    void deleteNeighbor(Graph::const_vertex_iterator v,Graph::const_vertex_iterator w);
 
         /**
          * Inserta un nuevo vertice al grafo y retorna el numero del indice agregado.
@@ -206,7 +205,7 @@ namespace tip {
          *
          * @return numero del vertice agregado
          */
-        const_vertex_iterator insertVertex(unsigned int elem);
+    const_vertex_iterator insertVertex(unsigned int elem);
 
             /**
             * Elimina el vertice v del grafo si el mismo pertenece al grafo.
@@ -214,7 +213,7 @@ namespace tip {
             *
             * @param v vertice a eliminar
             */
-//         vertex_iterator removeVertex(const_vertex_iterator v);
+//   vertex_iterator removeVertex(const_vertex_iterator v);
 
         /**
          * Agrega la arista vw al grafo.  Si la arista ya existe, no se agrega.
@@ -222,8 +221,8 @@ namespace tip {
          * @param v uno de los vertices de la arista
          * @param w el otro vertice de la arista
          */
-//        edge_iterator addEdge(const_vertex_iterator v, const_vertex_iterator w);
-        void add_edge(const_vertex_iterator v, const_vertex_iterator w);
+//  edge_iterator addEdge(const_vertex_iterator v, const_vertex_iterator w);
+    void add_edge(const_vertex_iterator v, const_vertex_iterator w);
 
         /**
             * Elimina la arista vw del grafo.  Si no pertenece al grafo, no hace nada
@@ -231,12 +230,12 @@ namespace tip {
             * @param v uno de los vertices de la arista
             * @param w el otro vertice de la arista
             */
-       void removeEdge(const_vertex_iterator  v, const_vertex_iterator  w);
+    void removeEdge(const_vertex_iterator  v, const_vertex_iterator  w);
 
 
-        void create_relationship(const_vertex_iterator greater_v, const_vertex_iterator lower_w, bool equally);
+    void create_relationship(const_vertex_iterator greater_v, const_vertex_iterator lower_w, bool equally);
 
-        void insert_in_highn(const_vertex_iterator v, const_vertex_iterator w, Neighbor nv);
+    void insert_in_highn(const_vertex_iterator v, const_vertex_iterator w, Neighbor nv);
 
 
     /**
@@ -282,7 +281,7 @@ namespace tip {
             * @param v
             * @return iterador a los vecinos de v.
     */
-//     VertexIterator iterHighNeighbors(int v);
+//  VertexIterator iterHighNeighbors(int v);
 
 
     /**
@@ -291,7 +290,7 @@ namespace tip {
             * @param v
             * @return
             */
-//     EdgeIterator iterEdgeNeighbors(int v);
+//  EdgeIterator iterEdgeNeighbors(int v);
 
 
 
