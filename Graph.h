@@ -352,7 +352,7 @@ namespace tip {
     
         std::list<Neighborhood>::iterator  find_neighborhood_with_degree(Vertices::iterator w, int degree);
         std::list<Neighborhood>::iterator  find_neighborhood_with_degree(std::list<Neighborhood>::iterator first, std::list<Neighborhood>::iterator last,  int degree);
-
+        std::list<Neighbor>::iterator find_neighbor_in_high(Vertices::iterator v,int elem);
         /**
          * Esto es un hack para transformar const_iterator en iterator
          */
