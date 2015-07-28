@@ -58,12 +58,13 @@ namespace tip {
      */
     std::list<Graph::Neighborhood>::iterator Graph::find_neighborhood_with_degree(Graph::Vertices::iterator w, int degree)
     {
+        //TODO: reemplazar por find_if
         std::list<Graph::Neighborhood>::iterator first = w->lowNeighborhood.begin();
         return find_neighborhood_with_degree(first, w->lowNeighborhood.end(), degree);
     }
 
     /**
-     *
+     * TODO: REEMPLAZAR POR find_if DEL STD
      */
     std::list<Graph::Neighborhood>::iterator Graph::find_neighborhood_with_degree(
     std::list<Graph::Neighborhood>::iterator first,
