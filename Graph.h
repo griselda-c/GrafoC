@@ -5,6 +5,14 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+/** Comentarios de Francisco:
+ * 27/07- Lamentablemente la indentacion me funcionaba mal, asi que puse un autoindent usando un editor.  Cambienlo si no les gusta
+ * 27/07- El problema con las cosas publicas y privada es que no estan declarando las funciones.  Por ejemplo, find_neighborhood_with_degree
+ *        habria que declararla dentro de graph, porque tiene acceso a la estructura interna.  Ademas, esta funcion deberia ser privada
+ *        porque sino muestra la estructura para afuera.  El tema es que si no la declaran, C++ piensa que es de afuera y no puede acceder a 
+ *        la estructura privada.  Abajo puse una seccion para poner las funciones privadas.
+ */
+
 namespace tip {
     class Graph {
     private:
