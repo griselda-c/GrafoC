@@ -78,15 +78,7 @@ namespace tip {
         return it;
     }
 
-    std::list<Graph::Neighborhood>::iterator find_neighborhood_with_degree(Graph::Vertices::iterator w, int degree){
-        auto it = w->lowNeighborhood.begin();
-        while(it != w->lowNeighborhood.end() && it->front().neighbor->degree < degree){
-            ++it;
-        }
-        return it;
-    }
-
-
+    
     void update_neighborhood(Graph::Vertices::iterator v) {
         auto it = v->highNeighborhood.begin();
         while(it != v->highNeighborhood.end()){
