@@ -56,7 +56,7 @@ namespace tip {
     /**
      * Retorna un puntero a la primer lista del low_neighbhood de w que tiene grado al menos degree.
      */
-    std::list<Graph::Neighborhood>::iterator find_neighborhood_with_degree(Graph::Vertices::iterator w, int degree)
+    std::list<Graph::Neighborhood>::iterator Graph::find_neighborhood_with_degree(Graph::Vertices::iterator w, int degree)
     {
         std::list<Graph::Neighborhood>::iterator first = w->lowNeighborhood.begin();
         return find_neighborhood_with_degree(first, w->lowNeighborhood.end(), degree);
@@ -65,7 +65,7 @@ namespace tip {
     /**
      *
      */
-    std::list<Graph::Neighborhood>::iterator find_neighborhood_with_degree(
+    std::list<Graph::Neighborhood>::iterator Graph::find_neighborhood_with_degree(
     std::list<Graph::Neighborhood>::iterator first,
     std::list<Graph::Neighborhood>::iterator last,
     int degree)
@@ -97,7 +97,7 @@ namespace tip {
                 v_list_in_x->push_front(*(it->self_pointer));
             }
             else {
-                // Nota: falta contemplar el caso en que tenían mismo grado
+                // Nota: falta contemplar el caso en que tenÃ­an mismo grado
 
             }
         }
