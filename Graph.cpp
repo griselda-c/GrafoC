@@ -9,48 +9,48 @@ namespace tip {
 
     void Graph::add_edge(Graph::const_vertex_iterator iter_v, Graph::const_vertex_iterator iter_w){
 
-        auto v = to_iterator(iter_v);
-        auto w = to_iterator(iter_w);
-
-        //queremos que v tenga menor o igual grado a w
-        if(v->degree > w->degree){
-            std::swap(v,w);
-        }
-
-        //PHASE 1: Algoritmo 1 del paper.
-        update_neighborhood(v);
-        update_neighborhood(w);
-
-        //PHASE 2:
-        //Tener cuidado con que v y w tengan el mismo grado.
-        auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
-        if(pos_v_in_low_w == w->lowNeighborhood.end()) {
-            if (pos_v_in_low_w->neighbor->degree > v->degree + 1) {
-                pos_v_in_low_w = w->lowNeighborhood.insert(pos_v_in_low_w, Neighborhood());
-
-                auto& v_list_in_w = *pos_v_in_low_w;
-                auto& w_list_in_v = v->highNeighborhood;
-
-                w_list_in_v.back().list_pointer = pos_v_in_low_w;
-            }
-            else if (w->degree + 1 == v->degree + 1) {
-                auto& v_list_in_w = w->highNeighborhood;
-                auto& w_list_in_v = v->highNeighborhood;
-
-                w_list_in_v.back().list_pointer = w->lowNeighborhood.end();
-            }
-        }
-
-        v_list_in_w.push_front(Neighbor(v));
-        w_list_in_v.push_front(Neighbor(w));
-
-        v_list_in_w.back().list_pointer = v->lowNeighborhood.end();
-        v_list_in_w.back().self_pointer = w_list_in_v.begin();
-
-        w_list_in_v.back().self_pointer = v_list_in_w.begin();
-
-        //cambiarGrado
-
+//        auto v = to_iterator(iter_v);
+//        auto w = to_iterator(iter_w);
+//
+//        //queremos que v tenga menor o igual grado a w
+//        if(v->degree > w->degree){
+//            std::swap(v,w);
+//        }
+//
+//        //PHASE 1: Algoritmo 1 del paper.
+//        update_neighborhood(v);
+//        update_neighborhood(w);
+//
+//        //PHASE 2:
+//        //Tener cuidado con que v y w tengan el mismo grado.
+//        auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
+//        if(pos_v_in_low_w == w->lowNeighborhood.end()) {
+//            if (pos_v_in_low_w->neighbor->degree > v->degree + 1) {
+//                pos_v_in_low_w = w->lowNeighborhood.insert(pos_v_in_low_w, Neighborhood());
+//
+//                auto& v_list_in_w = *pos_v_in_low_w;
+//                auto& w_list_in_v = v->highNeighborhood;
+//
+//                w_list_in_v.back().list_pointer = pos_v_in_low_w;
+//            }
+//            else if (w->degree + 1 == v->degree + 1) {
+//                auto& v_list_in_w = w->highNeighborhood;
+//                auto& w_list_in_v = v->highNeighborhood;
+//
+//                w_list_in_v.back().list_pointer = w->lowNeighborhood.end();
+//            }
+//        }
+//
+//        v_list_in_w.push_front(Neighbor(v));
+//        w_list_in_v.push_front(Neighbor(w));
+//
+//        v_list_in_w.back().list_pointer = v->lowNeighborhood.end();
+//        v_list_in_w.back().self_pointer = w_list_in_v.begin();
+//
+//        w_list_in_v.back().self_pointer = v_list_in_w.begin();
+//
+//        //cambiarGrado
+//
     };
 
     /**
@@ -79,11 +79,11 @@ namespace tip {
     }
 
 
-    void update_neighborhood(Graph::Vertices::iterator v) {
+    void Graph::update_neighborhood(Graph::Vertices::iterator v) {
         auto it = v->highNeighborhood.begin();
         while(it != v->highNeighborhood.end()){
             if (it->neighbor->degree != v->degree) {
-                v_list_in_x = it->list_pointer;
+                auto v_list_in_x = it->list_pointer;
                 v_list_in_x->remove(*(it->self_pointer));
                 ++v_list_in_x;
                 it->list_pointer = v_list_in_x;
@@ -111,28 +111,42 @@ namespace tip {
             return it;
     }
 
+    /**
+        la variable neighbor del Neighbor que guarda?
+        puntero al vecino o puntero al vertice al que pertenece?
+
+    **/
+
     void Graph::update_after_delete(Graph::Vertices::iterator x){
         // empezamos actualizando highNeighborhood, estos vecinos pueden tener a x en high
         // (si tienen el mismo grado) o en low
 
         for(auto it = x->highNeighborhood.begin(); it != x->highNeighborhood.end(); ++it) {
-            //si el vecino lo tiene en high
-            if(it->list_pointer == it->neighbor->lowNeighborhood.end() ){
-                //pasarlo a low
-                auto pos_low_neighbor = find_neighborhood_with_degree(x,x->degree);
+            auto pos_low_neighbor = find_neighborhood_with_degree(x,x->degree);
 
-                if(pos_low_neighbor == it->neighbor->lowNeighborhood.end()) {
-                    //no existe la lista con ese grado
-                    pos_low_neighbor = it->neighbor->lowNeighborhood.insert(pos_low_neighbor, Neighborhood());
+            if(pos_low_neighbor == it->neighbor->lowNeighborhood.end()) {
+                //no existe la lista con ese grado
+                pos_low_neighbor = it->neighbor->lowNeighborhood.insert(pos_low_neighbor, Neighborhood());
+            }
+
+            // borrarlo de la lista vieja.
+            //Esta en low_vecino
+            if(it->list_pointer != it->neighbor->lowNeighborhood.end() ){
+                it->list_pointer->erase(it->self_pointer);
+                if(it->list_pointer->empty()){
+                  it->neighbor->lowNeighborhood.erase(it->list_pointer);
                 }
-                it->list_pointer = pos_low_neighbor;
-                auto& list_low = *pos_low_neighbor;
-                list_low.push_front(*it);
-                it->self_pointer = list_low.begin();
-          }else{ // el vecino lo tiene en low
+            }else{// estaba en high
+                it->neighbor->highNeighborhood.erase(it->self_pointer);
+            }
+
+            //actualizar los datos.
+            it->list_pointer = pos_low_neighbor;
+            auto& list_low = *pos_low_neighbor;
+            list_low.push_front(*it);
+            it->self_pointer = list_low.begin();
 
 
-          }
        }
 
     }

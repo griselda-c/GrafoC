@@ -329,11 +329,6 @@ private:
         size_t degree;
         Neighborhood highNeighborhood;
         std::list<Neighborhood> lowNeighborhood;
-
-        bool is_degree_greater(const_vertex_iterator w)
-        {
-            return (w.it->degree > this->degree);
-        }
     };
 
     struct Neighbor
@@ -370,6 +365,7 @@ private:
     std::list<Neighborhood>::iterator  find_neighborhood_with_degree(Vertices::iterator w, int degree);
     std::list<Neighborhood>::iterator  find_neighborhood_with_degree(std::list<Neighborhood>::iterator first, std::list<Neighborhood>::iterator last,  int degree);
     std::list<Neighbor>::iterator find_neighbor_in_high(Vertices::iterator v,int elem);
+    void update_neighborhood(Vertices::iterator v);
     void update_after_delete(Vertices::iterator x);
     /**
      * Esto es un hack para transformar const_iterator en iterator
