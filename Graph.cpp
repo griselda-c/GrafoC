@@ -78,7 +78,7 @@ namespace tip {
         return it;
     }
 
-    
+
     void update_neighborhood(Graph::Vertices::iterator v) {
         auto it = v->highNeighborhood.begin();
         while(it != v->highNeighborhood.end()){
@@ -98,12 +98,9 @@ namespace tip {
 
 
     void Graph::removeEdge(Graph::const_vertex_iterator  v, Graph::const_vertex_iterator  w){
-
-
         //if existe edge(v,w)
          deleteNeighbor(v,w); //w es vecino de v
         //update_after_delete();
-
     }
 
     std::list<Graph::Neighbor>::iterator Graph::find_neighbor_in_high(Graph::Vertices::iterator v,int elem){
@@ -114,6 +111,32 @@ namespace tip {
             return it;
     }
 
+    void Graph::update_after_delete(Graph::Vertices::iterator x){
+        // empezamos actualizando highNeighborhood, estos vecinos pueden tener a x en high
+        // (si tienen el mismo grado) o en low
+
+        for(auto it = x->highNeighborhood.begin(); it != x->highNeighborhood.end(); ++it) {
+            //si el vecino lo tiene en high
+            if(it->list_pointer == it->neighbor->lowNeighborhood.end() ){
+                //pasarlo a low
+                auto pos_low_neighbor = find_neighborhood_with_degree(x,x->degree);
+
+                if(pos_low_neighbor == it->neighbor->lowNeighborhood.end()) {
+                    //no existe la lista con ese grado
+                    pos_low_neighbor = it->neighbor->lowNeighborhood.insert(pos_low_neighbor, Neighborhood());
+                }
+                it->list_pointer = pos_low_neighbor;
+                auto& list_low = *pos_low_neighbor;
+                list_low.push_front(*it);
+                it->self_pointer = list_low.begin();
+          }else{ // el vecino lo tiene en low
+
+
+          }
+       }
+
+    }
+
     void Graph::deleteNeighbor(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
         auto v = to_iterator(iter_v);
         auto w = to_iterator(iter_w);
@@ -121,7 +144,7 @@ namespace tip {
             std::swap(v,w);  // v es el de grado menor
         }
 
-        if(v->degree == w->degree){
+        if(v->degree == w->degree){ // ambos estan en high
         // w esta en high_v
         auto neighbor = find_neighbor_in_high(v,w->elem);
         //borrar a v de w
@@ -132,12 +155,13 @@ namespace tip {
         }else{
 
         auto neighbor = find_neighbor_in_high(v,w->elem);
-        //buscar a v en low_w
-        *neighbor->list_pointer->erase(neighbor->self_pointer);
-        //borrar a w en v
+        //borrar de low_w  a v
+        neighbor->list_pointer->erase(neighbor->self_pointer);
+        //borrar a w en de la lista_v
         v->highNeighborhood.erase(neighbor);
-
         }
+        v->degree -=1;
+        w->degree -=1;
     }
 
 
