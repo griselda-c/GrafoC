@@ -10,8 +10,149 @@
 namespace tip
 {
     
-    
-    
+    namespace impl {
+        /**
+         * En este namespace vamos a agregar las clases auxiliares que utilizamos en el grafo.
+         * La idea es poder tener ciertas funcionalidades sin afectar la lectura del grafo
+         */
+        
+        struct Neighbor;
+        struct Vertex;
+        using degNeighborhood = std::list<Neighbor>;
+        using Neighborhood = std::list<degNeighborhood>;
+        using Vertices = std::list<Vertex>;
+        
+        
+        int degree(degNeighborhood::const_iterator neighbor);
+        int degree(const degNeighborhood& neighbors);
+        int degree(const Neighborhood::const_iterator neigbhors);
+        degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
+        
+        
+        
+        /**
+         * Vertex representa una instancia de un vertice del h-grafo
+         * Tiene un elemento de algun tipo (por ahora entero), el grado y un vecindario.
+         * El vecindario es una lista de listas N(v, d_1), ..., N(v, d_k), H donde cada lista N(v, d_i)
+         * guarda los vecions de grado d_i y donde H guarda el resto de los vecinos.
+         * La lista H siempre es la del final de neighborhood.
+         */
+        struct Vertex
+        {
+            int elem;  //elemento
+            size_t degree;  //grado
+            Neighborhood neighborhood;  //vecindario
+            
+            /**
+             * Crea un nuevo vertice con grado 0.  Siempre tiene una lista de high neighbors
+             */
+            explicit Vertex(int elem, size_t degree = 0):
+            elem(elem), degree(degree)
+            {
+                //garantizamos el high neighbohood
+                neighborhood.push_back(degNeighborhood());
+            }
+            
+            /**
+             * retorna un puntero al high neighborhood()
+             */
+            Neighborhood::iterator highNeighborhood() {
+                return std::prev(neighborhood.end());
+            }
+            
+            /**
+             *  Mueve who de la lista list a la siguiente lista como si incrementara el grado en 1.
+             *  Se asume que el grado de who es el correcto en su lista, y no incrementa el grado.
+             *  Crea la lista en caso en que no exista.
+             *  Borra la lista list en caso que quede vacia.
+             *  Deja bien los punteros de this, pero no los de who.
+             *  Retorna la lista en la que who queda insertado.  Siempre se inserta al inicio, para poder
+             *  actualizar los punteros de who.
+             * 
+             * Precondicion: list no es high_neighborhood
+             */
+            Neighborhood::iterator toNextList(Neighborhood::iterator list, degNeighborhood::iterator who) {
+                auto to_list = std::next(list);
+                if( impl::degree(who) < this->degree && impl::degree(to_list) != impl::degree(who)) {
+                    to_list = insertDegNeighborhood(to_list);
+                }
+                to_list->push_front(*who);
+                erase(list, who);
+                return to_list;
+            }
+            
+            /**
+             *  Mueve who de la lista list a la lista previa como si se decrementara el grado en 1.
+             *  Se asume que el grado de who el de la lista destino, y no incrementa el grado.
+             *  Crea la lista en caso en que no exista.
+             *  Borra la lista list en caso que quede vacia.
+             *  Deja bien los punteros de this, pero no los de who.
+             *  Retorna la lista en la que who queda insertado.  Siempre se inserta al inicio, para poder
+             *  actualizar los punteros de who.
+             * 
+             * Precondicion: who no queda en el high neighborhood
+             */
+            Neighborhood::iterator toPrevList(Neighborhood::iterator list, degNeighborhood::iterator who) {
+                Neighborhood::iterator to_list;
+                if(list == neighborhood.begin() || impl::degree(std::prev(list)) < impl::degree(who)) {
+                    to_list = insertDegNeighborhood(list);
+                } else { 
+                    to_list = std::prev(list);
+                }
+                erase(list, who);
+                to_list->push_front(*who);
+                return to_list;
+            }
+            
+            /**
+             * Borra who de la lista list, eliminando list si queda vacia y no es el high neighborhood
+             */
+            void erase(Neighborhood::iterator list, degNeighborhood::iterator who) {
+                list->erase(who);
+                if(list->empty() && list != highNeighborhood()) {
+                    neighborhood.erase(list);
+                }
+            }
+            
+            Neighborhood::iterator insertDegNeighborhood(Neighborhood::iterator pos) {
+                return neighborhood.insert(pos, degNeighborhood());
+            }
+            
+        };
+        
+        
+        struct Neighbor
+        {
+            /**
+             * Los objetos de esta clase se van a almacenar en listas que juntas representan el vecindario N(v) de un vertice v.
+             * El vecindario de N(v) se divide en dos.  Por una parte, esta la lista H(v) de los vecinos mayores o iguales a v
+             * y por otra esta L(v) que es una lista L(v, 1), L(v, 2), ..., L(v, k) donde cada L(v, i) contiene los vecinos
+             * de v que tienen grado i (no se guardan las listas que sean vacias).
+             *
+             * Cada NeighborDescriptor representa un vecino w de v que mantiene toda la informacion necesaria para
+             * que sea eficiente eliminar v de N(w) cuando se tiene acceso a w en N(v).  En particular, se mantiene
+             * el nombre de cada w en N(v), la ubicacion de v en la lista de N(w) que lo contiene y la ubicacion de la lista
+             * de N(w) que lo contiene.
+             */
+            Neighbor() = default;
+            Neighbor(Vertices::iterator neighbor) : neighbor(neighbor) {}
+            Vertices::iterator neighbor;
+            
+            /**
+             * Es un puntero directo a la posicion de v en la lista de N(w) que lo contiene.
+             */
+            degNeighborhood::iterator self_pointer;
+            
+            /**
+             * Es un puntero directo a la lista de L(w) que contiene a v. (Solo tiene en cuenta los low_neighborhood;
+             * cuando v esta en high_neighborhood de w, dejamos low_neighborhood.end())
+             */
+            Neighborhood::iterator list_pointer;
+            
+            
+        };
+        
+    }
     
     
     
@@ -20,10 +161,11 @@ namespace tip
     {
     private:
         //forward declarations
-        struct Neighbor;
-        struct Vertex;
-        using Vertices = std::list<Vertex>;
-        using Neighborhood = std::list<Neighbor>;
+        using Neighbor = impl::Neighbor;
+        using Vertex = impl::Vertex;
+        using Vertices = impl::Vertices;
+        using Neighborhood = impl::Neighborhood;
+        using degNeighborhood = impl::degNeighborhood;
         
         
     public:
@@ -212,7 +354,7 @@ namespace tip
         //Graph& operator=(Graph&& other)
         //G = f() donde f() retorna un grafo por copia (evita la copia)
         //G = std::move(H
-                
+        
         /**
          * Inserta un nuevo vertice al grafo y retorna el numero del indice agregado.
          *
@@ -313,129 +455,14 @@ namespace tip
     private:
         Vertices vertices;
         
-        struct Neighbor;
         
-        struct Vertex
-        {
-            using iterator = std::list<Neighborhood>::iterator;
-            
-            explicit Vertex(int elem, size_t degree = 0):
-            elem(elem), degree(degree)
-            {
-                //garantizamos el high neighbohood
-                neighborhood.push_back(Neighborhood());
-            }
-            
-            /**
-             * retorna un puntero al high neighborhood()
-             */
-            iterator highNeighborhood() {
-               return std::prev(neighborhood.end());
-            }
-            
-            /**
-             *  Mueve who de la lista list a la siguiente lista como si incrementara el grado en 1.
-             *  Se asume que el grado de who es el correcto en su lista, y no incrementa el grado.
-             *  Crea la lista en caso en que no exista.
-             *  Borra la lista list en caso que quede vacia.
-             *  Deja bien los punteros de this, pero no los de who.
-             *  Retorna la lista en la que who queda insertado.  Siempre se inserta al inicio, para poder
-             *  actualizar los punteros de who.
-             * 
-             * Precondicion: list no es high_neighborhood
-             */
-            iterator toNextList(iterator list, Neighborhood::iterator who) {
-                auto to_list = std::next(list);
-                if( who->neighbor->degree < this->degree && 
-                    to_list->begin()->neighbor->degree != who->neighbor->degree) {
-                    to_list = neighborhood.insert(to_list, Neighborhood());
-                }
-                to_list->push_front(*who);
-                erase(list, who);
-                return to_list;
-            }
-            
-            /**
-             *  Mueve who de la lista list a la lista previa como si se decrementara el grado en 1.
-             *  Se asume que el grado de who el de la lista destino, y no incrementa el grado.
-             *  Crea la lista en caso en que no exista.
-             *  Borra la lista list en caso que quede vacia.
-             *  Deja bien los punteros de this, pero no los de who.
-             *  Retorna la lista en la que who queda insertado.  Siempre se inserta al inicio, para poder
-             *  actualizar los punteros de who.
-             * 
-             * Precondicion: who no queda en el high neighborhood
-             */
-            iterator toPrevList(iterator list, Neighborhood::iterator who) {
-                iterator to_list;
-                if(list == neighborhood.begin() || 
-                    std::prev(list)->begin()->neighbor->degree < who->neighbor->degree) {
-                    to_list = neighborhood.insert(list, Neighborhood());
-                } else { 
-                    to_list = std::prev(list);
-                }
-                erase(list, who);
-                to_list->push_front(*who);
-                return to_list;
-            }
-            
-            /**
-             * Borra who de la lista list, eliminando list si queda vacia y no es el high neighborhood
-             */
-            void erase(iterator list, Neighborhood::iterator who) {
-                list->erase(who);
-                if(list->empty() && list != highNeighborhood()) {
-                    neighborhood.erase(list);
-                }
-            }
-            
-            int elem;
-            size_t degree;
-            //es una lista que tiene un vecindario por cada grado menor que v, y el ultimo, que siempre existe
-            //tiene los vertices de grado mayor o igual a v.
-            std::list<Neighborhood> neighborhood;
-        };
-        
-        struct Neighbor
-        {
-            /**
-             * Los objetos de esta clase se van a almacenar en listas que juntas representan el vecindario N(v) de un vertice v.
-             * El vecindario de N(v) se divide en dos.  Por una parte, esta la lista H(v) de los vecinos mayores o iguales a v
-             * y por otra esta L(v) que es una lista L(v, 1), L(v, 2), ..., L(v, k) donde cada L(v, i) contiene los vecinos
-             * de v que tienen grado i (no se guardan las listas que sean vacias).
-             *
-             * Cada NeighborDescriptor representa un vecino w de v que mantiene toda la informacion necesaria para
-             * que sea eficiente eliminar v de N(w) cuando se tiene acceso a w en N(v).  En particular, se mantiene
-             * el nombre de cada w en N(v), la ubicacion de v en la lista de N(w) que lo contiene y la ubicacion de la lista
-             * de N(w) que lo contiene.
-             */
-            Neighbor() = default;
-            Neighbor(Vertices::iterator neighbor) : neighbor(neighbor) {}
-            Vertices::iterator neighbor;
-            
-            /**
-             * Es un puntero directo a la posicion de v en la lista de N(w) que lo contiene.
-             */
-            Neighborhood::iterator self_pointer;
-            
-            /**
-             * Es un puntero directo a la lista de L(w) que contiene a v. (Solo tiene en cuenta los low_neighborhood;
-             * cuando v esta en high_neighborhood de w, dejamos low_neighborhood.end())
-             */
-            Vertex::iterator list_pointer;
-            
-            int degree() const {
-                return neighbor->degree;
-            }
-            friend class Graph;
-        };
         // FUNCIONES PRIVADAS
         
-        std::list<Neighborhood>::iterator  find_neighborhood_with_degree(Vertices::iterator w, int degree);
-        std::list<Neighborhood>::iterator  find_neighborhood_with_degree(std::list<Neighborhood>::iterator first, std::list<Neighborhood>::iterator last,  int degree);
-        std::list<Neighbor>::iterator find_neighbor_in(Vertex::iterator neighborhood, int elem);
+        std::list<degNeighborhood>::iterator  find_neighborhood_with_degree(Vertices::iterator w, int degree);
+        std::list<degNeighborhood>::iterator  find_neighborhood_with_degree(std::list<degNeighborhood>::iterator first, std::list<degNeighborhood>::iterator last,  int degree);
+//         degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
         void deleteNeighbor(const_vertex_iterator iter_v, const_vertex_iterator iter_w);
-            
+        
         
         void update_neighborhood(Vertices::iterator v);
         void update_after_delete(Vertices::iterator x);
@@ -449,7 +476,7 @@ namespace tip
             return vertices.erase(it.it, it.it);
         };
         
-        static int degree(const Neighborhood& N) {
+        static int degree(const degNeighborhood& N) {
             return N.begin()->neighbor->degree;
         }
     };

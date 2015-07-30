@@ -1,11 +1,48 @@
 #include <iostream>
 #include <list>
+#include <algorithm>
 
 #include "Graph.h"
 
 using namespace std;
 
 namespace tip {
+    
+  namespace impl {
+      int degree(degNeighborhood::const_iterator neighbor) {
+          return neighbor->neighbor->degree;
+      }
+      
+      int degree(const degNeighborhood& neighbors) {
+          return degree(neighbors.begin());
+      }
+      
+      int degree(const Neighborhood::const_iterator neighbors) {
+          return degree(*neighbors);
+      }
+
+      
+      degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem){
+        
+          return find_if(neighborhood->begin(), neighborhood->end(), [elem](auto& neighbor)->bool{
+              return neighbor.neighbor->elem == elem;
+          });
+          
+//           auto it = neighborhood->begin();
+//           while(it != neighborhood->end() && it->neighbor->elem != elem){
+//               ++it;
+//           }
+//           return it;
+      }
+
+      degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, Vertices::iterator elem){
+          return find_if(neighborhood->begin(), neighborhood->end(), [elem](auto& neighbor)->bool{
+              return neighbor.neighbor == elem;
+          });
+          
+      }
+      
+  }
     
     
     void Graph::add_edge(Graph::const_vertex_iterator iter_v, Graph::const_vertex_iterator iter_w){
@@ -57,19 +94,19 @@ namespace tip {
     /**
      * Retorna un puntero a la primer lista del low_neighbhood de w que tiene grado al menos degree.
      */
-    std::list<Graph::Neighborhood>::iterator Graph::find_neighborhood_with_degree(Graph::Vertices::iterator w, int degree)
+    std::list<Graph::degNeighborhood>::iterator Graph::find_neighborhood_with_degree(Graph::Vertices::iterator w, int degree)
     {
         //TODO: reemplazar por find_if
-        std::list<Graph::Neighborhood>::iterator first = w->neighborhood.begin();
+        std::list<Graph::degNeighborhood>::iterator first = w->neighborhood.begin();
         return find_neighborhood_with_degree(first, std::prev(w->neighborhood.end()), degree);
     }
     
     /**
      * TODO: REEMPLAZAR POR find_if DEL STD
      */
-    std::list<Graph::Neighborhood>::iterator Graph::find_neighborhood_with_degree(
-        std::list<Graph::Neighborhood>::iterator first,
-        std::list<Graph::Neighborhood>::iterator last,
+    std::list<Graph::degNeighborhood>::iterator Graph::find_neighborhood_with_degree(
+        std::list<Graph::degNeighborhood>::iterator first,
+        std::list<Graph::degNeighborhood>::iterator last,
         int degree)
     {
         auto it = first;
@@ -85,13 +122,13 @@ namespace tip {
      */
     /*
     void Graph::update_neighborhood(Graph::Vertices::iterator v) {
-        for(auto it : v->highNeighborhood) {
+        for(auto it : v->highdegNeighborhood) {
             if (it->neighbor->degree > v->degree) {
                 auto v_list_in_x = it->list_pointer;
                 v_list_in_x->erase(it->self_pointer);
-                auto* new_list = &(it->neighbor->highNeighborhood);
+                auto* new_list = &(it->neighbor->highdegNeighborhood);
                 ++v_list_in_x;
-                if((v_list_in_x != it->neighbor->lowNeighborhood.end() &&
+                if((v_list_in_x != it->neighbor->lowdegNeighborhood.end() &&
                    v->degree + 1 == v_list_in_x.begin()->degree
                 ) {
                     ///crear una lista nueva
@@ -115,13 +152,13 @@ namespace tip {
         //update_after_delete();
     }
     
-    std::list<Graph::Neighbor>::iterator Graph::find_neighbor_in(Graph::Vertex::iterator neighborhood, int elem){
-        auto it = neighborhood->begin();
-        while(it != neighborhood->end() && it->neighbor->elem != elem){
-            ++it;
-        }
-        return it;
-    }
+//     std::list<Graph::Neighbor>::iterator Graph::find_neighbor_in(Graph::Neighborhood::iterator neighborhood, int elem){
+//         auto it = neighborhood->begin();
+//         while(it != neighborhood->end() && it->neighbor->elem != elem){
+//             ++it;
+//         }
+//         return it;
+//     }
     
     /**
      *        la variable neighbor del Neighbor que guarda?
@@ -130,7 +167,7 @@ namespace tip {
      **/
     
     void Graph::update_after_delete(Graph::Vertices::iterator x){
-        // empezamos actualizando highNeighborhood, estos vecinos pueden tener a x en high
+        // empezamos actualizando highdegNeighborhood, estos vecinos pueden tener a x en high
         // (si tienen el mismo grado) o en low
         
         for(auto list = x->neighborhood.begin(); list != x->neighborhood.end(); ++list) {
@@ -151,7 +188,8 @@ namespace tip {
         }
         
         /**** REVERTIR LA FASE 2 ****/
-        auto neighbor = find_neighbor_in(v->highNeighborhood(), w->elem);
+        //auto neighbor = find_neighbor_in(v->highNeighborhood(), w->elem);
+        auto neighbor = find_neighbor_in(v->highNeighborhood(), w);
         //borrar de low_w  a v
         w->erase(neighbor->list_pointer, neighbor->self_pointer);
         //borrar a w en de la lista_v
@@ -176,7 +214,7 @@ namespace tip {
     
     Graph::const_vertex_iterator Graph::insertVertex(unsigned int elem) {
         vertices.push_front(Vertex(elem));
-        vertices.front().neighborhood.push_back(Neighborhood());
+        vertices.front().neighborhood.push_back(degNeighborhood());
         return begin();
     }
     
