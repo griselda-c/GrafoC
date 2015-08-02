@@ -7,27 +7,27 @@
 using namespace std;
 
 namespace tip {
-    
+
   namespace impl {
       int degree(degNeighborhood::const_iterator neighbor) {
           return neighbor->neighbor->degree;
       }
-      
+
       int degree(const degNeighborhood& neighbors) {
           return degree(neighbors.begin());
       }
-      
+
       int degree(const Neighborhood::const_iterator neighbors) {
           return degree(*neighbors);
       }
 
-      
+
       degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem){
-        
+
           return find_if(neighborhood->begin(), neighborhood->end(), [elem](auto& neighbor)->bool{
               return neighbor.neighbor->elem == elem;
           });
-          
+
 //           auto it = neighborhood->begin();
 //           while(it != neighborhood->end() && it->neighbor->elem != elem){
 //               ++it;
@@ -39,14 +39,14 @@ namespace tip {
           return find_if(neighborhood->begin(), neighborhood->end(), [elem](auto& neighbor)->bool{
               return neighbor.neighbor == elem;
           });
-          
+
       }
-      
+
   }
-    
-    
+
+
     void Graph::add_edge(Graph::const_vertex_iterator iter_v, Graph::const_vertex_iterator iter_w){
-        
+
         //        auto v = to_iterator(iter_v);
         //        auto w = to_iterator(iter_w);
         //
@@ -90,7 +90,7 @@ namespace tip {
         //        //cambiarGrado
         //
     };
-    
+
     /**
      * Retorna un puntero a la primer lista del low_neighbhood de w que tiene grado al menos degree.
      */
@@ -100,7 +100,7 @@ namespace tip {
         std::list<Graph::degNeighborhood>::iterator first = w->neighborhood.begin();
         return find_neighborhood_with_degree(first, std::prev(w->neighborhood.end()), degree);
     }
-    
+
     /**
      * TODO: REEMPLAZAR POR find_if DEL STD
      */
@@ -115,10 +115,10 @@ namespace tip {
         }
         return it;
     }
-    
+
     /**
      * Recorre cada w en el high neighborhood de v y actualiza la posicion de v dentro
-     * del vecindario de w. 
+     * del vecindario de w.
      */
     /*
     void Graph::update_neighborhood(Graph::Vertices::iterator v) {
@@ -132,26 +132,21 @@ namespace tip {
                    v->degree + 1 == v_list_in_x.begin()->degree
                 ) {
                     ///crear una lista nueva
-                    new_list = &(*v_list_in_x 
+                    new_list = &(*v_list_in_x
                 }
-                
+
                 it->list_pointer = v_list_in_x;
                 v_list_in_x->push_front(*(it->self_pointer));
             }
             else {
                 // Nota: falta contemplar el caso en que tenían mismo grado
-                
+
             }
         }
     }
- */   
+ */
 
-    void Graph::removeEdge(Graph::const_vertex_iterator  v, Graph::const_vertex_iterator  w){
-        //if existe edge(v,w)
-        deleteNeighbor(v,w); //w es vecino de v
-        //update_after_delete();
-    }
-    
+
 //     std::list<Graph::Neighbor>::iterator Graph::find_neighbor_in(Graph::Neighborhood::iterator neighborhood, int elem){
 //         auto it = neighborhood->begin();
 //         while(it != neighborhood->end() && it->neighbor->elem != elem){
@@ -159,80 +154,73 @@ namespace tip {
 //         }
 //         return it;
 //     }
-    
-    /**
-     *        la variable neighbor del Neighbor que guarda?
-     *        puntero al vecino o puntero al vertice al que pertenece?
-     * 
-     **/
-    
+
+
     void Graph::update_after_delete(Graph::Vertices::iterator x){
-        // empezamos actualizando highdegNeighborhood, estos vecinos pueden tener a x en high
-        // (si tienen el mismo grado) o en low
-        
         for(auto list = x->neighborhood.begin(); list != x->neighborhood.end(); ++list) {
             for(auto it = list->begin(); it != list->end(); ++it) {
-                
                 it->list_pointer = it->neighbor->toPrevList(it->list_pointer, it->self_pointer);
-                it->self_pointer = it->list_pointer->begin();                
+                it->self_pointer = it->list_pointer->begin();
             }
-            
         }
     }
-    
-    void Graph::deleteNeighbor(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
+
+    void Graph::removeEdge(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
         auto v = to_iterator(iter_v);
         auto w = to_iterator(iter_w);
         if(v->degree > w->degree){
             std::swap(v,w);  // v es el de grado menor
         }
-        
+
         /**** REVERTIR LA FASE 2 ****/
-        //auto neighbor = find_neighbor_in(v->highNeighborhood(), w->elem);
+        // v seguro lo tiene a w en high, ya sea porque el es menor o porque tiene igual grado.
+
         auto neighbor = find_neighbor_in(v->highNeighborhood(), w);
         //borrar de low_w  a v
         w->erase(neighbor->list_pointer, neighbor->self_pointer);
-        //borrar a w en de la lista_v
+        //borrar a w de la lista_v
         v->highNeighborhood()->erase(neighbor);
-        
+
         /*** REVERTIR LA FASE 1 ***/
-        
-        
         v->degree -=1;
         w->degree -=1;
+
+        //actualiza el vecindario
+        update_after_delete(v);
+        update_after_delete(w);
     }
-    
-    
+
+
     int Graph::vertexCount() const {
         return  this->vertices.size();
     };
-    
+
     int Graph::degree(Graph::const_vertex_iterator v) const{
         return v.it->degree;
     };
-    
-    
+
+
     Graph::const_vertex_iterator Graph::insertVertex(unsigned int elem) {
         vertices.push_front(Vertex(elem));
         vertices.front().neighborhood.push_back(degNeighborhood());
         return begin();
     }
-    
+
     Graph::const_vertex_iterator Graph::begin() const {
         return const_vertex_iterator(vertices.begin());
     }
-    
+
     Graph::const_vertex_iterator Graph::cbegin() const {
         return begin();
     }
-    
+
     Graph::const_vertex_iterator Graph::end() const {
         return const_vertex_iterator(vertices.end());
     }
-    
+
     Graph::const_vertex_iterator Graph::cend() const {
         return end();
     }
-    
+
 };
 
