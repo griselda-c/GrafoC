@@ -373,6 +373,7 @@ namespace tip
          * @param v vertice a eliminar
          */
         //   vertex_iterator removeVertex(const_vertex_iterator v);
+        void remove_vertex(const_vertex_iterator v);
 
         /**
          * Agrega la arista vw al grafo.  Si la arista ya existe, no se agrega.
@@ -462,7 +463,7 @@ namespace tip
         std::list<degNeighborhood>::iterator  find_neighborhood_with_degree(std::list<degNeighborhood>::iterator first, std::list<degNeighborhood>::iterator last,  int degree);
 //         degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
 
-
+        void remove_edge(Vertices::iterator v, Vertices::iterator w);
         void update_neighborhood(Vertices::iterator v);
         void update_after_delete(Vertices::iterator x);
 

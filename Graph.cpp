@@ -165,21 +165,31 @@ namespace tip {
         }
     }
 
-    void Graph::removeEdge(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
-        auto v = to_iterator(iter_v);
-        auto w = to_iterator(iter_w);
-        if(v->degree > w->degree){
+    /***
+        Funcion privada.
+        Borra a v del vecindario de w y Borra a w del vecindario de v
+        NO decrementa el grado NI actualiza el vecindario.
+    ***/
+
+    void Graph::remove_edge(Graph::Vertices::iterator v, Graph::Vertices::iterator w){
+         if(v->degree > w->degree){
             std::swap(v,w);  // v es el de grado menor
         }
-
-        /**** REVERTIR LA FASE 2 ****/
         // v seguro lo tiene a w en high, ya sea porque el es menor o porque tiene igual grado.
-
         auto neighbor = find_neighbor_in(v->highNeighborhood(), w);
         //borrar de low_w  a v
         w->erase(neighbor->list_pointer, neighbor->self_pointer);
         //borrar a w de la lista_v
         v->highNeighborhood()->erase(neighbor);
+
+    }
+
+    void Graph::removeEdge(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
+        auto v = to_iterator(iter_v);
+        auto w = to_iterator(iter_w);
+
+        /**** REVERTIR LA FASE 2 ****/
+        remove_edge(v,w);
 
         /*** REVERTIR LA FASE 1 ***/
         v->degree -=1;
@@ -188,6 +198,25 @@ namespace tip {
         //actualiza el vecindario
         update_after_delete(v);
         update_after_delete(w);
+    }
+
+    /***
+        Recorre todo el vecindario de v borrando las aristas existentes
+        y actualiza sólo el vecindario del otro vertice involucrado.
+        Por ultimo se borra v de la lista de vertices.
+    ***/
+
+    void Graph::remove_vertex(Graph::const_vertex_iterator iter_v){
+        auto v = to_iterator(iter_v);
+        for(auto list = v->neighborhood.begin(); list != v->neighborhood.end(); ++list) {
+            for(auto it = list->begin(); it != list->end(); ++it) {
+                remove_edge(v,it->neighbor);
+                it->neighbor->degree -= 1;
+                update_after_delete(it->neighbor);
+            }
+        }
+
+        vertices.erase(v);
     }
 
 
