@@ -464,7 +464,7 @@ namespace tip
 //         degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
 
         void remove_edge(Vertices::iterator v, Vertices::iterator w);
-        void update_neighborhood(Vertices::iterator v);
+        void update_neighborhood(Vertices::iterator x);
         void update_after_delete(Vertices::iterator x);
 
 
