@@ -60,20 +60,27 @@ namespace tip {
         update_neighborhood(w);
 
         //PHASE 2:
-        auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
+        //auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
+
+        Graph::degNeighborhood v_list_in_w;
+        Graph::degNeighborhood w_list_in_v;
 
         // ya que estar aseguro que v tiene grado menor o igual a w se descarta contemplar el caso contrario
         if (w->degree > v->degree) {
-            pos_v_in_low_w = w->neighborhood.insert(pos_v_in_low_w, Neighborhood());
+            //pos_v_in_low_w = w->neighborhood.insert(pos_v_in_low_w, Neighborhood());
+            auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
+
+            //if pos_v_in_low_w.begin().degree > v->degree + 1
+            pos_v_in_low_w = w->insertDegNeighborhood(pos_v_in_low_w);
 
             auto& v_list_in_w = *pos_v_in_low_w;
-            auto& w_list_in_v = v->highNeighborhood();
+            auto& w_list_in_v = *v->highNeighborhood();
 
             w_list_in_v.back().list_pointer = pos_v_in_low_w;
         }
         else {
-            auto& v_list_in_w = w->highNeighborhood();
-            auto& w_list_in_v = v->highNeighborhood();
+            auto& v_list_in_w = *w->highNeighborhood();
+            auto& w_list_in_v = *v->highNeighborhood();
 
             w_list_in_v.back().list_pointer = w->highNeighborhood();
         }
