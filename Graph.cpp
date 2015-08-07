@@ -117,8 +117,14 @@ namespace tip {
         std::list<Graph::degNeighborhood>::iterator last,
         int degree)
     {
+//        return find_if(first, last, [degree](auto& list_n)->bool{
+//              return list_n.front().neighbor->degree == degree;
+//          });
         auto it = first;
-        while(it != last && it->front().neighbor->degree < degree) {
+        while(it != last ) {
+            if(!it->empty() and it->front().neighbor->degree < degree){
+                return it;
+            }
             ++it;
         }
         return it;
@@ -241,6 +247,8 @@ namespace tip {
     Graph::const_vertex_iterator Graph::cend() const {
         return end();
     }
+
+
 
 };
 
