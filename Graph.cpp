@@ -60,18 +60,17 @@ namespace tip {
         update_neighborhood(w);
 
         //PHASE 2:
-        //auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
-
         Graph::degNeighborhood v_list_in_w;
         Graph::degNeighborhood w_list_in_v;
 
-        // ya que estar aseguro que v tiene grado menor o igual a w se descarta contemplar el caso contrario
+        // ya que se asegura que v tiene grado menor o igual a w se descarta contemplar el caso contrario
         if (w->degree > v->degree) {
-            //pos_v_in_low_w = w->neighborhood.insert(pos_v_in_low_w, Neighborhood());
             auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
 
-            //if pos_v_in_low_w.begin().degree > v->degree + 1
-            pos_v_in_low_w = w->insertDegNeighborhood(pos_v_in_low_w);
+            // Si estoy en highN es porque no existe una lista de ese grado aún
+            if (pos_v_in_low_w == w->highNeighborhood()) {
+                pos_v_in_low_w = w->insertDegNeighborhood(pos_v_in_low_w);
+            }
 
             auto& v_list_in_w = *pos_v_in_low_w;
             auto& w_list_in_v = *v->highNeighborhood();
@@ -89,10 +88,10 @@ namespace tip {
         v_list_in_w.push_front(Neighbor(v));
         w_list_in_v.push_front(Neighbor(w));
 
-        v_list_in_w.back().list_pointer = v->highNeighborhood();
-        v_list_in_w.back().self_pointer = w_list_in_v.begin();
+        v_list_in_w.front().list_pointer = v->highNeighborhood();
+        v_list_in_w.front().self_pointer = w_list_in_v.begin();
 
-        w_list_in_v.back().self_pointer = v_list_in_w.begin();
+        w_list_in_v.front().self_pointer = v_list_in_w.begin();
 
         v->degree +=1;
         w->degree +=1;
@@ -122,7 +121,7 @@ namespace tip {
 //          });
         auto it = first;
         while(it != last ) {
-            if(!it->empty() and it->front().neighbor->degree < degree){
+            if(!it->empty() and it->front().neighbor->degree == degree){
                 return it;
             }
             ++it;
