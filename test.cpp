@@ -12,10 +12,8 @@ void print_vertices( Graph& G) {
     }
 }
 
-void print_vecinos(Graph& G, Graph::const_vertex_iterator x){
 
 
-}
 
 
 
@@ -29,10 +27,12 @@ int main() {
     G.add_edge(v1,v2);
     G.add_edge(v1,v3);
 
+    G.print_vecinos(v1);
     //print_vertices(G);
 //    cout << G.vertexCount() <<endl;
-    cout <<G.degree(v1) <<endl;
-    cout <<G.degree(v2) <<endl;
+//    cout <<G.degree(v1) <<endl;
+//    cout <<G.degree(v2) <<endl;
+
 
     return 0;
 }

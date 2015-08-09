@@ -450,7 +450,7 @@ namespace tip
          */
         //  EdgeIterator iterEdgeNeighbors(int v);
 
-
+        void print_vecinos(const_vertex_iterator x);
 
 
     private:

@@ -69,24 +69,26 @@ namespace tip {
 
             // Si estoy en highN es porque no existe una lista de ese grado aún
             if (pos_v_in_low_w == w->highNeighborhood()) {
+
                 pos_v_in_low_w = w->insertDegNeighborhood(pos_v_in_low_w);
             }
 
             auto& v_list_in_w = *pos_v_in_low_w;
             auto& w_list_in_v = *v->highNeighborhood();
 
-            w_list_in_v.back().list_pointer = pos_v_in_low_w;
+            //w_list_in_v.back().list_pointer = pos_v_in_low_w;
         }
         else {
             auto& v_list_in_w = *w->highNeighborhood();
             auto& w_list_in_v = *v->highNeighborhood();
 
-            w_list_in_v.back().list_pointer = w->highNeighborhood();
+           // w_list_in_v.back().list_pointer = w->highNeighborhood();
         }
 
 
         v_list_in_w.push_front(Neighbor(v));
         w_list_in_v.push_front(Neighbor(w));
+
 
         v_list_in_w.front().list_pointer = v->highNeighborhood();
         v_list_in_w.front().self_pointer = w_list_in_v.begin();
@@ -242,6 +244,19 @@ namespace tip {
     Graph::const_vertex_iterator Graph::end() const {
         return const_vertex_iterator(vertices.end());
     }
+
+    void Graph::print_vecinos(Graph::const_vertex_iterator x){
+        auto v = to_iterator(x);
+
+        for(auto neigh = v->neighborhood.begin(); neigh != v->neighborhood.end(); ++neigh){
+            cout << "neighborhood size " +std::to_string (v->neighborhood.size())<< endl;
+            cout << neigh->size()<< endl;
+            for(auto deg_neig = neigh->begin(); deg_neig != neigh->end(); ++deg_neig){
+                cout << "neighbor " +std::to_string (deg_neig->neighbor->elem)<< endl;
+            }
+        }
+
+}
 
     Graph::const_vertex_iterator Graph::cend() const {
         return end();
