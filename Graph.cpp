@@ -60,40 +60,43 @@ namespace tip {
         update_neighborhood(w);
 
         //PHASE 2:
-        Graph::degNeighborhood v_list_in_w;
-        Graph::degNeighborhood w_list_in_v;
+        Graph::Neighborhood::iterator v_list_in_w;
+        Graph::Neighborhood::iterator w_list_in_v;
 
         // ya que se asegura que v tiene grado menor o igual a w se descarta contemplar el caso contrario
         if (w->degree > v->degree) {
             auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
 
-            // Si estoy en highN es porque no existe una lista de ese grado aún
+            //Si estoy en highN es porque no existe una lista de ese grado aún
             if (pos_v_in_low_w == w->highNeighborhood()) {
 
                 pos_v_in_low_w = w->insertDegNeighborhood(pos_v_in_low_w);
             }
 
-            auto& v_list_in_w = *pos_v_in_low_w;
-            auto& w_list_in_v = *v->highNeighborhood();
+            v_list_in_w = pos_v_in_low_w;
+            w_list_in_v = v->highNeighborhood();
 
             //w_list_in_v.back().list_pointer = pos_v_in_low_w;
         }
         else {
-            auto& v_list_in_w = *w->highNeighborhood();
-            auto& w_list_in_v = *v->highNeighborhood();
+             /** cuando se agrega el primer vertice,esto funciona **/
+             v_list_in_w = w->highNeighborhood();
+             w_list_in_v = v->highNeighborhood();
 
            // w_list_in_v.back().list_pointer = w->highNeighborhood();
         }
 
 
-        v_list_in_w.push_front(Neighbor(v));
-        w_list_in_v.push_front(Neighbor(w));
+        v_list_in_w->push_front(Neighbor(v));
+
+        /**cuando se agrega el segundo vertice, rompe aca**/
+        w_list_in_v->push_front(Neighbor(w));
 
 
-        v_list_in_w.front().list_pointer = v->highNeighborhood();
-        v_list_in_w.front().self_pointer = w_list_in_v.begin();
+        v_list_in_w->front().list_pointer = v->highNeighborhood();
+        v_list_in_w->front().self_pointer = w_list_in_v->begin();
 
-        w_list_in_v.front().self_pointer = v_list_in_w.begin();
+        w_list_in_v->front().self_pointer = v_list_in_w->begin();
 
         v->degree +=1;
         w->degree +=1;
@@ -248,7 +251,7 @@ namespace tip {
 
         for(auto neigh = v->neighborhood.begin(); neigh != v->neighborhood.end(); ++neigh){
             cout << "neighborhood size " +std::to_string (v->neighborhood.size())<< endl;
-            cout << neigh->size()<< endl;
+            cout << "degneighborhood size " +std::to_string (neigh->size())<< endl;
             for(auto deg_neig = neigh->begin(); deg_neig != neigh->end(); ++deg_neig){
                 cout << "neighbor " +std::to_string (deg_neig->neighbor->elem)<< endl;
             }
