@@ -122,12 +122,10 @@ namespace tip {
 //              return list_n.front().neighbor->degree == degree;
 //          });
         auto it = first;
-        while(it != last ) {
-            if(!it->empty() and it->front().neighbor->degree == degree){
-                return it;
-            }
+        while(it != last && it->front().neighbor->degree < degree) {
             ++it;
-        }
+            }
+
         return it;
     }
 
@@ -229,7 +227,7 @@ namespace tip {
 
     Graph::const_vertex_iterator Graph::insertVertex(unsigned int elem) {
         vertices.push_front(Vertex(elem));
-        vertices.front().neighborhood.push_back(degNeighborhood());
+        //vertices.front().neighborhood.push_back(degNeighborhood());
         return begin();
     }
 
