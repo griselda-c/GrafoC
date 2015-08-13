@@ -3,3 +3,5 @@ Graph.depend
 Graph.layout
 bin/*
 obj/*
+# Compiled Object files
+*.o
