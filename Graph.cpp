@@ -3,8 +3,10 @@
 #include <algorithm>
 
 #include "Graph.h"
+#include "Log.h"
 
 using namespace std;
+
 
 namespace tip {
 
@@ -46,7 +48,6 @@ namespace tip {
 
 
     void Graph::add_edge(Graph::const_vertex_iterator iter_v, Graph::const_vertex_iterator iter_w){
-
         auto v = to_iterator(iter_v);
         auto w = to_iterator(iter_w);
 
@@ -54,12 +55,24 @@ namespace tip {
         if(v->degree > w->degree){
             std::swap(v,w);
         }
+        DEBUG("Graph::add_edge(", v->elem, ",", w->elem, ")");
+        DUMP("DUMP DEL GRAFO");
+        DUMP(*this);
+
+        MESSAGE("grado de v: ", v->degree);
+        MESSAGE("grado de w: ", w->degree);
 
         //PHASE 1: Algoritmo 1 del paper.
+        DEBUG(std::string("Phase 1"));
         update_neighborhood(v);
         update_neighborhood(w);
 
+        DUMP("DUMP DEL GRAFO");
+        DUMP(*this);
+
+
         //PHASE 2:
+        DEBUG(std::string("Phase 2"));
         Graph::Neighborhood::iterator v_list_in_w;
         Graph::Neighborhood::iterator w_list_in_v;
 
@@ -137,12 +150,17 @@ namespace tip {
      * del vecindario de w.
      */
     void Graph::update_neighborhood(Graph::Vertices::iterator x) {
-        for(auto list = x->neighborhood.begin(); list != x->neighborhood.end(); ++list) {
+        DEBUG(std::string("Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
+
+        //NOTA: NO PROCESAMOS EL HIGH NEIGHBORHOOD
+        for(auto list = x->neighborhood.begin(); list != x->highNeighborhood(); ++list) {
             for(auto it = list->begin(); it != list->end(); ++it) {
+                MESSAGE(std::string("Procesando vecino: ") + std::to_string(it->neighbor->elem));
                 it->list_pointer = it->neighbor->toNextList(it->list_pointer, it->self_pointer);
                 it->self_pointer = it->list_pointer->begin();
             }
         }
+        DEBUG(std::string("END OF Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
     }
 
 
@@ -246,8 +264,12 @@ namespace tip {
         return const_vertex_iterator(vertices.end());
     }
 
-    void Graph::print_vecinos(Graph::const_vertex_iterator x){
-        auto v = to_iterator(x);
+    Graph::const_vertex_iterator Graph::cend() const {
+        return end();
+    }
+
+    void Graph::print_vecinos(Graph::const_vertex_iterator x) const {
+        auto v = x.it;
 
         for(auto neigh = v->neighborhood.begin(); neigh != v->neighborhood.end(); ++neigh){
             cout << "neighborhood size " +std::to_string (v->neighborhood.size())<< endl;
@@ -256,14 +278,61 @@ namespace tip {
                 cout << "neighbor " +std::to_string (deg_neig->neighbor->elem)<< endl;
             }
         }
+    }
 
-}
-
-    Graph::const_vertex_iterator Graph::cend() const {
-        return end();
+    std::ostream& Graph::dump(std::ostream& out) const {
+        for(auto& v : vertices) {
+            out << v << std::endl;
+        }
+        return out;
     }
 
 
+    namespace impl {
+        std::string Vertex::dump() const {
+            {
+                std::string res;
+                res += "elemento: " + std::to_string(elem) + '\n';
+                res += "grado: " + std::to_string(degree) + '\n';
+                for(auto it_degn = neighborhood.begin(); it_degn != neighborhood.end(); ++it_degn) {
+                    if(it_degn != highNeighborhood()) {
+                        res += "  Vecinos de grado: " + std::to_string(impl::degree(it_degn)) + '\n';
+                    } else {
+                        res += "  High neighborhood\n";
+                    }
+                    for(auto& neighbor : *it_degn) {
+                        res += "    neighborhood: " + neighbor.dump();
+                    }
+                    res += '\n';
+                }
+                return res;
+            }
+        }
+    }
 
 };
 
+std::ostream& operator<<(std::ostream& out, const tip::impl::Vertex& v) {
+    out << '{' << v.elem << ", " << v.degree << '}';
+    out << '<';
+    for(auto it_degn = v.neighborhood.begin(); it_degn != v.neighborhood.end(); ++it_degn) {
+        if(it_degn != v.highNeighborhood()) {
+            out << "N(v," << tip::impl::degree(it_degn) << "): [";
+        } else {
+            out << "H(v): [";
+        }
+        for(auto& neighbor : *it_degn) {
+            out << neighbor << ", ";
+        }
+        out << ']';
+    }
+    return out << '>';
+}
+
+std::ostream& operator<<(std::ostream& out, const tip::impl::Neighbor& n) {
+    return out << "(" << n.neighbor->elem << "," << n.self_pointer->neighbor->elem << ")";
+}
+
+std::ostream& operator<<(std::ostream& out, const tip::Graph& G) {
+    return G.dump(out);
+}

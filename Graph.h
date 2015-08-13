@@ -1,6 +1,7 @@
 #include <iostream>
 #include <list>
 #include <iterator>
+#include <cassert>
 
 #ifndef GRAPH_H
 #define GRAPH_H
@@ -61,6 +62,13 @@ namespace tip
             }
 
             /**
+             * retorna un puntero al high neighborhood()
+             */
+            Neighborhood::const_iterator highNeighborhood() const {
+                return std::prev(neighborhood.end());
+            }
+
+            /**
              *  Mueve who de la lista list a la siguiente lista como si incrementara el grado en 1.
              *  Se asume que el grado de who es el correcto en su lista, y no incrementa el grado.
              *  Crea la lista en caso en que no exista.
@@ -73,6 +81,8 @@ namespace tip
              */
             Neighborhood::iterator toNextList(Neighborhood::iterator list, degNeighborhood::iterator who) {
                 auto to_list = std::next(list);
+                //ASEGURAMOS LA PRECONDICION
+                assert(to_list != neighborhood.end());
                 if( impl::degree(who) < this->degree && impl::degree(to_list) != impl::degree(who)) {
                     to_list = insertDegNeighborhood(to_list);
                 }
@@ -118,6 +128,45 @@ namespace tip
                 return neighborhood.insert(pos, degNeighborhood());
             }
 
+            /**
+             * imprime informacion de debugging
+             */
+            std::string dump() const;
+
+//             void invariante_representacion() const {
+//                 check_degree(); check_list_degrees();
+//             }
+
+            /**
+             * retorna true si el grado es igual a la cantidad de elementos en su vecindario
+             */
+//             void check_degree() const {
+//                 int vecinos = 0;
+//                 for(auto& degn : neighborhood) {
+//                     vecinos += degn.size();
+//                 }
+//                 assert(vecinos == degree);
+//             }
+
+            /**
+             * retorna true si todos en una lista tienen el mismo grado, ninguna lista es vacia,
+             * las listas estan en orden creciente y todos los de la ultima lista tienen grado mayor al de v
+             * y los anteriores menor
+             */
+//             void check_list_degrees() const {
+//                 for(auto itn = neighborhood.begin(); itn != highNeighborhood(); ++itn) {
+//                     assert(itn->size() != 0 &&
+//                         (std::next(itn) == highNeighborhood() ||
+//                         impl::degree(*itn) < impl::degree(*std::next(itn))) &&
+//                         degree > impl::degree(*itn));
+//
+//                     for(auto w = itn->begin(); w != itn->end(); ++w) {
+//                         assert(impl::degree(w) == impl::degree(*itn));
+//                     }
+//                 }
+//                 for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
+//                     assert(impl::degree(w) >= degree);
+//             }
         };
 
 
@@ -149,7 +198,15 @@ namespace tip
              */
             Neighborhood::iterator list_pointer;
 
-
+            /**
+             * imprime informacion de debugging
+             */
+            std::string dump() const {
+                std::string res;
+                res += "vecino: " + std::to_string(neighbor->elem) + '\n';
+                res += "self_pointer apunta a " + std::to_string(self_pointer->neighbor->elem)  + '\n';
+                return res;
+            }
         };
 
     }
@@ -450,7 +507,18 @@ namespace tip
          */
         //  EdgeIterator iterEdgeNeighbors(int v);
 
-        void print_vecinos(const_vertex_iterator x);
+        void print_vecinos(const_vertex_iterator x) const;
+
+        /**
+         * Imprime informacion de debugging
+         */
+        std::ostream& dump(std::ostream& out) const;
+
+//         void invariante_representacion() const {
+//             for(auto& vertex : vertices) {
+//                 vertex.invariante_representacion();
+//             }
+//         }
 
 
     private:
@@ -479,10 +547,13 @@ namespace tip
         static int degree(const degNeighborhood& N) {
             return N.begin()->neighbor->degree;
         }
+
     };
 
 }
 
+std::ostream& operator<<(std::ostream& out, const tip::impl::Vertex& v);
+std::ostream& operator<<(std::ostream& out, const tip::impl::Neighbor& v);
+std::ostream& operator<<(std::ostream& out, const tip::Graph& G);
 #endif //GRAPH_H
-
 
