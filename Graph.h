@@ -80,15 +80,18 @@ namespace tip
              * Precondicion: list no es high_neighborhood
              */
             Neighborhood::iterator toNextList(Neighborhood::iterator list, degNeighborhood::iterator who) {
-                auto to_list = std::next(list);
-                //ASEGURAMOS LA PRECONDICION
-                assert(to_list != neighborhood.end());
-                if( impl::degree(who) < this->degree && impl::degree(to_list) != impl::degree(who)) {
-                    to_list = insertDegNeighborhood(to_list);
+                if(list != highNeighborhood()){
+                    auto to_list = std::next(list);
+                    //ASEGURAMOS LA PRECONDICION
+                    assert(to_list != neighborhood.end());
+                    if( impl::degree(who) < this->degree && impl::degree(to_list) != impl::degree(who)) {
+                        to_list = insertDegNeighborhood(to_list);
+                    }
+                    to_list->push_front(*who);
+                    erase(list, who);
+                    return to_list;
                 }
-                to_list->push_front(*who);
-                erase(list, who);
-                return to_list;
+                return list;
             }
 
             /**
@@ -127,7 +130,6 @@ namespace tip
             Neighborhood::iterator insertDegNeighborhood(Neighborhood::iterator pos) {
                 return neighborhood.insert(pos, degNeighborhood());
             }
-
             /**
              * imprime informacion de debugging
              */
@@ -534,6 +536,7 @@ namespace tip
         void remove_edge(Vertices::iterator v, Vertices::iterator w);
         void update_neighborhood(Vertices::iterator x);
         void update_after_delete(Vertices::iterator x);
+        void updateHighNeighborhood(Vertices::iterator x);
 
 
         /**

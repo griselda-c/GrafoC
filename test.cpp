@@ -28,13 +28,26 @@ int main() {
     auto v3 = G.insertVertex(3);
     auto v4 = G.insertVertex(4);
     auto v5 = G.insertVertex(5);
+    auto v6 = G.insertVertex(6);
+    auto v7 = G.insertVertex(7);
+    auto v8 = G.insertVertex(8);
+
 
     G.add_edge(v1,v2);
-    G.add_edge(v4,v5);
+    G.add_edge(v1,v3);
 
     G.add_edge(v2,v4);
+    G.add_edge(v2,v5); //ACA
+
+    //G.removeEdge(v1,v2);
+
+    //G.removeEdge(v1,v3);
+//
+    G.add_edge(v3,v6);
+    G.add_edge(v3,v7);
 
     cout << G;
+
     return 0;
 
 }

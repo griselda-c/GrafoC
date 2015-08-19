@@ -35,6 +35,8 @@
 		<Unit filename="EdgeIterator.h" />
 		<Unit filename="Graph.cpp" />
 		<Unit filename="Graph.h" />
+		<Unit filename="Log.cpp" />
+		<Unit filename="Log.h" />
 		<Unit filename="NeighborDescriptor.h" />
 		<Unit filename="VertexDescriptor.h" />
 		<Unit filename="VertexIterator.h" />
