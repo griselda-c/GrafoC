@@ -16,20 +16,20 @@
 	<iostream>
 	"Graph.h"
 
-1439979832 source:/home/griselda/Escritorio/GrafoC/Graph.cpp
+1440123722 source:/home/griselda/Escritorio/GrafoC/Graph.cpp
 	<iostream>
 	<list>
 	<algorithm>
 	"Graph.h"
 	"Log.h"
 
-1439980278 /home/griselda/Escritorio/GrafoC/Graph.h
+1440123864 /home/griselda/Escritorio/GrafoC/Graph.h
 	<iostream>
 	<list>
 	<iterator>
 	<cassert>
 
-1439980202 source:/home/griselda/Escritorio/GrafoC/test.cpp
+1440123254 source:/home/griselda/Escritorio/GrafoC/test.cpp
 	<iostream>
 	"Graph.h"
 	"Log.h"

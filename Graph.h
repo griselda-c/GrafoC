@@ -107,9 +107,12 @@ namespace tip
              */
             Neighborhood::iterator toPrevList(Neighborhood::iterator list, degNeighborhood::iterator who) {
                 Neighborhood::iterator to_list;
-                if(list == neighborhood.begin() || impl::degree(std::prev(list)) < impl::degree(who)) {
+
+                if (list == highNeighborhood() && impl::degree(who) >= degree) {
+                    to_list = highNeighborhood();
+                }else if(list == neighborhood.begin() || impl::degree(std::prev(list)) < impl::degree(who)) {
                     to_list = insertDegNeighborhood(list);
-                } else {
+                }else {
                     to_list = std::prev(list);
                 }
                 erase(list, who);
@@ -537,6 +540,7 @@ namespace tip
         void update_neighborhood(Vertices::iterator x);
         void update_after_delete(Vertices::iterator x);
         void updateHighNeighborhood(Vertices::iterator x);
+        std::list<degNeighborhood>::iterator update_degNeighborhood(std::list<degNeighborhood>::iterator list_n, Vertices::iterator x);
 
 
         /**

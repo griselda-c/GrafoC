@@ -35,16 +35,15 @@ int main() {
 
     G.add_edge(v1,v2);
     G.add_edge(v1,v3);
-
     G.add_edge(v2,v4);
-    G.add_edge(v2,v5); //ACA
-
-    //G.removeEdge(v1,v2);
-
-    //G.removeEdge(v1,v3);
+//    G.add_edge(v2,v5); //ACA
 //
-    G.add_edge(v3,v6);
-    G.add_edge(v3,v7);
+   G.removeEdge(v1,v2);
+//
+   G.removeEdge(v1,v3);
+//
+//    G.add_edge(v3,v6);
+//    G.add_edge(v3,v7);
 
     cout << G;
 
