@@ -26,7 +26,7 @@ namespace tip {
 
       degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem){
 
-          return find_if(neighborhood->begin(), neighborhood->end(), [elem](auto& neighbor)->bool{
+          return find_if(neighborhood->begin(), neighborhood->end(), [elem](Neighbor& neighbor)->bool{
               return neighbor.neighbor->elem == elem;
           });
 
@@ -38,7 +38,7 @@ namespace tip {
       }
 
       degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, Vertices::iterator elem){
-          return find_if(neighborhood->begin(), neighborhood->end(), [elem](auto& neighbor)->bool{
+          return find_if(neighborhood->begin(), neighborhood->end(), [elem](Neighbor& neighbor)->bool{
               return neighbor.neighbor == elem;
           });
 
