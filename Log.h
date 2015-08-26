@@ -1,5 +1,8 @@
 #include <iostream>
 
+#ifndef LOGGER_H_
+#define LOGGER_H_
+
 namespace tip {
     
     class Log {
@@ -21,6 +24,7 @@ namespace tip {
         template<typename T, typename... Targs>
         void print(Level l, const T& message, Targs... args) {
             print(l, message);
+            print(l, " ");
             print(l, args...);
         }
         
@@ -41,14 +45,15 @@ namespace tip {
     }
     template<typename... Targs>
     void MESSAGE(Targs... message) {
-        Log::get_instance().print(Log::Level::MESSAGE, message..., '\n');
+        Log::get_instance().print(Log::Level::MESSAGE,  message..., '\n');
     }
     template<typename... Targs>
     void DEBUG(Targs... message) {
-        Log::get_instance().print(Log::Level::DEBUG, message..., '\n');
+        Log::get_instance().print(Log::Level::DEBUG,  message..., '\n');
     }
     template<typename... Targs>
     void CRITICAL(Targs... message) {
         Log::get_instance().print(Log::Level::CRITICAL, message..., '\n');
     }
 }
+#endif //LOGGER_H_

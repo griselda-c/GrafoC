@@ -43,6 +43,33 @@ namespace tip {
           });
 
       }
+      
+      Neighborhood::iterator Vertex::toNextList(Neighborhood::iterator list, degNeighborhood::iterator who)
+       {
+                DEBUG(this->elem, "-> Graph::toNextList(", *who, ")");
+                assert(list != highNeighborhood());
+
+                auto to_list = std::next(list);
+                if(impl::degree(who)+1 < this->degree and 
+                   (to_list == highNeighborhood() || impl::degree(to_list) != impl::degree(who))) {
+                    MESSAGE("Creando la lista de grado", impl::degree(who), "para albergar a", *who);
+                    to_list = insertDegNeighborhood(to_list);
+                }
+                to_list->push_front(*who);
+                MESSAGE("Borrando a", *who, "de su lista");
+                erase(list, who);
+                DEBUG("END OF Graph::toNextList");
+                return to_list;
+            }
+
+            void Vertex::erase(Neighborhood::iterator list, degNeighborhood::iterator who) {
+                DEBUG(*this, "-> Graph::erase(", *who, ")");
+                list->erase(who);
+                if(list->empty() && list != highNeighborhood()) {
+                    MESSAGE("Borrando la lista que quedo vacia");
+                    neighborhood.erase(list);
+                }
+            }
 
   }
 
@@ -56,7 +83,6 @@ namespace tip {
             std::swap(v,w);
         }
         DEBUG("Graph::add_edge(", v->elem, ",", w->elem, ")");
-        DUMP("DUMP DEL GRAFO");
         DUMP(*this);
 
         MESSAGE("grado de v: ", v->degree);
@@ -66,9 +92,6 @@ namespace tip {
         DEBUG(std::string("Phase 1"));
         update_neighborhood(v);
         update_neighborhood(w);
-
-        DUMP("DUMP DEL GRAFO");
-        DUMP(*this);
 
 
         //PHASE 2:
@@ -109,6 +132,8 @@ namespace tip {
         v->degree +=1;
         w->degree +=1;
 
+        DUMP(*this);
+        DEBUG("End of Graph::add_edge()");
     };
 
     /**
@@ -141,28 +166,42 @@ namespace tip {
     }
 
     /**
+     * APLICA LA FASE 1 AL VERTICE x.  Es decir.
      * Recorre cada w en el high neighborhood de v y actualiza la posicion de v dentro
-     * del vecindario de w.
-     * FALTA ACTUALIZAR A W DENTRO DEL VECINDARIO DE V
-     * si w esta en el high y tiene el mismo grado que v antes de agregar la arista
-     * debe salir de High e ir a un N(v)
+     * del vecindario de w.  Para ello, debe pasar a v a la siguiente lista cuando
+     * d(v) < d(w).  Cuando d(v) == d(w), debe bajar a N(v, d(v))
      */
     void Graph::update_neighborhood(Graph::Vertices::iterator x) {
         DEBUG(std::string("Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
+        DUMP(*this);
+        
+        for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
+            MESSAGE("Procesando high neighbor: ", it->neighbor->elem, "de grado", impl::degree(it));
+            if(impl::degree(it) == x->degree) {
+                //Ya cree la lista que alberga los vertices de grado x?
+                Neighborhood::iterator to_list = std::prev(x->highNeighborhood());
+                if(x->highNeighborhood() == x->neighborhood.begin() || impl::degree(to_list) != x->degree) {
+                    MESSAGE("Creando la lista de grado", x->degree); 
+                    to_list = x->insertDegNeighborhood(x->highNeighborhood());
+                } else {
+                    to_list = std::prev(x->highNeighborhood());
+                }
+                to_list->push_front(*it);
 
-        //NOTA: NO PROCESAMOS EL HIGH NEIGHBORHOOD
-        for(auto list = x->neighborhood.begin(); list != x->highNeighborhood(); ++list) {
-            for(auto it = list->begin(); it != list->end(); ++it) {
+                //actualizo el list_pointer  y el self_pointer del neighbor de x en w
+                auto neighobor_x = it->self_pointer;// donde esta x en w
+                
+                neighobor_x->list_pointer = to_list;
+                neighobor_x->self_pointer = to_list->begin();
 
-                MESSAGE(std::string("Procesando vecino: ") + std::to_string(it->neighbor->elem));
-
+                it = x->highNeighborhood()->erase(it);
+            } else {
                 it->list_pointer = it->neighbor->toNextList(it->list_pointer, it->self_pointer);
-
                 it->self_pointer = it->list_pointer->begin();
             }
+            DUMP(*this);
         }
 
-        updateHighNeighborhood(x);
         DEBUG(std::string("END OF Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
     }
 
@@ -176,53 +215,6 @@ namespace tip {
 //         return it;
 //     }
 
-/**
-        Busca en el higneighborhood de v aquellos que tienen el mismo grado de v,
-        porque deben pasar a low, dado que v aumentará de grado.
-        Busca el degneighborhood correcto, si no existe lo crea,
-        agrega el Neighbor_w a la lista nueva, y lo borra del High,
-        Por ultimo actualiza los punteros el Neighbor_x en w.
-
-        Otro caso es aquellos que tienen un grado menos, eso quiere decir
-        que w tiene a x en low, y ahora pasarian a tener igual grado por lo
-        que debe mover a x a high_w
-
-***/
-
-    void Graph::updateHighNeighborhood(Graph::Vertices::iterator x){
-
-        for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
-
-                if(impl::degree(it)== x->degree){
-
-                    auto pos_new_it = find_neighborhood_with_degree(x,impl::degree(it));
-
-                    if(impl::degree(pos_new_it) > impl::degree(it) || pos_new_it == x->highNeighborhood()){
-
-
-                        pos_new_it = x->insertDegNeighborhood(pos_new_it);
-                        pos_new_it->push_front(*it);
-
-                        //actualizo el list_pointer  y el self_pointer del neighbor de x en w
-                        auto neighobor_x = it->self_pointer;// donde esta x en w
-
-                        neighobor_x->list_pointer = pos_new_it;
-                        neighobor_x->self_pointer = pos_new_it->begin();
-
-                        it =  x->highNeighborhood()->erase(it);
-                    }
-                }else if(impl::degree(it) == x->degree +1){
-                    auto neighbor_x = it->self_pointer;
-                    auto list_before = it->list_pointer;
-
-                    it->list_pointer = it->neighbor->highNeighborhood();
-                    it->list_pointer->push_front(*neighbor_x);
-                    it->self_pointer = it->list_pointer->begin();
-
-                    it->neighbor->erase(list_before, neighbor_x);
-                }
-        }
-    }
 
 
     void Graph::update_after_delete(Graph::Vertices::iterator x){

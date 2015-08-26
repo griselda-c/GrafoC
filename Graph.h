@@ -3,6 +3,8 @@
 #include <iterator>
 #include <cassert>
 
+#include "Log.h"
+
 #ifndef GRAPH_H
 #define GRAPH_H
 
@@ -79,24 +81,11 @@ namespace tip
              *
              * Precondicion: list no es high_neighborhood
              */
-            Neighborhood::iterator toNextList(Neighborhood::iterator list, degNeighborhood::iterator who) {
-                if(list != highNeighborhood()){
-                    auto to_list = std::next(list);
-                    //ASEGURAMOS LA PRECONDICION
-                    assert(to_list != neighborhood.end());
-                    if( impl::degree(who) < this->degree && impl::degree(to_list) != impl::degree(who)) {
-                        to_list = insertDegNeighborhood(to_list);
-                    }
-                    to_list->push_front(*who);
-                    erase(list, who);
-                    return to_list;
-                }
-                return list;
-            }
+            Neighborhood::iterator toNextList(Neighborhood::iterator list, degNeighborhood::iterator who);
 
             /**
              *  Mueve who de la lista list a la lista previa como si se decrementara el grado en 1.
-             *  Se asume que el grado de who el de la lista destino, y no incrementa el grado.
+             *  Se asume que el grado de who es el de la lista destino, y no incrementa el grado.
              *  Crea la lista en caso en que no exista.
              *  Borra la lista list en caso que quede vacia.
              *  Deja bien los punteros de this, pero no los de who.
@@ -123,13 +112,8 @@ namespace tip
             /**
              * Borra who de la lista list, eliminando list si queda vacia y no es el high neighborhood
              */
-            void erase(Neighborhood::iterator list, degNeighborhood::iterator who) {
-                list->erase(who);
-                if(list->empty() && list != highNeighborhood()) {
-                    neighborhood.erase(list);
-                }
-            }
-
+            void erase(Neighborhood::iterator list, degNeighborhood::iterator who);
+            
             Neighborhood::iterator insertDegNeighborhood(Neighborhood::iterator pos) {
                 return neighborhood.insert(pos, degNeighborhood());
             }
@@ -454,8 +438,26 @@ namespace tip
          */
         void removeEdge(const_vertex_iterator  v, const_vertex_iterator  w);
 
+        /**
+         * Agrega un nuevo vertice cuyo vecindario es N
+         */
+        const_vertex_iterator add_vertex(unsigned int elem, std::initializer_list<const_vertex_iterator> N) {
+            return add_vertex(elem, N.begin(), N.end());
+        }
 
-
+        /**
+         * Agrega un nuevo vertice con todas las aristas de [begin, end).
+         * Begin y end son iteradores a un rango de const_vertex_iterator.
+         */
+        template<class iter>
+        const_vertex_iterator add_vertex(unsigned int elem, iter begin, iter end) {
+            auto v = insertVertex(elem);
+            while(begin != end) {
+                add_edge(v, *begin);
+                ++begin;
+            }
+            return v;
+        }
 
 
         /**
