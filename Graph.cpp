@@ -234,18 +234,18 @@ namespace tip {
                     it->self_pointer = pos_x_in_w->begin();
                 }
 
-          auto pre = prev(x->highNeighborhood());
-          if(x->highNeighborhood() != x->neighborhood.begin() and impl::degree(pre) >= x->degree){
-                for(auto n = pre->begin(); n != pre->end(); ++n){
+          auto prev_high = prev(x->highNeighborhood());
+          if(x->highNeighborhood() != x->neighborhood.begin() and impl::degree(prev_high) >= x->degree){
+                for(auto n = prev_high->begin(); n != prev_high->end(); ++n){
                     x->highNeighborhood()->push_front(*n);
                     auto neighbor_x = n->self_pointer; // x en w
                    //actualizamos el neighbor_x que esta en w
                    neighbor_x->list_pointer = x->highNeighborhood();
                    neighbor_x->self_pointer = x->highNeighborhood()->begin();
-                   n = pre->erase(n);
+                   n = prev_high->erase(n);
 
                 }
-             x->neighborhood.erase(pre);
+             x->neighborhood.erase(prev_high);
           }
 
         DEBUG(std::string("******END Graph::update_after_delete(") + std::to_string(x->elem) + ")");
@@ -253,15 +253,12 @@ namespace tip {
     }
 
 
-    /***
-        Funcion privada.
-        Borra a v del vecindario de w y Borra a w del vecindario de v
-        NO decrementa el grado NI actualiza el vecindario.
-        Usado para remove_vertex y remove_edge
-    ***/
+    void Graph::removeEdge(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
+        auto v = to_iterator(iter_v);
+        auto w = to_iterator(iter_w);
 
-    void Graph::remove_edge(Graph::Vertices::iterator v, Graph::Vertices::iterator w){
-         if(v->degree > w->degree){
+        /**** REVERTIR LA FASE 2 ****/
+        if(v->degree > w->degree){
             std::swap(v,w);  // v es el de grado menor
         }
         // v seguro lo tiene a w en high, ya sea porque el es menor o porque tiene igual grado.
@@ -270,15 +267,6 @@ namespace tip {
         w->erase(neighbor->list_pointer, neighbor->self_pointer);
         //borrar a w de la lista_v
         v->highNeighborhood()->erase(neighbor);
-
-    }
-
-    void Graph::removeEdge(Graph::const_vertex_iterator iter_v,Graph::const_vertex_iterator iter_w){
-        auto v = to_iterator(iter_v);
-        auto w = to_iterator(iter_w);
-
-        /**** REVERTIR LA FASE 2 ****/
-        remove_edge(v,w);
 
         /*** REVERTIR LA FASE 1 ***/
         v->degree -=1;
@@ -289,23 +277,30 @@ namespace tip {
         update_after_delete(w);
     }
 
+
+//    Graph::Neighborhood::iterator erase_neighborhood(Graph::Neighborhood::iterator){
+//
+//
+//    }
+
     /***
-        Recorre todo el vecindario de v borrando las aristas existentes
+        Recorre todo el vecindario de v borrando únicamente a v del vecindario de sus vecinos
         y actualiza sólo el vecindario del otro vertice involucrado.
         Por ultimo se borra v de la lista de vertices.
     ***/
 
     void Graph::remove_vertex(Graph::const_vertex_iterator iter_v){
+        DEBUG(std::string("BEGIN Graph::REMOVE_VERTEX (") + std::to_string(*iter_v) + ")");
         auto v = to_iterator(iter_v);
         for(auto list = v->neighborhood.begin(); list != v->neighborhood.end(); ++list) {
             for(auto it = list->begin(); it != list->end(); ++it) {
-                remove_edge(v,it->neighbor);
-                it->neighbor->degree -= 1;
+                it->list_pointer->erase(it->self_pointer);
+                it->neighbor->degree -=1;
                 update_after_delete(it->neighbor);
             }
         }
-
         vertices.erase(v);
+        DEBUG(std::string("END Graph::REMOVE_VERTEX (") + std::to_string(*iter_v) + ")");
     }
 
 

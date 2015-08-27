@@ -127,40 +127,40 @@ namespace tip
              */
             std::string dump() const;
 
-//             void invariante_representacion() const {
-//                 check_degree(); check_list_degrees();
-//             }
+             void invariante_representacion() const {
+                 check_degree(); check_list_degrees();
+             }
 
             /**
              * retorna true si el grado es igual a la cantidad de elementos en su vecindario
              */
-//             void check_degree() const {
-//                 int vecinos = 0;
-//                 for(auto& degn : neighborhood) {
-//                     vecinos += degn.size();
-//                 }
-//                 assert(vecinos == degree);
-//             }
+             void check_degree() const {
+                 int vecinos = 0;
+                 for(auto& degn : neighborhood) {
+                     vecinos += degn.size();
+                 }
+                 assert(vecinos == degree);
+             }
 
             /**
              * retorna true si todos en una lista tienen el mismo grado, ninguna lista es vacia,
              * las listas estan en orden creciente y todos los de la ultima lista tienen grado mayor al de v
              * y los anteriores menor
              */
-//             void check_list_degrees() const {
-//                 for(auto itn = neighborhood.begin(); itn != highNeighborhood(); ++itn) {
-//                     assert(itn->size() != 0 &&
-//                         (std::next(itn) == highNeighborhood() ||
-//                         impl::degree(*itn) < impl::degree(*std::next(itn))) &&
-//                         degree > impl::degree(*itn));
-//
-//                     for(auto w = itn->begin(); w != itn->end(); ++w) {
-//                         assert(impl::degree(w) == impl::degree(*itn));
-//                     }
-//                 }
-//                 for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
-//                     assert(impl::degree(w) >= degree);
-//             }
+             void check_list_degrees() const {
+                 for(auto itn = neighborhood.begin(); itn != highNeighborhood(); ++itn) {
+                     assert(itn->size() != 0 &&
+                         (std::next(itn) == highNeighborhood() ||
+                         impl::degree(*itn) < impl::degree(*std::next(itn))) &&
+                         degree > impl::degree(*itn));
+
+                     for(auto w = itn->begin(); w != itn->end(); ++w) {
+                         assert(impl::degree(w) == impl::degree(*itn));
+                     }
+                 }
+                 for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
+                     assert(impl::degree(w) >= degree);
+             }
         };
 
 
@@ -526,11 +526,11 @@ namespace tip
          */
         std::ostream& dump(std::ostream& out) const;
 
-//         void invariante_representacion() const {
-//             for(auto& vertex : vertices) {
-//                 vertex.invariante_representacion();
-//             }
-//         }
+         void invariante_representacion() const {
+             for(auto& vertex : vertices) {
+                 vertex.invariante_representacion();
+             }
+         }
 
 
     private:
@@ -541,8 +541,6 @@ namespace tip
 
         std::list<degNeighborhood>::iterator  find_neighborhood_with_degree(Vertices::iterator w, int degree);
         std::list<degNeighborhood>::iterator  find_neighborhood_with_degree(std::list<degNeighborhood>::iterator first, std::list<degNeighborhood>::iterator last,  int degree);
-
-        void remove_edge(Vertices::iterator v, Vertices::iterator w);
         void update_neighborhood(Vertices::iterator x);
         void update_after_delete(Vertices::iterator x);
 

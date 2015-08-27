@@ -43,9 +43,10 @@ int main() {
 
     //G.add_vertex(6, {v3, v4, v5});
 
-//ACA
-//
-   G.removeEdge(v1,v6);
+
+   //G.removeEdge(v1,v6);
+    G.remove_vertex(v6);
+    G.invariante_representacion();
 //
 //   G.removeEdge(v1,v3);
 //
