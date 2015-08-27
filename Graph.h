@@ -29,6 +29,7 @@ namespace tip
         int degree(degNeighborhood::const_iterator neighbor);
         int degree(const degNeighborhood& neighbors);
         int degree(const Neighborhood::const_iterator neigbhors);
+        size_t elem(degNeighborhood::const_iterator neighbor);
         degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
 
 
@@ -95,17 +96,21 @@ namespace tip
              * Precondicion: who no queda en el high neighborhood
              */
             Neighborhood::iterator toPrevList(Neighborhood::iterator list, degNeighborhood::iterator who) {
+            DEBUG(std::string("BEGIN Graph::toPrevList(") + std::to_string(elem) + ")");
                 Neighborhood::iterator to_list;
 
                 if (list == highNeighborhood() && impl::degree(who) >= degree) {
                     to_list = highNeighborhood();
                 }else if(list == neighborhood.begin() || impl::degree(std::prev(list)) < impl::degree(who)) {
+                    MESSAGE(std::string("Insertando lista)") + std::to_string(impl::elem(who)) + ")");
                     to_list = insertDegNeighborhood(list);
+
                 }else {
                     to_list = std::prev(list);
                 }
                 erase(list, who);
                 to_list->push_front(*who);
+                DEBUG(std::string("END Grap::ToPrevList(") + ")");
                 return to_list;
             }
 
@@ -113,7 +118,7 @@ namespace tip
              * Borra who de la lista list, eliminando list si queda vacia y no es el high neighborhood
              */
             void erase(Neighborhood::iterator list, degNeighborhood::iterator who);
-            
+
             Neighborhood::iterator insertDegNeighborhood(Neighborhood::iterator pos) {
                 return neighborhood.insert(pos, degNeighborhood());
             }

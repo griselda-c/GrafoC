@@ -20,7 +20,7 @@ void print_vertices( Graph& G) {
 
 int main() {
     Log::get_instance().set_output(&std::cout);
-    Log::get_instance().set_level(Log::Level::NONE);
+    Log::get_instance().set_level(Log::Level::DEBUG);
 
     Graph G;
 
@@ -29,17 +29,23 @@ int main() {
     auto v3 = G.insertVertex(3);
     auto v4 = G.insertVertex(4);
     auto v5 = G.insertVertex(5);
+    auto v6 = G.insertVertex(6);
+    auto v7 = G.insertVertex(7);
+    auto v8 = G.insertVertex(8);
 
     G.add_edge(v1,v2);
     G.add_edge(v1,v3);
+    G.add_edge(v1,v7);
+    G.add_edge(v1,v6);
+
     G.add_edge(v2,v4);
     G.add_edge(v2,v5);
 
-    G.add_vertex(6, {v3, v4, v5}); 
-        
+    //G.add_vertex(6, {v3, v4, v5});
+
 //ACA
 //
-//   G.removeEdge(v1,v2);
+   G.removeEdge(v1,v8);
 //
 //   G.removeEdge(v1,v3);
 //
