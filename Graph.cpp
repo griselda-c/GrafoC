@@ -228,7 +228,7 @@ namespace tip {
     void Graph::update_after_delete(Graph::Vertices::iterator x){
         DEBUG(std::string("BEGIN Graph::update_after_delete(") + std::to_string(x->elem) + ")");
         for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
-                DEBUG(std::string("******Entrando al for Graph::update_after_delete(") + std::to_string(it->neighbor->elem) + ")");
+                DEBUG(std::string("Entrando al for Graph::update_after_delete(") + std::to_string(it->neighbor->elem) + ")");
                     auto pos_x_in_w = it->neighbor->toPrevList(it->list_pointer, it->self_pointer);
                     it->list_pointer = pos_x_in_w;
                     it->self_pointer = pos_x_in_w->begin();
@@ -239,7 +239,7 @@ namespace tip {
                 for(auto n = pre->begin(); n != pre->end(); ++n){
                     x->highNeighborhood()->push_front(*n);
                     auto neighbor_x = n->self_pointer; // x en w
-                   actualizamos el neighbor_x que esta en w
+                   //actualizamos el neighbor_x que esta en w
                    neighbor_x->list_pointer = x->highNeighborhood();
                    neighbor_x->self_pointer = x->highNeighborhood()->begin();
                    n = pre->erase(n);
@@ -248,31 +248,10 @@ namespace tip {
              x->neighborhood.erase(pre);
           }
 
-         DEBUG(std::string("******Asingnacion terminada(") + std::to_string(x->elem) + ")");
-
         DEBUG(std::string("******END Graph::update_after_delete(") + std::to_string(x->elem) + ")");
+        DUMP(*this);
     }
 
-    std::list<Graph::degNeighborhood>::iterator Graph::update_degNeighborhood(std::list<Graph::degNeighborhood>::iterator list_n, Graph::Vertices::iterator x){
-        for(auto it = list_n->begin(); it != list_n->end(); ++it) {
-                it->list_pointer = it->neighbor->toPrevList(it->list_pointer, it->self_pointer);
-                it->self_pointer = it->list_pointer->begin();
-
-                if(impl::degree(it) == x->degree){
-
-                auto neighbor_x = it->self_pointer; // x en w
-                 x->highNeighborhood()->push_front(*it);
-                //actualizamos el neighbor_x que esta en w
-                neighbor_x->list_pointer = x->highNeighborhood();
-                neighbor_x->self_pointer = x->highNeighborhood()->begin();
-
-                it = list_n->erase(it);
-
-                }
-            }
-        return list_n;
-
-    }
 
     /***
         Funcion privada.
@@ -341,7 +320,6 @@ namespace tip {
 
     Graph::const_vertex_iterator Graph::insertVertex(unsigned int elem) {
         vertices.push_front(Vertex(elem));
-        //vertices.front().neighborhood.push_back(degNeighborhood());
         return begin();
     }
 
@@ -359,18 +337,6 @@ namespace tip {
 
     Graph::const_vertex_iterator Graph::cend() const {
         return end();
-    }
-
-    void Graph::print_vecinos(Graph::const_vertex_iterator x) const {
-        auto v = x.it;
-
-        for(auto neigh = v->neighborhood.begin(); neigh != v->neighborhood.end(); ++neigh){
-            cout << "neighborhood size " +std::to_string (v->neighborhood.size())<< endl;
-            cout << "degneighborhood size " +std::to_string (neigh->size())<< endl;
-            for(auto deg_neig = neigh->begin(); deg_neig != neigh->end(); ++deg_neig){
-                cout << "neighbor " +std::to_string (deg_neig->neighbor->elem)<< endl;
-            }
-        }
     }
 
     std::ostream& Graph::dump(std::ostream& out) const {

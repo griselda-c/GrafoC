@@ -519,7 +519,7 @@ namespace tip
          */
         //  EdgeIterator iterEdgeNeighbors(int v);
 
-        void print_vecinos(const_vertex_iterator x) const;
+        //void print_vecinos(const_vertex_iterator x) const;
 
         /**
          * Imprime informacion de debugging
@@ -541,13 +541,11 @@ namespace tip
 
         std::list<degNeighborhood>::iterator  find_neighborhood_with_degree(Vertices::iterator w, int degree);
         std::list<degNeighborhood>::iterator  find_neighborhood_with_degree(std::list<degNeighborhood>::iterator first, std::list<degNeighborhood>::iterator last,  int degree);
-//         degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
 
         void remove_edge(Vertices::iterator v, Vertices::iterator w);
         void update_neighborhood(Vertices::iterator x);
         void update_after_delete(Vertices::iterator x);
-        void updateHighNeighborhood(Vertices::iterator x);
-        std::list<degNeighborhood>::iterator update_degNeighborhood(std::list<degNeighborhood>::iterator list_n, Vertices::iterator x);
+
 
 
         /**

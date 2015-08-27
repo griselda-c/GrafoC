@@ -20,7 +20,7 @@ void print_vertices( Graph& G) {
 
 int main() {
     Log::get_instance().set_output(&std::cout);
-    Log::get_instance().set_level(Log::Level::DEBUG);
+    Log::get_instance().set_level(Log::Level::NONE);
 
     Graph G;
 
@@ -45,7 +45,7 @@ int main() {
 
 //ACA
 //
-   G.removeEdge(v1,v8);
+   G.removeEdge(v1,v6);
 //
 //   G.removeEdge(v1,v3);
 //
