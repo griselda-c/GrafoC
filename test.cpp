@@ -38,13 +38,19 @@ int main() {
     G.add_edge(v1,v7);
     G.add_edge(v1,v6);
 
+    G.add_edge(v2,v6);
+
     G.add_edge(v2,v4);
     G.add_edge(v2,v5);
 
-    //G.add_vertex(6, {v3, v4, v5});
+    G.add_vertex(6, {v3, v4, v5});
+
+//    G.add_edge(v6,v3);
+//    G.add_edge(v6,v4);
+//    G.add_edge(v6,v5);
 
 
-   //G.removeEdge(v1,v6);
+    G.removeEdge(v1,v6);
     G.remove_vertex(v6);
     G.invariante_representacion();
 //
