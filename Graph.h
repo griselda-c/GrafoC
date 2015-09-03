@@ -107,7 +107,7 @@
                     }
                     erase(list, who);
                     to_list->push_front(*who);
-                 DEBUG(std::string("END Graph::toPrevList(") + std::to_string(impl::elem(who)) + ")");
+                DEBUG(std::string("END Graph::toPrevList(") + std::to_string(impl::elem(who)) + ")");
                     return to_list;
 
                 }
@@ -125,40 +125,122 @@
                  */
                 std::string dump() const;
 
-                 void invariante_representacion() const {
-                     check_degree(); check_list_degrees();
-                 }
+                void invariante_representacion() const {
+                    check_degree(); check_list_degrees();
+                }
 
                 /**
                  * retorna true si el grado es igual a la cantidad de elementos en su vecindario
                  */
-                 void check_degree() const {
-                     int vecinos = 0;
-                     for(auto& degn : neighborhood) {
-                         vecinos += degn.size();
-                     }
-                     assert(vecinos == degree);
-                 }
+                void check_degree() const {
+                    int vecinos = 0;
+                    for(auto& degn : neighborhood) {
+                        vecinos += degn.size();
+                    }
+                    assert(vecinos == degree);
+                }
 
                 /**
                  * retorna true si todos en una lista tienen el mismo grado, ninguna lista es vacia,
                  * las listas estan en orden creciente y todos los de la ultima lista tienen grado mayor al de v
                  * y los anteriores menor
                  */
-                 void check_list_degrees() const {
-                     for(auto itn = neighborhood.begin(); itn != highNeighborhood(); ++itn) {
-                         assert(itn->size() != 0 &&
-                             (std::next(itn) == highNeighborhood() ||
-                             impl::degree(*itn) < impl::degree(*std::next(itn))) &&
-                             degree > impl::degree(*itn));
+                void check_list_degrees() const {
+                    for(auto itn = neighborhood.begin(); itn != highNeighborhood(); ++itn) {
+                        assert(itn->size() != 0 &&
+                            (std::next(itn) == highNeighborhood() ||
+                            impl::degree(*itn) < impl::degree(*std::next(itn))) &&
+                            degree > impl::degree(*itn));
 
-                         for(auto w = itn->begin(); w != itn->end(); ++w) {
-                             assert(impl::degree(w) == impl::degree(*itn));
-                         }
-                     }
-                     for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
-                         assert(impl::degree(w) >= degree);
-                 }
+                        for(auto w = itn->begin(); w != itn->end(); ++w) {
+                            assert(impl::degree(w) == impl::degree(*itn));
+                        }
+                    }
+                    for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
+                        assert(impl::degree(w) >= degree);
+                }
+
+
+                /**
+                * Iterador de los vecinos
+                */
+                class const_neighbor_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+                {
+
+                public:
+                    /**
+                    * Construye un iterador que no apunta a nada y es invalido.
+                    * Se usa simplemente para poder declarar iteradores sin definir
+                    */
+                    const_neighbor_iterator();
+
+                    //constructores y destructores
+
+                    bool operator==(const_neighbor_iterator other) const
+                    {
+                        return it == other.it;
+                    }
+
+                    bool operator!=(const_neighbor_iterator other) const
+                    {
+                        return it != other.it;
+                    }
+
+
+                    //Neighborhood::iterator operator*() const
+                    //{
+                    //    return it->neighborhood;
+                    //}
+
+                    //      T* operator->() {
+                    //          return it.operator->();
+                    //      }
+
+                    void swap(const_neighbor_iterator & other)
+                    {
+                        std::swap(it, other.it);
+                    }
+
+                    const_neighbor_iterator & operator++()
+                    {
+                        ++it;
+                        return *this;
+                    }
+
+                    const_neighbor_iterator  operator++(int)
+                    {
+                        const_neighbor_iterator temp = *this;
+                        ++it;
+                        return temp;
+                    }
+
+                    const_neighbor_iterator & operator--()
+                    {
+                        --it;
+                        return *this;
+                    }
+
+                    const_neighbor_iterator operator--(int)
+                    {
+                        const_neighbor_iterator temp = *this;
+                        --it;
+                        return temp;
+                    }
+
+
+                private:
+                    const_neighbor_iterator (std::list<Neighbor>::const_iterator it) : it(it) {};
+                    friend class Graph;
+                    std::list<Neighbor>::const_iterator it;
+                };
+
+
+                const_neighbor_iterator begin() const;
+                const_neighbor_iterator cbegin() const;
+
+                const_neighbor_iterator end() const;
+                const_neighbor_iterator cend() const;
+
             };
 
 
@@ -303,81 +385,6 @@
             private:
             };
 
-
-
-            /**
-             * Iterador de los vecinos
-             */
-            class const_neighbor_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
-            {
-
-            public:
-                /**
-                 * Construye un iterador que no apunta a nada y es invalido.
-                 * Se usa simplemente para poder declarar iteradores sin definir
-                 */
-                const_neighbor_iterator();
-
-                //constructores y destructores
-
-                bool operator==(const_neighbor_iterator other) const
-                {
-                    return it == other.it;
-                }
-
-                bool operator!=(const_neighbor_iterator other) const
-                {
-                    return it != other.it;
-                }
-
-
-                Vertices::iterator operator*() const
-                {
-                    return it->neighbor;
-                }
-
-                //      T* operator->() {
-                //          return it.operator->();
-                //      }
-
-                void swap(const_neighbor_iterator & other)
-                {
-                    std::swap(it, other.it);
-                }
-
-                const_neighbor_iterator & operator++()
-                {
-                    ++it;
-                    return *this;
-                }
-
-                const_neighbor_iterator  operator++(int)
-                {
-                    const_neighbor_iterator temp = *this;
-                    ++it;
-                    return temp;
-                }
-
-                const_neighbor_iterator & operator--()
-                {
-                    --it;
-                    return *this;
-                }
-
-                const_neighbor_iterator operator--(int)
-                {
-                    const_neighbor_iterator temp = *this;
-                    --it;
-                    return temp;
-                }
-
-
-            private:
-                const_neighbor_iterator (std::list<Neighbor>::const_iterator it) : it(it) {};
-                friend class Graph;
-                std::list<Neighbor>::const_iterator it;
-            };
-
             //Constructor por defecto
             //Graph() { }
 
@@ -506,7 +513,7 @@
              * @param v
              * @return iterador a los vecinos de v.
              */
-            //  VertexIterator iterHighNeighbors(int v);
+            Vertex::const_neighbor_iterator iterHighNeighbors(int v);
 
 
             /**

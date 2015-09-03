@@ -341,6 +341,29 @@
             return end();
         }
 
+
+        //Graph::Vertex::const_neighbor_iterator begin() const {
+            //return const_neighbor_iterator(v->.begin());
+        //}
+
+        //Graph::Vertex::const_neighbor_iterator cbegin() const {
+            //return begin();
+        //}
+
+        //Graph::Vertex::const_neighbor_iterator end() const {
+            //return const_neighbor_iterator(vertices.end());
+        //}
+
+        //Graph::Vertex::const_neighbor_iterator cend() const {
+            //return end();
+        //}
+
+
+
+        //Vertex::const_neighbor_iterator Graph::iterHighNeighbors(int v) {
+
+        //};
+
         std::ostream& Graph::dump(std::ostream& out) const {
             for(auto& v : vertices) {
                 out << v << std::endl;
