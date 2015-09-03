@@ -59,6 +59,8 @@ int main() {
 //    G.add_edge(v3,v6);
 //    G.add_edge(v3,v7);
 
+    cout << *G.iterHighNeighbors(v1);
+
     cout << G;
 
     return 0;

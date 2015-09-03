@@ -187,10 +187,14 @@
                     }
 
 
-                    //Neighborhood::iterator operator*() const
-                    //{
-                    //    return it->neighborhood;
-                    //}
+                    int operator*() const
+                    {
+                        if(it->empty()){
+                           return 0;
+                        }else{
+                           return impl::degree(it);
+                        }
+                   }
 
                     //      T* operator->() {
                     //          return it.operator->();
@@ -229,17 +233,25 @@
 
 
                 private:
-                    const_neighbor_iterator (std::list<Neighbor>::const_iterator it) : it(it) {};
-                    friend class Graph;
-                    std::list<Neighbor>::const_iterator it;
+                    const_neighbor_iterator (Neighborhood::const_iterator it) : it(it) {};
+                    friend class Vertex;
+                    Neighborhood::const_iterator it;
                 };
 
 
-                const_neighbor_iterator begin() const;
-                const_neighbor_iterator cbegin() const;
+                const_neighbor_iterator begin() const{
+                    return neighborhood.begin();
+                }
+                const_neighbor_iterator cbegin() const{
+                    return begin();
+                }
 
-                const_neighbor_iterator end() const;
-                const_neighbor_iterator cend() const;
+                const_neighbor_iterator end() const{
+                    return neighborhood.end();
+                }
+                const_neighbor_iterator cend() const{
+                    return end();
+                }
 
             };
 
@@ -297,9 +309,12 @@
             using Vertices = impl::Vertices;
             using Neighborhood = impl::Neighborhood;
             using degNeighborhood = impl::degNeighborhood;
+            using const_neighbor_iterator = impl::Vertex::const_neighbor_iterator;
 
 
         public:
+
+
             /**
              * Iterador de los vertices del grafo const
              */
@@ -513,7 +528,7 @@
              * @param v
              * @return iterador a los vecinos de v.
              */
-            Vertex::const_neighbor_iterator iterHighNeighbors(int v);
+            const_neighbor_iterator iterHighNeighbors(const_vertex_iterator v);
 
 
             /**
