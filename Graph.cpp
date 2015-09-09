@@ -66,7 +66,7 @@
             }
 
                 void Vertex::erase(Neighborhood::iterator list, degNeighborhood::iterator who) {
-                    DEBUG(*this, "-> Graph::erase(", *who, ")");
+                    //DEBUG(*this, "-> Graph::erase(", *who, ")");
                     list->erase(who);
                     if(list->empty() && list != highNeighborhood()) {
                         MESSAGE("Borrando la lista que quedo vacia");
@@ -342,10 +342,12 @@
         }
 
 
-
-
         Graph::const_neighbor_iterator Graph::iterHighNeighbors(const_vertex_iterator v) {
                    return --v.it->end();
+        }
+
+        Graph::const_neighbor_iterator Graph::iterDegNeighborhood(const_vertex_iterator v,size_t degree) const{
+                return v.it->iterDegNeighborhood(degree);
         }
 
         std::ostream& Graph::dump(std::ostream& out) const {

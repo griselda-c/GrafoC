@@ -45,21 +45,20 @@ int main() {
 
     G.add_vertex(6, {v3, v4, v5});
 
-//    G.add_edge(v6,v3);
-//    G.add_edge(v6,v4);
-//    G.add_edge(v6,v5);
-
-
     G.removeEdge(v1,v6);
     G.remove_vertex(v6);
     G.invariante_representacion();
-//
-//   G.removeEdge(v1,v3);
-//
-//    G.add_edge(v3,v6);
-//    G.add_edge(v3,v7);
 
-    cout << *G.iterHighNeighbors(v1);
+    //G.removeEdge(v1,v3);
+    G.add_edge(v3,v7);
+
+//    cout << *G.iterHighNeighbors(v1) <<endl;
+//    //que pasa si no existe
+//    cout << *G.iterDegNeighborhood(v1,2) <<endl;
+
+    for(auto it = v1.begin(); it != v1.end(); ++it){
+        cout<< *it <<endl;
+    }
 
     cout << G;
 

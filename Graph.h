@@ -253,6 +253,14 @@
                     return end();
                 }
 
+                const_neighbor_iterator iterDegNeighborhood(size_t d)const{
+                    auto it = begin();
+                    while(it != end() && *it < d) {
+                            ++it;
+                    }
+                    return it;
+                }
+
             };
 
 
@@ -379,6 +387,20 @@
                     return temp;
                 }
 
+                const_neighbor_iterator begin() const{
+                    return it->begin();
+                }
+                const_neighbor_iterator cbegin() const{
+                    return begin();
+                }
+
+                const_neighbor_iterator end() const{
+                    return it->end();
+                }
+                const_neighbor_iterator cend() const{
+                    return end();
+                }
+
 
 
             private:
@@ -500,6 +522,7 @@
              */
             int degree(const_vertex_iterator v) const;
 
+
             /**
              * Pertenencia de la arista vw
              *
@@ -529,6 +552,8 @@
              * @return iterador a los vecinos de v.
              */
             const_neighbor_iterator iterHighNeighbors(const_vertex_iterator v);
+
+            const_neighbor_iterator iterDegNeighborhood(const_vertex_iterator v,size_t degree) const;
 
 
             /**
