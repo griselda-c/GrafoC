@@ -5,3 +5,5 @@ bin/*
 obj/*
 # Compiled Object files
 *.o
+test
+geany

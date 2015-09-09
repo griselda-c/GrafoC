@@ -162,9 +162,19 @@
 
 
                 /**
-                * Iterador de los vecinos
+                * Iterador de los vecinos de algun grado 
                 */
-                class const_neighbor_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+                class deg_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+                {
+
+                    private:
+                    degNeighborhood::const_iterator it;
+                }                
+
+                /**
+                * Iterador de los vecinos (todos los vecinos)
+                */
+                class iterator : std::iterator<std::bidirectional_iterator_tag,  int>
                 {
 
                 public:
@@ -235,7 +245,8 @@
                 private:
                     const_neighbor_iterator (Neighborhood::const_iterator it) : it(it) {};
                     friend class Vertex;
-                    Neighborhood::const_iterator it;
+                    Neighborhood::const_iterator list_it;
+                    deg_iterator it;
                 };
 
 
@@ -543,7 +554,11 @@
             const_vertex_iterator end() const;
             const_vertex_iterator cend() const;
 
-
+            const_neighbor_iterator N_begin() const;
+            const_neighbor_iterator N_end() const;
+            
+            const_degree_iterator H_begin() const;
+            const_degree_iterator H_end() const;
 
             /**
              * Retorna un iterador a los vecinos de v que tienen grado al menos d(v)

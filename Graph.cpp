@@ -66,7 +66,7 @@
             }
 
                 void Vertex::erase(Neighborhood::iterator list, degNeighborhood::iterator who) {
-                    //DEBUG(*this, "-> Graph::erase(", *who, ")");
+                    DEBUG(*this, "-> Graph::erase(", *who, ")");
                     list->erase(who);
                     if(list->empty() && list != highNeighborhood()) {
                         MESSAGE("Borrando la lista que quedo vacia");

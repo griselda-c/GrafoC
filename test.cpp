@@ -20,7 +20,7 @@ void print_vertices( Graph& G) {
 
 int main() {
     Log::get_instance().set_output(&std::cout);
-    Log::get_instance().set_level(Log::Level::NONE);
+    Log::get_instance().set_level(Log::Level::DEBUG);
 
     Graph G;
 
@@ -59,6 +59,15 @@ int main() {
     for(auto it = v1.begin(); it != v1.end(); ++it){
         cout<< *it <<endl;
     }
+    
+    for(auto z = G.H_begin(v1); z != G.H_end(v1); ++z) {
+        cout << *z << endl;
+    }
+
+    for(auto z = G.N_begin(v1); z != G.N_end(v1); ++z) {
+        cout << *z << endl;
+    }
+
 
     cout << G;
 
