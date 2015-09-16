@@ -41,6 +41,7 @@
 		<Unit filename="VertexDescriptor.h" />
 		<Unit filename="VertexIterator.h" />
 		<Unit filename="test.cpp" />
+		<Unit filename="triangles.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

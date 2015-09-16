@@ -19,8 +19,8 @@
              * La idea es poder tener ciertas funcionalidades sin afectar la lectura del grafo
              */
 
-            struct Neighbor;
             struct Vertex;
+            struct Neighbor;
             using degNeighborhood = std::list<Neighbor>;
             using Neighborhood = std::list<degNeighborhood>;
             using Vertices = std::list<Vertex>;
@@ -162,19 +162,73 @@
 
 
                 /**
-                * Iterador de los vecinos de algun grado 
+                * Iterador de los vecinos de algun grado
                 */
                 class deg_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
                 {
 
+                    bool operator==(deg_iterator other) const
+                    {
+                        return it == other.it;
+                    }
+
+                    bool operator!=(deg_iterator other) const
+                    {
+                        return it != other.it;
+                    }
+
+
+                    size_t operator*() const
+                    {
+                    return impl::elem(it);
+                    }
+
+                    //      T* operator->() {
+                    //          return it.operator->();
+                    //      }
+
+                    void swap(deg_iterator & other)
+                    {
+                        std::swap(it, other.it);
+                    }
+
+                    deg_iterator& operator++()
+                    {
+                        ++it;
+                        return *this;
+                    }
+
+                    deg_iterator  operator++(int)
+                    {
+                        deg_iterator temp = *this;
+                        ++it;
+                        return temp;
+                    }
+
+                    deg_iterator & operator--()
+                    {
+                        --it;
+                        return *this;
+                    }
+
+                    deg_iterator operator--(int)
+                    {
+                        deg_iterator temp = *this;
+                        --it;
+                        return temp;
+                    }
+
+
                     private:
                     degNeighborhood::const_iterator it;
-                }                
+                    deg_iterator (degNeighborhood::const_iterator it) : it(it) {};
+                    friend class Vertex;
+                };
 
                 /**
                 * Iterador de los vecinos (todos los vecinos)
                 */
-                class iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+                class const_neighbor_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
                 {
 
                 public:
@@ -199,11 +253,7 @@
 
                     int operator*() const
                     {
-                        if(it->empty()){
-                           return 0;
-                        }else{
-                           return impl::degree(it);
-                        }
+                        *it;
                    }
 
                     //      T* operator->() {
@@ -217,14 +267,34 @@
 
                     const_neighbor_iterator & operator++()
                     {
-                        ++it;
+                       // std::cout<<" vengo de imprimir operator ++ " +std::to_string(*it)<<std::endl;
+                        if(it == --list_it->end()){
+                            ++list_it; //hay que cambiar de lista
+                            if(list_it->empty()){ // si es el high y esta vacio
+                                ++list_it; //avanzar el iterador
+                            }
+                            it = list_it->begin();
+                        }
+                        else{
+                            ++it;
+                        }
                         return *this;
                     }
 
                     const_neighbor_iterator  operator++(int)
                     {
                         const_neighbor_iterator temp = *this;
-                        ++it;
+                        if(it == --list_it->end()){
+                            ++list_it;
+                            if(list_it->empty()){ // si es el high y esta vacio
+                                list_it++;
+                            }else{
+                                 it = list_it->begin();
+                            }
+                        }
+                        else{
+                            ++it;
+                        }
                         return temp;
                     }
 
@@ -242,26 +312,48 @@
                     }
 
 
+
                 private:
-                    const_neighbor_iterator (Neighborhood::const_iterator it) : it(it) {};
+                    const_neighbor_iterator (Neighborhood::const_iterator list_it) : list_it(list_it), it(list_it->begin()) {
+                        if(list_it->empty()){
+                            ++list_it;
+                            it = list_it->begin();
+                        }
+                    };
                     friend class Vertex;
                     Neighborhood::const_iterator list_it;
                     deg_iterator it;
+
                 };
 
 
                 const_neighbor_iterator begin() const{
-                    return neighborhood.begin();
+                    return const_neighbor_iterator (neighborhood.begin());
                 }
                 const_neighbor_iterator cbegin() const{
                     return begin();
                 }
 
                 const_neighbor_iterator end() const{
-                    return neighborhood.end();
+                    return const_neighbor_iterator (neighborhood.end());
                 }
                 const_neighbor_iterator cend() const{
                     return end();
+                }
+
+                const_neighbor_iterator H_begin() const{
+                    return const_neighbor_iterator(highNeighborhood());
+                }
+
+                const_neighbor_iterator H_end() const{
+                    Neighborhood::const_iterator high_end;
+
+                    if(highNeighborhood()->empty()){
+                        high_end = highNeighborhood();
+                    }else{
+                        high_end = ++highNeighborhood();
+                    }
+                    return const_neighbor_iterator(high_end);
                 }
 
                 const_neighbor_iterator iterDegNeighborhood(size_t d)const{
@@ -554,11 +646,15 @@
             const_vertex_iterator end() const;
             const_vertex_iterator cend() const;
 
-            const_neighbor_iterator N_begin() const;
-            const_neighbor_iterator N_end() const;
-            
-            const_degree_iterator H_begin() const;
-            const_degree_iterator H_end() const;
+            const_neighbor_iterator H_begin(const_vertex_iterator v) const;
+            const_neighbor_iterator H_end(const_vertex_iterator v) const;
+
+//            const_neighbor_iterator N_begin() const;
+//            const_neighbor_iterator N_end() const;
+//
+//            const_degree_iterator H_begin() const;
+//            const_degree_iterator H_end() const;
+
 
             /**
              * Retorna un iterador a los vecinos de v que tienen grado al menos d(v)
