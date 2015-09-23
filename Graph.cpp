@@ -341,11 +341,11 @@
             return end();
         }
 
-        Graph::const_neighbor_iterator Graph::H_begin(const_vertex_iterator v)const{
+        Graph::deg_iterator Graph::H_begin(const_vertex_iterator v)const{
             return v.it->H_begin();
         }
 
-        Graph::const_neighbor_iterator Graph::H_end(const_vertex_iterator v)const{
+        Graph::deg_iterator Graph::H_end(const_vertex_iterator v)const{
             return v.it->H_end();
         }
 

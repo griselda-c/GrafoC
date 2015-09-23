@@ -1,6 +1,7 @@
 
 
 #include <iostream>
+#include <vector>
 #include "Graph.h"
 #include "Log.h"
 
@@ -13,52 +14,77 @@ void print_vertices( Graph& G) {
     }
 }
 
-
+/*
+namespace std {
+template<>
+struct iterator_traits<Graph::deg_iterator> {
+   using difference_type = Graph::deg_iterator::difference_type; //ptrdiff_t;
+   using value_type = size_t;
+   using pointer = const size_t*;
+   using reference = const size_t&;
+   using iterator_category = std::bidirectional_iterator_tag; 
+};
+}
+*/
 
 int main() {
     Log::get_instance().set_output(&std::cout);
     Log::get_instance().set_level(Log::Level::NONE);
 
     Graph G;
+    vector<Graph::const_vertex_iterator> V;
 
-    auto v1 = G.insertVertex(1);
-    auto v2 = G.insertVertex(2);
-    auto v3 = G.insertVertex(3);
-    auto v4 = G.insertVertex(4);
-    auto v5 = G.insertVertex(5);
-    auto v6 = G.insertVertex(6);
-    auto v7 = G.insertVertex(7);
-    auto v8 = G.insertVertex(8);
+    for(int i = 0; i < 9; ++i) {
+        V.push_back(G.insertVertex(i));
+    }
+/*
+    auto V[1] = G.insertVertex(1);
+    auto V[2] = G.insertVertex(2);
+    auto V[3] = G.insertVertex(3);
+    auto V[4] = G.insertVertex(4);
+    auto V[5] = G.insertVertex(5);
+    auto V[6] = G.insertVertex(6);
+    auto V[7] = G.insertVertex(7);
+    auto V[8] = G.insertVertex(8);
+*/
+    G.add_edge(V[1],V[2]);
+    G.add_edge(V[1],V[3]);
+    G.add_edge(V[1],V[7]);
+    G.add_edge(V[1],V[6]);
 
-    G.add_edge(v1,v2);
-    G.add_edge(v1,v3);
-    G.add_edge(v1,v7);
-    G.add_edge(v1,v6);
+    G.add_edge(V[2],V[6]);
 
-    G.add_edge(v2,v6);
+    G.add_edge(V[2],V[4]);
+    G.add_edge(V[2],V[5]);
 
-    G.add_edge(v2,v4);
-    G.add_edge(v2,v5);
+    V.push_back(G.add_vertex(9, {V[3], V[4], V[5]}));
 
-    G.add_vertex(9, {v3, v4, v5});
-
-//    G.removeEdge(v1,v6);
-//    G.remove_vertex(v6);
+//    G.removeEdge(V[1],V[6]);
+//    G.remove_vertex(V[6]);
     G.invariante_representacion();
 
-//    G.removeEdge(v1,v3);
-//    G.add_edge(v3,v7);
+//    G.removeEdge(V[1],V[3]);
+//    G.add_edge(V[3],V[7]);
 
 
-//    for(auto it = v2.begin(); it != v2.end(); ++it){
+//    for(auto it = V[2].begin(); it != V[2].end(); ++it){
 //        cout<< *it <<endl;
 //    }
 //
-    for(auto z = G.H_begin(v7); z != G.H_end(v7); ++z) {
-        cout << *z << endl;
+    G.dump(cout);
+    for(auto& v : V) {
+        cout << "recorriendo H(" << *v << "): ";
+        for(auto z = G.H_begin(v); z != G.H_end(v); ++z) {
+            cout << *z << ',';
+        }
+        cout << endl;
+        cout << "recorriendo H(" << *v << ") al reves: ";
+        for(auto z = G.H_end(v); z != G.H_begin(v); --z) {
+            cout << *prev(z) << ',';
+        }
+        cout << endl;
     }
-
-//    auto x = G.H_end(v1);
+//    auto x = G.H_end(V[1]);
 //    --x;
 //    cout << *x << endl;
 //    --x;
@@ -70,10 +96,19 @@ int main() {
 
 
 
-    for(auto z = G.N_begin(v1); z != G.N_end(v1); ++z) {
-        cout << *z << endl;
+    for(auto& v : V) {
+        cout << "recorriendo N(" << *v << "): ";
+        auto z = G.N_begin(v);
+        for(; z != G.N_end(v); ++z) {
+            cout << *z << ',';
+        }
+        cout << endl;
+        cout << "recorriendo N(" << *v << ") al reves: ";
+        for(; z != G.N_begin(v); --z) {
+            cout << *prev(z) << ',';
+        }
+        cout << endl;
     }
-
 
 
     cout << G;

@@ -164,8 +164,9 @@ namespace impl {
         /**
         * Iterador de los vecinos de algun grado
         */
-        class deg_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+        class deg_iterator : public std::iterator<std::bidirectional_iterator_tag, size_t>
         {
+            public:
 
             bool operator==(deg_iterator other) const
             {
@@ -228,7 +229,7 @@ namespace impl {
         /**
         * Iterador de los vecinos (todos los vecinos)
         */
-        class const_neighbor_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+        class const_neighbor_iterator : public std::iterator<std::bidirectional_iterator_tag,  int>
         {
 
         public:
@@ -242,7 +243,7 @@ namespace impl {
 
             bool operator==(const_neighbor_iterator other) const
             {
-                return it == other.it;
+                return it == other.it; //and list_it == other.list_it (innecesario)
             }
 
             bool operator!=(const_neighbor_iterator other) const
@@ -251,10 +252,10 @@ namespace impl {
             }
 
 
-            int operator*() const
+            size_t operator*() const
             {
                 *it;
-           }
+            }
 
             //      T* operator->() {
             //          return it.operator->();
@@ -262,108 +263,83 @@ namespace impl {
 
             void swap(const_neighbor_iterator & other)
             {
+                std::swap(list_it, other.list_it);
                 std::swap(it, other.it);
             }
 
             const_neighbor_iterator & operator++()
             {
-                if(it == --list_it->end()){
-                    ++list_it; //hay que cambiar de lista
-                    if(list_it->empty()){ // si es el high y esta vacio
-                        ++list_it; //avanzar el iterador
-                    }
+                ++it;
+                if(it == list_it->end() and list_it != high){
+                    ++list_it;
                     it = list_it->begin();
-                }
-                else{
-                    ++it;
                 }
                 return *this;
             }
 
             const_neighbor_iterator  operator++(int)
             {
-                const_neighbor_iterator temp = *this;
-                if(it == --list_it->end()){
-                    ++list_it; //pasar a lista siguiente
-                    if(list_it->empty()){ // si es el high y esta vacio
-                        list_it++; // avanza al end
-                    }else{
-                         it = list_it->begin();
-                    }
-                }
-                else{
-                    ++it;
-                }
+                auto temp = *this;
+                ++it;
                 return temp;
             }
 
             const_neighbor_iterator & operator--()
             {
-                if(it == list_it->begin()){
+                if((list_it == high and high->empty()) or it == list_it->begin()) {
                     --list_it;
-                    it = --list_it->end();
-                }else{
+                    it = std::prev(list_it->end());
+                } else {
                      --it;
                 }
-
                 return *this;
             }
 
             const_neighbor_iterator operator--(int)
             {
-                const_neighbor_iterator temp = *this;
-                if(it == list_it->begin()){
-                    --list_it;
-                    it = --list_it->end();
-                }else{
-                     --it;
-                }
+                auto temp = *this;
+                --it;
                 return temp;
             }
 
-
-
         private:
-            const_neighbor_iterator (Neighborhood::const_iterator list_it) : list_it(list_it), it(list_it->begin()) {
-                if(list_it->empty()){
-                    ++list_it;
-                    it = list_it->begin();
-                }
-            };
+            const_neighbor_iterator (Neighborhood::const_iterator list_it, deg_iterator it, Neighborhood::const_iterator highNeighborhood) : list_it(list_it), it(it), high(highNeighborhood) 
+            {};
+                                    
+            /** Vamos a suponer que la posicion end se corresponde a:
+             * list_it apunta a high,
+             * it apunta a high->end()
+             */
             friend class Vertex;
             Neighborhood::const_iterator list_it;
+            Neighborhood::const_iterator high; //para saber si list_it apunta a high
             deg_iterator it;
-
+            
         };
 
 
         const_neighbor_iterator begin() const{
-            return const_neighbor_iterator (neighborhood.begin());
+            auto first_list = neighborhood.begin();
+            auto first_elem = deg_iterator(first_list->begin());
+            return const_neighbor_iterator (first_list, first_elem, highNeighborhood());
         }
         const_neighbor_iterator cbegin() const{
             return begin();
         }
 
         const_neighbor_iterator end() const{
-            return const_neighbor_iterator (neighborhood.end());
+            return const_neighbor_iterator (highNeighborhood(), H_end(), highNeighborhood());
         }
         const_neighbor_iterator cend() const{
             return end();
         }
 
-        const_neighbor_iterator H_begin() const{
-            return const_neighbor_iterator(highNeighborhood());
+        deg_iterator H_begin() const{
+            return deg_iterator(highNeighborhood()->begin());
         }
 
-        const_neighbor_iterator H_end() const{
-            Neighborhood::const_iterator high_end;
-
-            if(highNeighborhood()->empty()){
-                high_end = highNeighborhood(); //para que el begin sea igual al end
-            }else{
-                high_end = ++highNeighborhood(); // el end es el puntero siguiente al high
-            }
-            return const_neighbor_iterator(high_end);
+        deg_iterator H_end() const{
+            return deg_iterator(highNeighborhood()->end());
         }
 
     };
@@ -423,6 +399,7 @@ private:
     using Neighborhood = impl::Neighborhood;
     using degNeighborhood = impl::degNeighborhood;
     using const_neighbor_iterator = impl::Vertex::const_neighbor_iterator;
+    using deg_iterator = impl::Vertex::deg_iterator;
 
 
 public:
@@ -431,7 +408,7 @@ public:
     /**
      * Iterador de los vertices del grafo const
      */
-    class const_vertex_iterator : std::iterator<std::bidirectional_iterator_tag,  int>
+    class const_vertex_iterator : public std::iterator<std::bidirectional_iterator_tag,  int>
     {
     public:
         /**
@@ -648,8 +625,8 @@ public:
     const_vertex_iterator end() const;
     const_vertex_iterator cend() const;
 
-    const_neighbor_iterator H_begin(const_vertex_iterator v) const;
-    const_neighbor_iterator H_end(const_vertex_iterator v) const;
+    deg_iterator H_begin(const_vertex_iterator v) const;
+    deg_iterator H_end(const_vertex_iterator v) const;
 
     const_neighbor_iterator N_begin(const_vertex_iterator v) const;
     const_neighbor_iterator N_end(const_vertex_iterator v) const;
