@@ -15,9 +15,6 @@ void print_vertices( Graph& G) {
 
 
 
-
-
-
 int main() {
     Log::get_instance().set_output(&std::cout);
     Log::get_instance().set_level(Log::Level::NONE);
@@ -45,28 +42,37 @@ int main() {
 
     G.add_vertex(9, {v3, v4, v5});
 
-    G.removeEdge(v1,v6);
-    G.remove_vertex(v6);
+//    G.removeEdge(v1,v6);
+//    G.remove_vertex(v6);
     G.invariante_representacion();
 
-    G.removeEdge(v1,v3);
-    G.add_edge(v3,v7);
+//    G.removeEdge(v1,v3);
+//    G.add_edge(v3,v7);
 
-//    cout << *G.iterHighNeighbors(v1) <<endl;
-//    //que pasa si no existe
-//    cout << *G.iterDegNeighborhood(v1,2) <<endl;
+
+//    for(auto it = v2.begin(); it != v2.end(); ++it){
+//        cout<< *it <<endl;
+//    }
 //
-    for(auto it = v8.begin(); it != v8.end(); ++it){
-        cout<< *it <<endl;
+    for(auto z = G.H_begin(v7); z != G.H_end(v7); ++z) {
+        cout << *z << endl;
     }
-//
-//    for(auto z = G.H_begin(v1); z != G.H_end(v1); ++z) {
-//        cout << *z << endl;
-//    }
 
-//    for(auto z = G.N_begin(v1); z != G.N_end(v1); ++z) {
-//        cout << *z << endl;
-//    }
+//    auto x = G.H_end(v1);
+//    --x;
+//    cout << *x << endl;
+//    --x;
+//    cout << *x << endl;
+//    --x;
+//    cout << *x << endl;
+//    --x;
+//    cout << *x << endl;
+
+
+
+    for(auto z = G.N_begin(v1); z != G.N_end(v1); ++z) {
+        cout << *z << endl;
+    }
 
 
 

@@ -349,14 +349,15 @@
             return v.it->H_end();
         }
 
-
-        Graph::const_neighbor_iterator Graph::iterHighNeighbors(const_vertex_iterator v) {
-                   return --v.it->end();
+        Graph::const_neighbor_iterator Graph::N_begin(const_vertex_iterator v)const{
+            return v.it->begin();
         }
 
-        Graph::const_neighbor_iterator Graph::iterDegNeighborhood(const_vertex_iterator v,size_t degree) const{
-                return v.it->iterDegNeighborhood(degree);
+        Graph::const_neighbor_iterator Graph::N_end(const_vertex_iterator v) const{
+            return v.it->end();
         }
+
+
 
         std::ostream& Graph::dump(std::ostream& out) const {
             for(auto& v : vertices) {
