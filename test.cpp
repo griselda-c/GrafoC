@@ -8,7 +8,9 @@
 using namespace std;
 using namespace tip;
 
-void print_vertices( Graph& G) {
+using IntGraph = tip::Graph<int>;
+
+void print_vertices( IntGraph& G) {
     for(auto it = G.begin(); it != G.end(); ++it) {
         cout << *it << endl;
     }
@@ -17,8 +19,8 @@ void print_vertices( Graph& G) {
 /*
 namespace std {
 template<>
-struct iterator_traits<Graph::deg_iterator> {
-   using difference_type = Graph::deg_iterator::difference_type; //ptrdiff_t;
+struct iterator_traits<IntGraph::deg_iterator> {
+   using difference_type = IntGraph::deg_iterator::difference_type; //ptrdiff_t;
    using value_type = size_t;
    using pointer = const size_t*;
    using reference = const size_t&;
@@ -31,8 +33,8 @@ int main() {
     Log::get_instance().set_output(&std::cout);
     Log::get_instance().set_level(Log::Level::NONE);
 
-    Graph G;
-    vector<Graph::const_vertex_iterator> V;
+    IntGraph G;
+    vector<IntGraph::const_vertex_iterator> V;
 
     for(int i = 0; i < 9; ++i) {
         V.push_back(G.insertVertex(i));
@@ -61,7 +63,7 @@ int main() {
 
 //    G.removeEdge(V[1],V[6]);
 //    G.remove_vertex(V[6]);
-    G.invariante_representacion();
+//     G.invariante_representacion();
 
 //    G.removeEdge(V[1],V[3]);
 //    G.add_edge(V[3],V[7]);
