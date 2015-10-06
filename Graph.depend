@@ -23,24 +23,33 @@
 	"Graph.h"
 	"Log.h"
 
-1442932840 /home/griselda/Escritorio/GrafoC/Graph.h
+1444094022 /home/griselda/Escritorio/GrafoC/Graph.h
 	<iostream>
 	<list>
 	<iterator>
 	<cassert>
 	"Log.h"
+	"Neighbor.h"
+	"Vertex.h"
 
-1442932931 source:/home/griselda/Escritorio/GrafoC/test.cpp
+1444092700 source:/home/griselda/Escritorio/GrafoC/test.cpp
 	<iostream>
+	<vector>
 	"Graph.h"
 	"Log.h"
 
-1442180543 /home/griselda/Escritorio/GrafoC/Log.h
+1443490222 /home/griselda/Escritorio/GrafoC/Log.h
 	<iostream>
 
-1442180543 source:/home/griselda/Escritorio/GrafoC/Log.cpp
+1443490200 source:/home/griselda/Escritorio/GrafoC/Log.cpp
 	"Log.h"
 
-1442932589 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
+1443402914 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
 	"Graph.h"
+
+1443490304 /home/griselda/Escritorio/GrafoC/Neighbor.h
+
+1443490392 /home/griselda/Escritorio/GrafoC/Vertex.h
+	<list>
+	"Log.h"
 

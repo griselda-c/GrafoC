@@ -7,7 +7,7 @@
 //#include "Neighbor.h"
 
 namespace tip {
-    
+
     namespace impl {
         /**
          * Vertex representa una instancia de un vertice del h-grafo.
@@ -15,7 +15,7 @@ namespace tip {
          * El vecindario es una lista de listas N(v, d_1), ..., N(v, d_k), H donde cada lista N(v, d_i)
          * guarda los vecions de grado d_i y donde H guarda el resto de los vecinos.
          * La lista H siempre es la del final de neighborhood.
-         * 
+         *
          * Para guardar los vecinos se usa la estructura de soporte Neighbor<Graph>.  Esta es una estructura
          * que depende de Graph.  A su vez, Vertex tambien depende de graph porque necesita guardar sus vecinos de
          * alguna forma.  Se supone que Graph tiene las siguiente funciones/tipos (ver tambien Neighbor):
@@ -27,8 +27,8 @@ namespace tip {
          * - Graph::Neighborhood::iterator: Neighborhood es la coleccion donde se agrupan todos los degNeighborhood.
          * - Graph::elem_type: es el tipo del elemento de Vertex.
          * Se supone que Vertices, degNeighborhood y Neighborhood tienen la misma interfaz que std::list.
-         * 
-         * Esta estructura es de soporte, por lo cual muestra su implementacion interana.  Se asume que 
+         *
+         * Esta estructura es de soporte, por lo cual muestra su implementacion interana.  Se asume que
          * funciona dentro de la estructura h-grafo.
          */
         template<class Graph>
@@ -42,11 +42,11 @@ namespace tip {
             using degNeighborhood = typename Graph::degNeighborhood;
             //Estructura donde se guardan todos los vecindarios de todos los grados.
             using Neighborhood = typename Graph::Neighborhood;
-            
+
             elem_type elem;  //elemento
             size_t degree;  //grado
             Neighborhood neighborhood;  //vecindario
-            
+
             /**
              * Crea un nuevo vertice con grado 0.  Siempre tiene una lista de high neighbors.
              * Costo: O(copiar elem)
@@ -57,23 +57,23 @@ namespace tip {
                 //garantizamos el high neighbohood
                 neighborhood.push_back(degNeighborhood());
             }
-            
+
             /**
              * retorna un puntero al high neighborhood()
              */
-            typename Neighborhood::iterator highNeighborhood() 
+            typename Neighborhood::iterator highNeighborhood()
             {
                 return std::prev(neighborhood.end());
             }
-            
+
             /**
              * retorna un puntero al high neighborhood()
              */
-            typename Neighborhood::const_iterator highNeighborhood() const 
+            typename Neighborhood::const_iterator highNeighborhood() const
             {
                 return std::prev(neighborhood.end());
             }
-            
+
             /**
              *  Mueve who de la lista list a la siguiente lista como si incrementara el grado en 1.
              *  Se asume que el grado de who es el correcto en su lista, y no incrementa el grado.
@@ -86,13 +86,13 @@ namespace tip {
              * Precondicion: list no es high_neighborhood
              */
             typename Neighborhood::iterator toNextList(typename Neighborhood::iterator list, typename degNeighborhood::iterator who)
-            {    
+            {
                 //DEBUG(this->elem, "-> Graph::toNextList(", *who, ")");
                 assert(list != highNeighborhood());
                 auto to_list = std::next(list);
-                
+
                 if(who->degree() + 1 < this->degree and
-                    (to_list == highNeighborhood() || degree_of(to_list) != who->degree()+1)) 
+                    (to_list == highNeighborhood() || degree_of(to_list) != who->degree()+1))
                 {
                     //MESSAGE("Creando la lista de grado", impl::degree(who), +"para albergar a", *who);
                     to_list = insertDegNeighborhood(to_list);
@@ -103,8 +103,8 @@ namespace tip {
                 DEBUG("END OF Graph::toNextList");
                 return to_list;
             }
-            
-            
+
+
             /**
              *  Mueve who de la lista list a la lista previa como si se decrementara el grado en 1.
              *  Se asume que el grado de who es el de la lista destino, y no incrementa el grado.
@@ -118,9 +118,9 @@ namespace tip {
              */
             typename Neighborhood::iterator toPrevList(typename Neighborhood::iterator list, typename degNeighborhood::iterator who) {
                 DEBUG("BEGIN Graph::toPrevList(", *who, ")");
-                
+
                 typename Neighborhood::iterator to_list;
-                if(list == neighborhood.begin() || degree_of(std::prev(list)) < who->degree()) 
+                if(list == neighborhood.begin() || degree_of(std::prev(list)) < who->degree())
                 {
                     MESSAGE(std::string("INSERTANDO MENSAJE"));
                     to_list = insertDegNeighborhood(list);
@@ -131,9 +131,9 @@ namespace tip {
                 to_list->push_front(*who);
                 DEBUG("END Graph::toPrevList(", *who, ")");
                 return to_list;
-                
+
             }
-            
+
             /**
              * Borra who de la lista list, eliminando list si queda vacia y no es el high neighborhood
              */
@@ -146,117 +146,117 @@ namespace tip {
                 }
                 DEBUG("END OF Graph::erase");
             }
-            
+
             typename Neighborhood::iterator insertDegNeighborhood(typename Neighborhood::iterator pos) {
                 return neighborhood.insert(pos, degNeighborhood());
-            }            
-            
+            }
+
             /**
              * Iterador de los vecinos de algun grado
              */
             class deg_iterator : public std::iterator<std::bidirectional_iterator_tag, elem_type>
             {
             public:
-                
+
                 bool operator==(deg_iterator other) const
                 {
                     return it == other.it;
                 }
-                
+
                 bool operator!=(deg_iterator other) const
                 {
                     return it != other.it;
                 }
-                
-                
+
+
                 const elem_type& operator*() const
                 {
                     return it->neighbor->elem; //elem(it);
                 }
-                
+
                 const elem_type* operator->() {
                     return it.operator->();
                 }
-                
+
                 void swap(deg_iterator & other)
                 {
                     std::swap(it, other.it);
                 }
-                
+
                 deg_iterator& operator++()
                 {
                     ++it;
                     return *this;
                 }
-                
+
                 deg_iterator  operator++(int)
                 {
                     deg_iterator temp = *this;
                     ++it;
                     return temp;
                 }
-                
+
                 deg_iterator & operator--()
                 {
                     --it;
                     return *this;
                 }
-                
+
                 deg_iterator operator--(int)
                 {
                     deg_iterator temp = *this;
                     --it;
                     return temp;
                 }
-                
-                
+
+
             private:
                 typename degNeighborhood::const_iterator it;
                 deg_iterator (typename degNeighborhood::const_iterator it) : it(it) {};
                 friend class Vertex;
             }; //class deg_iterator
-            
+
             /**
              * Iterador de los vecinos (todos los vecinos)
              */
             class neighbor_iterator : public std::iterator<std::bidirectional_iterator_tag,  elem_type>
             {
-                
+
             public:
                 /**
                  * Construye un iterador que no apunta a nada y es invalido.
                  * Se usa simplemente para poder declarar iteradores sin definir
                  */
                 neighbor_iterator();
-                
+
                 //constructores y destructores
-                
+
                 bool operator==(neighbor_iterator other) const
                 {
                     return it == other.it; //and list_it == other.list_it (innecesario)
                 }
-                
+
                 bool operator!=(neighbor_iterator other) const
                 {
                     return it != other.it;
                 }
-                
-                
+
+
                 const elem_type& operator*() const
                 {
                     *it;
                 }
-                
+
                 const elem_type* operator->() {
                     return it.operator->();
                 }
-                
+
                 void swap(neighbor_iterator & other)
                 {
                     std::swap(list_it, other.list_it);
                     std::swap(it, other.it);
                 }
-                
+
                 neighbor_iterator & operator++()
                 {
                     ++it;
@@ -266,14 +266,14 @@ namespace tip {
                     }
                     return *this;
                 }
-                
+
                 neighbor_iterator  operator++(int)
                 {
                     auto temp = *this;
                     ++it;
                     return temp;
                 }
-                
+
                 neighbor_iterator & operator--()
                 {
                     if((list_it == high and high->empty()) or it == list_it->begin()) {
@@ -284,18 +284,18 @@ namespace tip {
                     }
                     return *this;
                 }
-                
+
                 neighbor_iterator operator--(int)
                 {
                     auto temp = *this;
                     --it;
                     return temp;
                 }
-                
+
             private:
-                neighbor_iterator (typename Neighborhood::const_iterator list_it, deg_iterator it, typename Neighborhood::const_iterator highNeighborhood) : list_it(list_it), it(it), high(highNeighborhood) 
+                neighbor_iterator (typename Neighborhood::const_iterator list_it, deg_iterator it, typename Neighborhood::const_iterator highNeighborhood) : list_it(list_it), it(it), high(highNeighborhood)
                 {};
-                
+
                 /** Vamos a suponer que la posicion end se corresponde a:
                  * list_it apunta a high,
                  * it apunta a high->end()
@@ -304,10 +304,10 @@ namespace tip {
                 typename Neighborhood::const_iterator list_it;
                 typename Neighborhood::const_iterator high; //para saber si list_it apunta a high
                 deg_iterator it;
-                
+
             }; //class neighbor_iterator
-            
-            
+
+
             neighbor_iterator begin() const{
                 auto first_list = neighborhood.begin();
                 auto first_elem = deg_iterator(first_list->begin());
@@ -316,23 +316,23 @@ namespace tip {
             neighbor_iterator cbegin() const{
                 return begin();
             }
-            
+
             neighbor_iterator end() const{
                 return neighbor_iterator (highNeighborhood(), H_end(), highNeighborhood());
             }
             neighbor_iterator cend() const{
                 return end();
             }
-            
+
             deg_iterator H_begin() const{
                 return deg_iterator(highNeighborhood()->begin());
             }
-            
+
             deg_iterator H_end() const{
                 return deg_iterator(highNeighborhood()->end());
             }
-            
-            
+
+
 //             /**
 //              * imprime informacion de debugging
 //              */
@@ -355,12 +355,12 @@ namespace tip {
 //                     return res;
 //                 }
 //             }
-//             
-//             
+//
+//
 //             void invariante_representacion() const {
 //                 check_degree(); check_list_degrees();
 //             }
-//             
+//
 //             /**
 //              * retorna true si el grado es igual a la cantidad de elementos en su vecindario
 //              */
@@ -371,7 +371,7 @@ namespace tip {
 //                 }
 //                 assert(vecinos == degree);
 //             }
-//             
+//
 //             /**
 //              * retorna true si todos en una lista tienen el mismo grado, ninguna lista es vacia,
 //              * las listas estan en orden creciente y todos los de la ultima lista tienen grado mayor al de v
@@ -383,7 +383,7 @@ namespace tip {
 //                     (std::next(itn) == highNeighborhood() ||
 //                     impl::degree(*itn) < impl::degree(*std::next(itn))) &&
 //                     degree > impl::degree(*itn));
-//                     
+//
 //                     for(auto w = itn->begin(); w != itn->end(); ++w) {
 //                         assert(impl::degree(w) == impl::degree(*itn));
 //                     }
@@ -391,17 +391,17 @@ namespace tip {
 //                 for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
 //                     assert(impl::degree(w) >= degree);
 //             }
-            
-        }; //class Vertex        
-        
-        
+
+        }; //class Vertex
+
+
         //FUNCIONES AUXILIARES PARA ACCEDER AL GRADO DE UNA LISTA DE VECINOS
 //         template<class Graph>
 //         size_t degree(typename degNeighborhood<Elem>::const_iterator neighbor) {
 //             return neighbor->neighbor->degree;
 //         }
-        
-        //Dada cualquier colecion de Neighbors (cosas que entienden la funcion degree), vamos a tomar que 
+
+        //Dada cualquier colecion de Neighbors (cosas que entienden la funcion degree), vamos a tomar que
         //el grado de la coleccion es el del primer neighbor.  La idea es usarlo para saber el grado de un degNeighborhood.
         //Esta funcion, en particular, toma un puntero a una coleccion de Neighbors.  La idea es poder usar un iterator
         //de Neighborhood, que es una coleccion de degNeighborhood, que adentro contiene sus Neighbors.
@@ -412,8 +412,8 @@ namespace tip {
             assert(neighbors->begin() != neighbors->end());
             return neighbors->begin()->degree();
         }
-                        
-        
+
+
     } //namespace impl
 } //namespace tip
 

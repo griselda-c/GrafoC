@@ -15,32 +15,32 @@
 
 namespace tip
 {
-    
+
     // namespace impl {
     //     /**
     //      * En este namespace vamos a agregar las clases auxiliares que utilizamos en el grafo.
     //      * La idea es poder tener ciertas funcionalidades sin afectar la lectura del grafo
     //      */
-    // 
+    //
     //     struct Vertex;
     //     struct Neighbor;
     //     using degNeighborhood = std::list<Neighbor>;
     //     using Neighborhood = std::list<degNeighborhood>;
     //     using Vertices = std::list<Vertex>;
-    // 
-    // 
+    //
+    //
     //     int degree(degNeighborhood::const_iterator neighbor);
     //     int degree(const degNeighborhood& neighbors);
     //     int degree(const Neighborhood::const_iterator neigbhors);
     //     size_t elem(degNeighborhood::const_iterator neighbor);
     //     degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
-    // 
-    // 
-    // 
-    // 
-    // 
+    //
+    //
+    //
+    //
+    //
     // }
-    
+
     template<class Elem>
     class Graph
     {
@@ -60,10 +60,10 @@ namespace tip
         using Neighborhood = std::list<degNeighborhood>;
         using neighbor_iterator = typename Vertex::neighbor_iterator;
         using deg_iterator = typename Vertex::deg_iterator;
-        
+
 
     public:
-        
+
         /**
          * Iterador de los vertices del grafo const
          */
@@ -76,69 +76,69 @@ namespace tip
              */
             const_vertex_iterator();
             //constructores y destructores
-            
+
             bool operator==(const_vertex_iterator other) const
             {
                 return it == other.it;
             }
-            
+
             bool operator!=(const_vertex_iterator other) const
             {
                 return it != other.it;
             }
-            
-            
+
+
             const Elem operator*() const
             {
                 return it->elem;
             }
-            
-            const Elem* operator->() 
+
+            const Elem* operator->()
             {
                 return it.operator->();
             }
-            
+
             void swap(const_vertex_iterator& other)
             {
                 std::swap(it, other.it);
             }
-            
+
             const_vertex_iterator& operator++()
             {
                 ++it;
                 return *this;
             }
-            
+
             const_vertex_iterator operator++(int)
             {
                 const_vertex_iterator temp = *this;
                 ++it;
                 return temp;
             }
-            
+
             const_vertex_iterator& operator--()
             {
                 --it;
                 return *this;
             }
-            
+
             const_vertex_iterator operator--(int)
             {
                 const_vertex_iterator temp = *this;
                 --it;
                 return temp;
             }
-            
+
             neighbor_iterator begin() const
             {
                 return it->begin();
             }
-            
+
             neighbor_iterator cbegin() const
             {
                 return begin();
             }
-            
+
             neighbor_iterator end() const
             {
                 return it->end();
@@ -147,54 +147,54 @@ namespace tip
             {
                 return end();
             }
-            
-            
-            
+
+
+
         private:
             const_vertex_iterator(typename Vertices::const_iterator it) : it(it) {};
             friend class Graph;
-            
+
             typename Vertices::const_iterator it;
         };// fin iterator vertex const
-        
-        
-        
+
+
+
         /**
          * Iterador de las aristas
          */
         class const_edge_iterator
         {
         public:
-            
+
         private:
         };
-        
+
         //Constructor por defecto
         //Graph() { }
-        
+
         //Destructor.  Libera todos los recursos.
         //~Graph() {}
-        
+
         //Constructor por copia
         //Graph(const Graph& other);
         //Graph H; //constructor por defecto
         //Graph G(H); constructor por copia
         //Graph G{H}; constructor por copia
         //Graph G = H; constructor por copia.
-        
+
         //operador de asignacion
         //Graph& operator=(const Graph& graph);
         //G = H;
-        
+
         //Move constructor
         //Graph(Graph&& other);
         //Graph G = f() donde f() retorna un grafo por copia (evita la copia)
-        
+
         //Asignacion por movimiento
         //Graph& operator=(Graph&& other)
         //G = f() donde f() retorna un grafo por copia (evita la copia)
         //G = std::move(H
-        
+
         /**
          * Inserta un nuevo vertice al grafo y retorna un iterador al elemento agregado.
          *
@@ -208,8 +208,8 @@ namespace tip
             vertices.push_front(Vertex(elem));
             return begin();
         }
-        
-        
+
+
         /**
          * Elimina el vertice v del grafo si el mismo pertenece al grafo.
          * Si no pertenece no hace nada.
@@ -227,12 +227,12 @@ namespace tip
                     update_after_delete(it->neighbor);
                 }
             }
-            
+
             vertices.erase(v);
             DEBUG(std::string("END Graph::REMOVE_VERTEX (") + std::to_string(*iter_v) + ")");
         }
-        
-        
+
+
         /**
          * Agrega la arista vw al grafo.  Si la arista ya existe, no se agrega.
          *
@@ -243,23 +243,23 @@ namespace tip
         void add_edge(const_vertex_iterator iter_v, const_vertex_iterator iter_w) {
             auto v = to_iterator(iter_v);
             auto w = to_iterator(iter_w);
-            
+
             //queremos que v tenga menor o igual grado a w
             if(v->degree > w->degree){
                 std::swap(v,w);
             }
             DEBUG("Graph::add_edge(", v->elem, ",", w->elem, ")");
             DUMP(*this);
-            
+
             MESSAGE("grado de v: ", v->degree);
             MESSAGE("grado de w: ", w->degree);
-            
+
             //PHASE 1: Algoritmo 1 del paper.
             DEBUG(std::string("Phase 1"));
             update_neighborhood(v);
             update_neighborhood(w);
-            
-            
+
+
             //PHASE 2:
             DEBUG(std::string("Phase 2"));
             typename Neighborhood::iterator v_list_in_w;
@@ -267,13 +267,13 @@ namespace tip
             // ya que se asegura que v tiene grado menor o igual a w se descarta contemplar el caso contrario
             if (w->degree > v->degree) {
                 auto pos_v_in_low_w = find_neighborhood_with_degree(w, v->degree+1);
-                
+
                 //Si estoy en highN es porque no existe una lista de ese grado aún
                 if (pos_v_in_low_w == w->highNeighborhood() || impl::degree_of(pos_v_in_low_w) > v->degree+1) {
-                    
+
                     pos_v_in_low_w = w->insertDegNeighborhood(pos_v_in_low_w);
                 }
-                
+
                 v_list_in_w = pos_v_in_low_w;
                 w_list_in_v = v->highNeighborhood();
             }
@@ -282,28 +282,28 @@ namespace tip
                 v_list_in_w = w->highNeighborhood();
                 w_list_in_v = v->highNeighborhood();
             }
-            
-            
+
+
             v_list_in_w->push_front(Neighbor(v));
-            
+
             w_list_in_v->push_front(Neighbor(w));
-            
-            
+
+
             v_list_in_w->front().list_pointer = v->highNeighborhood();
             v_list_in_w->front().self_pointer = w_list_in_v->begin();
-            
+
             w_list_in_v->front().self_pointer = v_list_in_w->begin();
             w_list_in_v->front().list_pointer = v_list_in_w;
-            
+
             v->degree +=1;
             w->degree +=1;
-            
+
             DUMP(*this);
             DEBUG("End of Graph::add_edge()");
         }
-        
-        
-        
+
+
+
         /**
          * Elimina la arista vw del grafo.  Si no pertenece al grafo, no hace nada
          *
@@ -313,7 +313,7 @@ namespace tip
         void removeEdge(const_vertex_iterator  iter_v, const_vertex_iterator  iter_w) {
             auto v = to_iterator(iter_v);
             auto w = to_iterator(iter_w);
-            
+
             /**** REVERTIR LA FASE 2 ****/
             if(v->degree > w->degree){
                 std::swap(v,w);  // v es el de grado menor
@@ -324,23 +324,23 @@ namespace tip
             w->erase(neighbor->list_pointer, neighbor->self_pointer);
             //borrar a w de la lista_v
             v->highNeighborhood()->erase(neighbor);
-            
+
             /*** REVERTIR LA FASE 1 ***/
             v->degree -=1;
             w->degree -=1;
-            
+
             //actualiza el vecindario
             update_after_delete(v);
             update_after_delete(w);
         }
-        
+
         /**
          * Agrega un nuevo vertice cuyo vecindario es N
          */
         const_vertex_iterator add_vertex(const Elem& elem, std::initializer_list<const_vertex_iterator> N) {
             return add_vertex(elem, N.begin(), N.end());
         }
-        
+
         /**
          * Agrega un nuevo vertice con todas las aristas de [begin, end).
          * Begin y end son iteradores a un rango de const_vertex_iterator.
@@ -354,30 +354,30 @@ namespace tip
             }
             return v;
         }
-        
-        
+
+
         /**
          * @return cantidad de vertices del grafo
          */
         size_t vertexCount() const {
             return  this->vertices.size();
         };
-        
-        
-        
-        
+
+
+
+
         size_t size() const;
-        
+
         /**
-         * 
+         *
          * @param v
          * @return grado de un vertex
          */
         size_t degree(const_vertex_iterator v) const {
             return v.it->degree;
         };
-        
-        
+
+
         /**
          * Pertenencia de la arista vw
          *
@@ -386,7 +386,7 @@ namespace tip
          * @return true si la arista pertenece al grafo.
          */
         const_edge_iterator find_edge(const_vertex_iterator v, const_vertex_iterator w) const;
-        
+
         /**
          * Retorna un iterador a los vecinos de v
          *
@@ -395,36 +395,44 @@ namespace tip
         const_vertex_iterator begin() const {
             return const_vertex_iterator(vertices.begin());
         }
-        
+
         const_vertex_iterator cbegin() const {
             return begin();
         }
-        
+
         const_vertex_iterator end() const {
             return const_vertex_iterator(vertices.end());
         }
-        
+
         const_vertex_iterator cend() const {
             return end();
         }
-        
+
         deg_iterator H_begin(const_vertex_iterator v)const{
             return v.it->H_begin();
         }
-        
+
         deg_iterator H_end(const_vertex_iterator v)const{
             return v.it->H_end();
         }
-        
+
+        deg_iterator H_begin(neighbor_iterator v)const{
+            return v.it->H_begin();
+        }
+
+        deg_iterator H_end(neighbor_iterator v)const{
+            return v.it->H_end();
+        }
+
         neighbor_iterator N_begin(const_vertex_iterator v)const{
             return v.it->begin();
         }
-        
+
         neighbor_iterator N_end(const_vertex_iterator v) const{
             return v.it->end();
         }
-        
-        
+
+
         /**
          * Imprime informacion de debugging
          */
@@ -434,20 +442,20 @@ namespace tip
             }
             return out;
         }
-        
-        
-        
+
+
+
 //         void invariante_representacion() const {
 //             for(auto& vertex : vertices) {
 //                 vertex.invariante_representacion();
 //             }
 //         }
-        
-        
+
+
     private:
         Vertices vertices;
-        
-        
+
+
         // FUNCIONES PRIVADAS
         /**
          * Retorna un puntero a la primer lista del low_neighbhood de w que tiene grado al menos degree.
@@ -458,7 +466,7 @@ namespace tip
             typename Neighborhood::iterator first = w->neighborhood.begin();
             return find_neighborhood_with_degree(first, std::prev(w->neighborhood.end()), degree);
         }
-        
+
         typename Neighborhood::iterator find_neighborhood_with_degree(typename Neighborhood::iterator first, typename Neighborhood::iterator last,  int degree)
         {
             //        return find_if(first, last, [degree](auto& list_n)->bool{
@@ -468,12 +476,12 @@ namespace tip
             while(it != last && it->front().neighbor->degree < degree) {
                 ++it;
             }
-            
+
             return it;
         }
-        
-        
-        
+
+
+
         /**
          * APLICA LA FASE 1 AL VERTICE x.  Es decir.
          * Recorre cada w en el high neighborhood de v y actualiza la posicion de v dentro
@@ -483,13 +491,13 @@ namespace tip
         void update_neighborhood(typename Vertices::iterator x) {
             DEBUG(std::string("Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
             DUMP(*this);
-            
+
             for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
                 MESSAGE("Procesando high neighbor: ", it->neighbor->elem, "de grado", it->degree());
                 if(it->degree() == x->degree) {
                     //Ya cree la lista que alberga los vertices de grado x?
                     typename Neighborhood::iterator to_list = std::prev(x->highNeighborhood());
-                    
+
                     if(x->highNeighborhood() == x->neighborhood.begin() || impl::degree_of(to_list) != x->degree) {
                         MESSAGE("Creando la lista de grado", x->degree);
                         to_list = x->insertDegNeighborhood(x->highNeighborhood());
@@ -497,13 +505,13 @@ namespace tip
                         to_list = std::prev(x->highNeighborhood());
                     }
                     to_list->push_front(*it);
-                    
+
                     //actualizo el list_pointer  y el self_pointer del neighbor de x en w
                     auto neighobor_x = it->self_pointer;// donde esta x en w
-                    
+
                     neighobor_x->list_pointer = to_list;
                     neighobor_x->self_pointer = to_list->begin();
-                    
+
                     //it = x->highNeighborhood()->erase(it);
                     x->highNeighborhood()->erase(it);
                     --it;
@@ -513,25 +521,25 @@ namespace tip
                 }
                 DUMP(*this);
             }
-            
+
             DEBUG(std::string("END OF Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
         }
-        
-        
+
+
         void update_after_delete(typename Vertices::iterator x) {
             DEBUG(std::string("BEGIN Graph::update_after_delete(") + std::to_string(x->elem) + ")");
-            
+
             for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
                 DEBUG(std::string("Entrando al for Graph::update_after_delete(") + std::to_string(it->neighbor->elem) + ")");
                 auto pos_x_in_w = it->neighbor->toPrevList(it->list_pointer, it->self_pointer);
                 it->list_pointer = pos_x_in_w;
                 it->self_pointer = pos_x_in_w->begin();
             }
-            
+
             auto prev_high = prev(x->highNeighborhood());
-            
+
             if(x->highNeighborhood() != x->neighborhood.begin() and impl::degree_of(prev_high) >= x->degree){
-                
+
                 for(auto n = prev_high->begin(); n != prev_high->end(); ++n){
                     x->highNeighborhood()->push_front(*n);
                     auto neighbor_x = n->self_pointer; // x en w
@@ -540,17 +548,17 @@ namespace tip
                     neighbor_x->self_pointer = x->highNeighborhood()->begin();
                     n = prev_high->erase(n);
                 }
-                
+
                 x->neighborhood.erase(prev_high);
             }
-            
+
             DEBUG(std::string("END Graph::update_after_delete(") + std::to_string(x->elem) + ")");
             DUMP(*this);
         }
-        
-        
-        
-        
+
+
+
+
         /**
          * Esto es un hack para transformar const_iterator en iterator
          */
@@ -558,13 +566,13 @@ namespace tip
         {
             return vertices.erase(it.it, it.it);
         };
-        
+
         static int degree(const degNeighborhood& N) {
             return N.begin()->neighbor->degree;
         }
-        
+
     };
-    
+
 }
 
 template<class Elem>
@@ -574,4 +582,3 @@ std::ostream& operator<<(std::ostream& out, const tip::Graph<Elem>& G) {
 
 
 #endif //GRAPH_H
-
