@@ -46,6 +46,7 @@ namespace tip
     {
     public:
         using elem_type = Elem;
+        class const_vertex_iterator; //forward declaration
 
     private:
         //para que puedan acceder a la implementacion de estos tipos
@@ -88,14 +89,14 @@ namespace tip
             }
 
 
-            const Elem operator*() const
+            const Elem& operator*() const
             {
                 return it->elem;
             }
 
             const Elem* operator->()
             {
-                return it.operator->();
+                return &(it->elem);
             }
 
             void swap(const_vertex_iterator& other)
@@ -148,11 +149,25 @@ namespace tip
                 return end();
             }
 
+            deg_iterator H_begin() const
+            {
+                return it->H_begin();
+            }
+
+            deg_iterator H_end() const
+            {
+                return it->H_end();
+            }
+
 
 
         private:
             const_vertex_iterator(typename Vertices::const_iterator it) : it(it) {};
             friend class Graph;
+            //para que pueda devolver el operator* un puntero al vertice en el grafo
+            friend class Graph::neighbor_iterator;
+            friend class Graph::deg_iterator;
+
 
             typename Vertices::const_iterator it;
         };// fin iterator vertex const
@@ -409,27 +424,28 @@ namespace tip
         }
 
         deg_iterator H_begin(const_vertex_iterator v)const{
-            return v.it->H_begin();
+            return v.H_begin();
         }
 
         deg_iterator H_end(const_vertex_iterator v)const{
-            return v.it->H_end();
+            return v.H_end();
         }
 
-        deg_iterator H_begin(neighbor_iterator v)const{
-            return v.it->H_begin();
-        }
-
-        deg_iterator H_end(neighbor_iterator v)const{
-            return v.it->H_end();
-        }
+//         //Recorre el H del apuntado por v
+//         deg_iterator H_begin(neighbor_iterator v) const{
+//             return v.H_begin();
+//         }
+//
+//         deg_iterator H_end(neighbor_iterator v)const{
+//             return v.H_end();
+//         }
 
         neighbor_iterator N_begin(const_vertex_iterator v)const{
-            return v.it->begin();
+            return v.begin();
         }
 
         neighbor_iterator N_end(const_vertex_iterator v) const{
-            return v.it->end();
+            return v.end();
         }
 
 
@@ -460,14 +476,14 @@ namespace tip
         /**
          * Retorna un puntero a la primer lista del low_neighbhood de w que tiene grado al menos degree.
          */
-        typename Neighborhood::iterator  find_neighborhood_with_degree(typename Vertices::iterator w, int degree)
+        typename Neighborhood::iterator  find_neighborhood_with_degree(typename Vertices::iterator w, size_t degree)
         {
             //TODO: reemplazar por find_if
             typename Neighborhood::iterator first = w->neighborhood.begin();
             return find_neighborhood_with_degree(first, std::prev(w->neighborhood.end()), degree);
         }
 
-        typename Neighborhood::iterator find_neighborhood_with_degree(typename Neighborhood::iterator first, typename Neighborhood::iterator last,  int degree)
+        typename Neighborhood::iterator find_neighborhood_with_degree(typename Neighborhood::iterator first, typename Neighborhood::iterator last,  size_t degree)
         {
             //        return find_if(first, last, [degree](auto& list_n)->bool{
             //              return list_n.front().neighbor->degree == degree;
@@ -489,7 +505,7 @@ namespace tip
          * d(v) < d(w).  Cuando d(v) == d(w), debe bajar a N(v, d(v))
          */
         void update_neighborhood(typename Vertices::iterator x) {
-            DEBUG(std::string("Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
+            DEBUG(std::string("Graph::update_neighborhood("), x->elem, ")");
             DUMP(*this);
 
             for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
@@ -522,7 +538,7 @@ namespace tip
                 DUMP(*this);
             }
 
-            DEBUG(std::string("END OF Graph::update_neighborhood(") + std::to_string(x->elem) + ")");
+            DEBUG(std::string("END OF Graph::update_neighborhood("), x->elem, ")");
         }
 
 
@@ -570,6 +586,7 @@ namespace tip
         static int degree(const degNeighborhood& N) {
             return N.begin()->neighbor->degree;
         }
+
 
     };
 

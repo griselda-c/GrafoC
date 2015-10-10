@@ -34,6 +34,8 @@ namespace tip {
         template<class Graph>
         struct Vertex
         {
+
+            class neighbor_iterator; //forward declaration
             //Tipo del elemento que se guarda en el vertice
             using elem_type = typename Graph::elem_type;
             //Estructura donde se guardan los vertices
@@ -42,6 +44,8 @@ namespace tip {
             using degNeighborhood = typename Graph::degNeighborhood;
             //Estructura donde se guardan todos los vecindarios de todos los grados.
             using Neighborhood = typename Graph::Neighborhood;
+            //Vertices en el grafo
+            using const_vertex_iterator = typename Graph::const_vertex_iterator;
 
             elem_type elem;  //elemento
             size_t degree;  //grado
@@ -175,7 +179,17 @@ namespace tip {
                 }
 
                 const elem_type* operator->() {
-                    return it.operator->();
+                    return &(it->neighbor->elem);
+                }
+
+                const_vertex_iterator as_vertex_iterator() const
+                {
+                    return const_vertex_iterator(it->neighbor);
+                }
+
+                operator const_vertex_iterator() const
+                {
+                    return as_vertex_iterator();
                 }
 
                 void swap(deg_iterator & other)
@@ -209,6 +223,29 @@ namespace tip {
                     return temp;
                 }
 
+                //Accede al vecindario del vecino
+                neighbor_iterator begin() const
+                {
+                    return it->neighbor->begin();
+                }
+
+                //Accede al vecindario del vecino
+                neighbor_iterator end() const
+                {
+                    return it->neighbor->end();
+                }
+
+                //Accede al H del vecino
+                deg_iterator H_begin() const
+                {
+                    return it->neighbor->H_begin();
+                }
+
+                //Accede al H del vecino
+                deg_iterator H_end() const
+                {
+                    return it->neighbor->H_end();
+                }
 
             private:
                 typename degNeighborhood::const_iterator it;
@@ -244,11 +281,21 @@ namespace tip {
 
                 const elem_type& operator*() const
                 {
-                    *it;
+                    return *it;
                 }
 
                 const elem_type* operator->() {
                     return it.operator->();
+                }
+
+                const_vertex_iterator as_vertex_iterator() const
+                {
+                    return it.as_vertex_iterator();
+                }
+
+                operator const_vertex_iterator() const
+                {
+                    return as_vertex_iterator();
                 }
 
                 void swap(neighbor_iterator & other)
@@ -292,8 +339,32 @@ namespace tip {
                     return temp;
                 }
 
+                //retorna un iterador al vecindario del vecino
+                neighbor_iterator begin() const
+                {
+                    return it.begin();
+                }
+
+                //retorna un iterador al vecindario del vecino
+                neighbor_iterator end() const
+                {
+                    return it.end();
+                }
+
+                //retorna un iterador al H del vecino
+                deg_iterator H_begin() const
+                {
+                    return it.H_begin();
+                }
+
+                //retorna un iterador al H del vecino
+                deg_iterator H_end() const
+                {
+                    return it.H_end();
+                }
+
             private:
-                neighbor_iterator (typename Neighborhood::const_iterator list_it, deg_iterator it, typename Neighborhood::const_iterator highNeighborhood) : list_it(list_it), it(it), high(highNeighborhood)
+                neighbor_iterator (typename Neighborhood::const_iterator list_it, deg_iterator it, typename Neighborhood::const_iterator highNeighborhood) : list_it(list_it), high(highNeighborhood), it(it)
                 {};
 
                 /** Vamos a suponer que la posicion end se corresponde a:

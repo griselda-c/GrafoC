@@ -1,29 +1,17 @@
 # depslib dependency file v1.0
-1436720836 source:/home/griselda/Escritorio/Graph/main.cpp
+1444396791 source:/home/griselda/Escritorio/GrafoC/Log.cpp
+	"Log.h"
+
+1444396824 /home/griselda/Escritorio/GrafoC/Log.h
 	<iostream>
 
-1437425837 source:/home/griselda/Escritorio/Graph/Graph.cpp
+1444397011 source:/home/griselda/Escritorio/GrafoC/test.cpp
 	<iostream>
-	<list>
-	"Graph.h"
-
-1437435089 /home/griselda/Escritorio/Graph/Graph.h
-	<iostream>
-	<list>
-	<iterator>
-
-1437425859 source:/home/griselda/Escritorio/Graph/test.cpp
-	<iostream>
-	"Graph.h"
-
-1442932390 source:/home/griselda/Escritorio/GrafoC/Graph.cpp
-	<iostream>
-	<list>
-	<algorithm>
+	<vector>
 	"Graph.h"
 	"Log.h"
 
-1444094022 /home/griselda/Escritorio/GrafoC/Graph.h
+1444396762 /home/griselda/Escritorio/GrafoC/Graph.h
 	<iostream>
 	<list>
 	<iterator>
@@ -32,24 +20,14 @@
 	"Neighbor.h"
 	"Vertex.h"
 
-1444092700 source:/home/griselda/Escritorio/GrafoC/test.cpp
-	<iostream>
-	<vector>
-	"Graph.h"
-	"Log.h"
+1444396865 /home/griselda/Escritorio/GrafoC/Neighbor.h
 
-1443490222 /home/griselda/Escritorio/GrafoC/Log.h
-	<iostream>
-
-1443490200 source:/home/griselda/Escritorio/GrafoC/Log.cpp
-	"Log.h"
-
-1443402914 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
-	"Graph.h"
-
-1443490304 /home/griselda/Escritorio/GrafoC/Neighbor.h
-
-1443490392 /home/griselda/Escritorio/GrafoC/Vertex.h
+1444396959 /home/griselda/Escritorio/GrafoC/Vertex.h
 	<list>
 	"Log.h"
+
+1444396916 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
+	<list>
+	<vector>
+	"Graph.h"
 
