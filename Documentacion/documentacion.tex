@@ -1,0 +1,115 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[spanish]{babel}
+
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+
+\begin{document}
+
+% Title of paper
+\title{TIP:  Implementaci\'on de algoritmos y estructuras de datos eficientes para grafos}
+
+% List of authors, with corresponding author marked by asterisk
+\author{Alejandro Merlo , Griselda Cardozo \\[4pt]}
+\date{} % Sin fecha.
+
+
+\maketitle
+
+\section{Resumen}
+\label{sec1}
+
+\section{Introducci\'on}
+\label{sec2}
+Este trabajo surge de la necesidad de verificar la veracidad del algoritmo de H-grafo descripta por Min Chih Lin, Fransisco J. Soulignac y Jayme L. Szwarcfiter en su art\'iculo "Arboricity, h-index, and dynamic algorithms" la cual se elabora en base a la estructura de grafo. Dicha estructura es simple, consistente de tres elementos claves por cada uno de los vertices del grafo. La implementaci\'on incluye las operaciones b\'asicas relacionadas a las aplicaciones din\'amicas tales como la inserci\'on y borrado de vertices o aristas junto con funciones de consulta sobre el grafo. El objetivo principal es demostrar la gran diferencia en cuanto a eficiencia del algoritmo comparado con otras implementaciones m\'as conocidas. Con este fin, hemos elaborado algunos casos de ejemplo hacia el final del trabajo con los que se pueden apreciar estas distinciones.
+
+\subsection{TAD grafo}
+Esta estructura abstracta est\'a conformada por v\'ertices que representan nodos que contienen un elemento y aristas que representan una relaci\'on entre dos vertices la cual puede ser bidireccional (o no dirigida) o dirigida, en nuestro caso particular usamos las aristas bidireccionales. A continuaci\'on se detallan algunas definiciones que vamos a usar a lo largo del documento.
+\begin{itemize}
+\item Grado: se le llama grado de un v\'ertice a la cantidad de aristas en donde este est\'e incluido.
+\item Vecino: se dice que un v\'ertice tiene como vecino a otro si comparten una arista.
+\item Vecindario: un vecindario de grado n de un v\'ertice es el conjunto de vecinos de grado n que tiene.
+\item Camino: es cualquier subconjunto de aristas contiguas, es decir, donde se cumpla que para cada par de aristas, el \'ultimo v\'ertice de la primer arista es el mismo que el primer v\'ertice de la segunda arista; salvando el caso de la primera y de la \'ultima arista que pueden cumplir o no este requisito.
+\item Circuito: es un subconjunto de las aristas del grafo que forman un camino donde el primer vertice es el \'ultimo en ser accedido.
+\item Bosque: es aquel grafo que no tiene circuitos.
+\item Arboricidad: es la m\'inima cantidad de bosques con aristas disjuntas que se pueden formar dentro del grafo.
+\end{itemize}
+
+\subsection{Interfaz del TAD grafo}
+
+El grafo representado permitir\'a realizar las siguientes operaciones:
+\begin{enumerate}
+\item Inserci\'on de un nuevo v\'ertice dentro del grafo.
+\item Inserci\'on de una nueva arista dentro del grafo.
+\item Borrado de un v\'ertice dentro del grafo.
+\item Borrado de una arista dentro del grafo.
+\item Saber el grado de un v\'ertice.
+\item Recorrer el vecindario de grado n de un v\'ertice.
+\item Recorrer los vecinos de un v\'ertice.
+\end{enumerate}
+
+
+\section{Implementaci\'on}
+\label{sec3}
+El prop\'osito de la estructura de datos h-graph es manejar de manera eficiente algunas operaciones b\'asicas de grafos, como la inserci\'on o borrado de aristas.
+
+
+\subsection{Estructura}
+Su estructura consiste b\'asicamente de tres elementos definidos como:
+
+\textit{d(v), N(v) y H(v)}.
+
+\begin{itemize}
+\item \textit{d(v)} se refiere al grado del v\'ertice
+\item \textit{N(v)} representa al vecindario del v\'ertice. Es una lista de listas y 
+cada sublista representa a los vecinos de determinado grado. Las sublistas est\'an ordenadas por grado y no pueden estar vac\'ias.
+\item \textit{H(v)} representa a los vecinos de v que tienen al menos el grado de v.
+\end{itemize}
+
+
+
+\subsection{Algoritmos}
+En esta secci\'on se describir\'a el algoritmo para insertar arista y vertices y el algoritmo para removerlos.
+C\'omo se dijo anteriormente, la estructura del h-graph consiste de tres elementos, \textit{d(v)} que es el grado del v\'ertice, \textit{N(v)} es una lista de sublistas que representa al vecindario de \textit{v}, cada sublista no vac\'ia contiene a los vecinos de determinado grado. Las sublistas est\'an ordenadas. \textit{H(v)} es una la lista que contiene a los vecinos que tienen al menos el grado de v.
+
+H-graph mantiene un puntero directo a los objetos que representan a los vertices, aristas y listas.
+
+
+\subsubsection{Inserci\'on de vertices y aristas}
+
+El algoritmo para insertar una nueva arista vw dentro del grafo G tiene dos fases.
+En la primer fase, se crea la sublista \textit{N(v, d(v))} para mover los vertices con grado \textit{d(v)} desde \textit{H(v)} hacia la nueva sublista \textit{N(v,d(v))} y se mueve a v desde \textit{N(z,d(v)} hacia \textit{N(z, d(v)+1)}, para cada \textit{z}  perteneciente \textit{H(v)}. De igual manera se procede con el v\'ertice w.
+En la segunda fase, se inserta a \textit{v} al final de la sublista \textit{N(w, d(v)+1)}
+y a \textit{w} al final de la sublista \textit{N(v,d(w)+1)}
+
+\subsubsection{Borrar vertices y aristas}
+
+Para remover una arista \textit{vw}, se asume que el \textit{d(v)} es ${\leq}$ a \textit{d(w)} , esto significa que  \textit{w} ${\in}$ \textit{H(v)}.
+El proceso de remoci\'on de la arista comienza deshaciendo la segunda fase de inserci\'on, esto es, remover f\'isicamente la arista \textit{vw}. Para ello se recorre \textit{H(v)} para localizar y borrar el objeto que representa a \textit{w}. Dado que el objeto que representa a \textit{w} guarda un puntero hacia donde est\'a ubicado \textit{v} en \textit{N(w)} es f\'acil remover a \textit{v} desde \textit{N(w,d(v)}.
+
+
+Despu\'es se deshace la fase 1, que consiste en actualizar  todo \textit{N(z)} ${\in}$ \textit{N(v)} ${\cup}$ \textit{N(w)}. Para eso se mueve a \textit{v} desde \textit{N(z,d(v))} hacia \textit{N(z,d(v)-1)} para cada \textit{z} ${\in}$ \textit{H(v)}, luego se une a  \textit{N(v,d(v)-1)} con \textit{H(v)}. Por \'ultimo se repite el mismo procedimiento con el v\'ertice \textit{w}
+
+
+\section{Codificaci\'on en C++}
+\label{sec4}
+
+\subsection{Interfaz de C++}
+
+
+
+\subsection{Estructura en C++}
+" por qu\'e de las elecciones de iteradores , porque el template.
+iteradores provistos"
+
+
+\subsubsection{Algoritmos en C++}
+" Explicaciones detalladas de los algoritmos principales "
+
+
+\section{Resultados de la experimentaci\'on}
+\label{sec5}
+"tiempo vs complejidad"
+
+
+\end{document}

@@ -37,6 +37,7 @@
 		<Unit filename="Log.h" />
 		<Unit filename="Neighbor.h" />
 		<Unit filename="Vertex.h" />
+		<Unit filename="generador.cpp" />
 		<Unit filename="test.cpp" />
 		<Unit filename="triangles.cpp" />
 		<Extensions>

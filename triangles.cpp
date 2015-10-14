@@ -63,18 +63,19 @@ list<Triangle> triangles(const Grafo G) {
     return res;
 }
 
-int main() {
-
-    Grafo G;
-
-    vector<Grafo::const_vertex_iterator> V;
-
-    V.push_back(G.add_vertex(Vertex(0), {}));
-    V.push_back(G.add_vertex(Vertex(1), {V[0]}));
-    V.push_back(G.add_vertex(Vertex(2), {V[0], V[1]}));
-
-    auto T = triangles(G);
-    for(auto t = T.begin(); t != T.end(); ++t) {
-        cout << t->v->elem << " " << t->w->elem << " " << t->z->elem << endl;
-    }
-}
+//int main() {
+//
+//    Grafo G;
+//
+//    vector<Grafo::const_vertex_iterator> V;
+//
+//    V.push_back(G.add_vertex(Vertex(0), {}));
+//    V.push_back(G.add_vertex(Vertex(1), {V[0]}));
+//    V.push_back(G.add_vertex(Vertex(2), {V[0], V[1]}));
+//
+//    auto T = triangles(G);
+//    for(auto t = T.begin(); t != T.end(); ++t) {
+//        cout << t->v->elem << " " << t->w->elem << " " << t->z->elem << endl;
+//    }
+//
+//}

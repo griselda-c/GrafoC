@@ -26,8 +26,18 @@
 	<list>
 	"Log.h"
 
-1444396916 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
+1444596395 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
 	<list>
 	<vector>
 	"Graph.h"
+
+1444684644 source:/home/griselda/Escritorio/GrafoC/generador.cpp
+	<iostream>
+	<vector>
+	<iostream>
+	<fstream>
+	<stdio.h>
+	<string.h>
+	"Graph.h"
+	"Log.h"
 
