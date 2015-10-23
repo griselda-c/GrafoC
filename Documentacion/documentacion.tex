@@ -1,105 +1,246 @@
 \documentclass[a4paper,12pt]{article}
-\usepackage[spanish]{babel}
 
-\usepackage[latin1]{inputenc}
-\usepackage{amsmath}
+\usepackage[T1]{fontenc}%encoding de los fonts del pdf (para copiar y pegar)
+\usepackage[spanish]{babel} %idioma español para los cortes de linea
+\usepackage[utf8]{inputenc} %encoding del .tex
+\usepackage{amsmath} %paquete de matematica
+\usepackage[margin=1.5cm]{geometry} %margenes
+\usepackage{enumerate} %mejor enumerate
+\usepackage{xspace} %espacios despues de un comando
+\usepackage[pdftitle={},pdfauthor={},pdfcreator={},pdfsubject={},pdfkeywords={},colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref} %hiperlinks
+\usepackage{listings} %para escribir codigo C++
+
+\newcommand{\Grafo}{\textsc{Grafo}\xspace}
+\newcommand{\Code}[1]{\texttt{#1}}
 
 \begin{document}
 
 % Title of paper
-\title{TIP:  Implementaci\'on de algoritmos y estructuras de datos eficientes para grafos}
+\title{TIP:  Implementación de algoritmos y estructuras de datos eficientes para grafos}
 
 % List of authors, with corresponding author marked by asterisk
-\author{Alejandro Merlo , Griselda Cardozo \\[4pt]}
-\date{} % Sin fecha.
-
+\author{Alejandro Merlo \and Griselda Cardozo}
+\date{(draft \today)} % Sin fecha.
 
 \maketitle
 
+\tableofcontents
+
 \section{Resumen}
-\label{sec1}
+\label{sec:resumen}
 
-\section{Introducci\'on}
-\label{sec2}
-Este trabajo surge de la necesidad de verificar la veracidad del algoritmo de H-grafo descripta por Min Chih Lin, Fransisco J. Soulignac y Jayme L. Szwarcfiter en su art\'iculo "Arboricity, h-index, and dynamic algorithms" la cual se elabora en base a la estructura de grafo. Dicha estructura es simple, consistente de tres elementos claves por cada uno de los vertices del grafo. La implementaci\'on incluye las operaciones b\'asicas relacionadas a las aplicaciones din\'amicas tales como la inserci\'on y borrado de vertices o aristas junto con funciones de consulta sobre el grafo. El objetivo principal es demostrar la gran diferencia en cuanto a eficiencia del algoritmo comparado con otras implementaciones m\'as conocidas. Con este fin, hemos elaborado algunos casos de ejemplo hacia el final del trabajo con los que se pueden apreciar estas distinciones.
 
-\subsection{TAD grafo}
-Esta estructura abstracta est\'a conformada por v\'ertices que representan nodos que contienen un elemento y aristas que representan una relaci\'on entre dos vertices la cual puede ser bidireccional (o no dirigida) o dirigida, en nuestro caso particular usamos las aristas bidireccionales. A continuaci\'on se detallan algunas definiciones que vamos a usar a lo largo del documento.
+\section{Introducción}
+\label{sec:introduccion}
+
+Decir qué es un grafo como objeto matemático (representa una relacion).  Un grafo es un par $G = (V, E)$ donde $V$ son vertices y $E$ son pares de vértices.  Los grafos se usan para modelar objetos de aplicaciones reales en forma abstracta.  Por ejemplo, en una red social blah.  La ventaja de los grafos es que proveen una terminologia comun, blah.  La teoría de grafos se encarga del estudio de grafos y, en particular, la teoria algoritmica de grafos se encarga de los problemas computacionales asociados.
+
+
+Este trabajo surge de la necesidad de verificar la viabilidad y dificultad de implementar la estructura $h$-grafo descripta por Lin et al. en~\cite{}``Arboricity, $h$-index, and dynamic algorithms''.   Esta estructura implementa el \emph{tipo abstracto de datos} (TAD) \Grafo.  Esta estructura esta pensada para aplicaciones que utilizan grafos dinámicos.  Por \emph{dinámico} nos referimos a que permite la inserción y borrado de vértices y aristas, a la vez que provee funciones de consulta.  La ventaja de esta estructura es que es muy eficiente en grafos ralos, i.e., grafos que tienen una baja \emph{arboricidad}.  
+
+La estructura $h$-grafo es conceptualmente simple.  La misma consiste de tres campos $(d(v), L(v), H(v))$ por cada vértice $v$ de un grafo $G$, donde $d(v)$ es el grado de $v$, $L(v)$ son los vecinos de $v$ con grado menor a $d(v)$ y $H(v)$ son los vecinos de $v$ con grado al menos $d(v)$.  Asimismo, la estructura mantiene una serie de punteros a fin de que las operaciones puedan resolverse eficientemente.  
+
+Los objetivos principales de este trabajo son:
 \begin{itemize}
-\item Grado: se le llama grado de un v\'ertice a la cantidad de aristas en donde este est\'e incluido.
-\item Vecino: se dice que un v\'ertice tiene como vecino a otro si comparten una arista.
-\item Vecindario: un vecindario de grado n de un v\'ertice es el conjunto de vecinos de grado n que tiene.
-\item Camino: es cualquier subconjunto de aristas contiguas, es decir, donde se cumpla que para cada par de aristas, el \'ultimo v\'ertice de la primer arista es el mismo que el primer v\'ertice de la segunda arista; salvando el caso de la primera y de la \'ultima arista que pueden cumplir o no este requisito.
-\item Circuito: es un subconjunto de las aristas del grafo que forman un camino donde el primer vertice es el \'ultimo en ser accedido.
-\item Bosque: es aquel grafo que no tiene circuitos.
-\item Arboricidad: es la m\'inima cantidad de bosques con aristas disjuntas que se pueden formar dentro del grafo.
+  \item desarrollar el TAD grafo implementado con la estructura $h$-grafo,
+  \item verificar que la eficiencia teórica coincide con la de nuestra implementación, y
+  \item testear la eficiencia de la estructura en grafos ralos grandes.
 \end{itemize}
 
-\subsection{Interfaz del TAD grafo}
+El presente documento esta organizado de la siguiente forma.  En la Sección~\ref{} damos blah.  En la Seccion~\ref{} hacemos bleh.
 
-El grafo representado permitir\'a realizar las siguientes operaciones:
-\begin{enumerate}
-\item Inserci\'on de un nuevo v\'ertice dentro del grafo.
-\item Inserci\'on de una nueva arista dentro del grafo.
-\item Borrado de un v\'ertice dentro del grafo.
-\item Borrado de una arista dentro del grafo.
-\item Saber el grado de un v\'ertice.
-\item Recorrer el vecindario de grado n de un v\'ertice.
-\item Recorrer los vecinos de un v\'ertice.
-\end{enumerate}
+\section{Preliminares}
+\label{sec:definiciones}
+
+Recordemos que uno de los objetivos de este trabajo es implementar un TAD grafo.  El TAD grafo representa el objeto \emph{grafo} que se estudia en matemática.  En esta sección presentamos las definiciones centrales de un grafo que impactan en el desarrollo de nuestro TAD.
+
+%Definiciones matematicas
+Un \emph{grafo} es un par $(V, E)$ donde $V$ \ldots (ver Figura~\ref{fig:definiciones} en donde se ejemplifican muchas de las definiciones).  Para cada $vw \in E$, decimos que $v$ y $w$ son \emph{vecinos} o \emph{adjacentes}.  El grado de $v$ es la cantidad de vecinos que tiene.  El $k$-vecindario de $v$ es el conjunto de todos los vecinos de $v$ que tienen grado $k$, para algun $k$ dado.  Al conjunto de todos los vecinos de $v$ lo llamamos, simplemente, su \emph{vecindario}.
+
+\begin{figure}
+  \centering
+  \fbox{Figura de un grafo en el que mostramos las definciones}
+
+  \caption{Grafo cuyo conjunto de vertices es $V = $ y cuyo conjunto de aristas es $E =$.  En este grafo.}\label{fig:definiciones}
+\end{figure}
 
 
-\section{Implementaci\'on}
-\label{sec3}
-El prop\'osito de la estructura de datos h-graph es manejar de manera eficiente algunas operaciones b\'asicas de grafos, como la inserci\'on o borrado de aristas.
+Camino: es cualquier subconjunto de aristas contiguas, es decir, donde se cumpla que para cada par de aristas, el último vértice de la primer arista es el mismo que el primer vértice de la segunda arista; salvando el caso de la primera y de la última arista que pueden cumplir o no este requisito.  Circuito: es un subconjunto de las aristas del grafo que forman un camino donde el primer vertice es el último en ser accedido.  Bosque: es aquel grafo que no tiene circuitos.  Arboricidad: es la mínima cantidad de bosques con aristas disjuntas que se pueden formar dentro del grafo.
+
+\section{El Tipo Grafo}
+\label{sec:tad grafo}
+
+El propósito de esta sección es presentar la interfaz abstracta del objeto grafo que implementaremos.  Este objeto es dinámico en el sentido \ldots.  Asimismo, ofrece distintas operaciones de consulta, que estan pensadas para poder recorrer eficientemente el vecindario de las distintas aristas del grafo.  Estas operaciones son muy utiles, por ejemplo, cuando uno quiere analizar la estructura local del grafo.  Es decir, cómo se conectan los vecinos de un vertice $v$ dado.  
+
+Para describir la interfaz del TAD grafo, vamos a detallar cada una de las operaciones junto con sus propositos y sus requerimientos.  Esta descripción será de alto nivel tal y como se desarrolla en~\cite{}.  La idea de esta descripcion es fijar los conceptos necesarios para la posterior descripcion de su implementación en el lenguaje C++.  Asimismo, mostraremos un ejemplo de su uso potencial y describiremos la complejidad temporal esperada.  Obviamente, esta complejidad está en función de la implementación que describimos en la Seccion~\ref{sec:h-grafo}.  
+
+\subsection{\texttt{create\_graph()}}
+
+\subsection{\texttt{insert\_vertex(G, N, info)}}
+\label{sec:tad grafo:insert-vertex}
+
+Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de insertar un nuevo vértice $v$ en $G$.  Retorna un puntero \texttt{v} al nuevo vértice $v$ agregado.  Este puntero \texttt{v} debe usarse para interactuar con $G$ a fin de modificar sus propiedades.  Notar que el vértice $v$ es un objeto conocido sólo por $G$ y no es compartido con otros grafos.  A este vertice se le puede asociar cierta información que es la reflejada por el parametro \texttt{info}.  Blah
+  
+\begin{description}
+  \item [Parámetros:] \texttt{G} representa un grafo $G$ e \texttt{info} es cualquier objeto.
+  \item [Propósito:] modifica \texttt{G} para representar un grafo $G + v$.
+  \item [Retorna:] un puntero \texttt{v} al vértice $v$.
+  \item [Complejidad temporal:]
+\end{description}
+
+\paragraph{Ejemplo de uso}
+
+El siguiente codigo crea un grafo $G$ con dos vértices, ambos con la letra ``a'' como información.  Luego, el ciclo imprime ``aa'' como resultado.  Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \texttt{vertex\_iterator}.
+
+\begin{lstlisting}
+G := create_graph()
+v := insert_vertex(G, 'a')
+w := insert_vertex(G, 'a')
+for v in vertex_iterator(G):
+  print get_info(v)
+\end{lstlisting}
 
 
-\subsection{Estructura}
-Su estructura consiste b\'asicamente de tres elementos definidos como:
+\begin{description}
+  \item [\texttt{insert\_vertex(G, info)}.]  Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de insertar un nuevo vértice $v$ en $G$.  Retorna un puntero \texttt{v} al nuevo vértice $v$ agregado.  Este puntero \texttt{v} debe usarse para interactuar con $G$ a fin de modificar sus propiedades.  Notar que el vértice $v$ es un objeto conocido sólo por $G$ y no es compartido con otros grafos.  A este vertice se le puede asociar cierta información que es la reflejada por el parametro \texttt{info}.  Blah
+  
+  
+  
+  \item Inserción de una nueva arista dentro del grafo.
+  \item Borrado de un vértice dentro del grafo.
+  \item Borrado de una arista dentro del grafo.
+  \item Saber el grado de un vértice.
+  \item Recorrer el vecindario de grado n de un vértice.
+  \item Recorrer los vecinos de un vértice.
+\end{description}
 
-\textit{d(v), N(v) y H(v)}.
 
+
+\section{La estructura $h$-grafo}
+\label{sec:h-grafo}
+
+En esta seccion describimos la estructura $h$-grafo que usamos para implementar el TAD grafo descripto en la Seccion~\ref{sec:tad grafo}.  Esta estructura es particularmente apropiada para grafos ralos, i.e., grafos cuya arboricidad es baja.  Esto se ve reflejado en que las complejidades temporales esperadas, dado que las mismas dependen de la cantidad de aristas y la arboricidad del grafo.  La descripción la hacemos a alto nivel tal como en el paper.  La idea es.
+
+
+Conceptualmente, la estructura mantiene un objeto \texttt{v} para cada vértice $v$ del grafo $G$.  Este objeto \emph{representa} a $v$ y mantiene la tripla $(d(v), N(v), H(v))$.  Recordemos que:   
 \begin{itemize}
-\item \textit{d(v)} se refiere al grado del v\'ertice
-\item \textit{N(v)} representa al vecindario del v\'ertice. Es una lista de listas y 
-cada sublista representa a los vecinos de determinado grado. Las sublistas est\'an ordenadas por grado y no pueden estar vac\'ias.
-\item \textit{H(v)} representa a los vecinos de v que tienen al menos el grado de v.
+\item $d(v)$ se refiere al grado del vértice
+\item $N(v)$ representa a los vecinos de $v$ que tienen menor grado que $v$
+\item $H(v)$ representa a los vecinos de $v$ que tienen al menos el grado de $v$.
 \end{itemize}
 
+ Obviamente $d(v)$ se representa usando un número. Para representar $N(v)$, el $h$-grafo mantiene (ver Figura) una lista con objetos que representan vecinos que tienen igual grado entre sí. Cada uno de estos vecinos,   llamémoslo $w$,  guarda un puntero a la lista $H(w)$ y otro puntero al lugar exacto dónde esta $v$ en $H(w)$.
+
+Vale remarcar que los vértices son privados del grafo, en el sentido de que no se pueden manipular directamente.  En su lugar, el usuario modifica $v$ a través de un \emph{puntero} que obtiene al insertar el vértice (ver ).  Remarcamos que este puntero es un objeto inteligente en el sentido que no muestra la implementacion al usuario.
+
+En el resto de esta sección describimos cómo implementar, usando la estructura $h$-grafo, cada una de las operaciones que el TAD Grafo soporta (ver Seccion~\ref{}).  Para que quede claro que estamos usando la estructura $h$-grafo, vamos a escribir cada operacion \texttt{oper(G, $\cdots$)} usando la notación punto, i.e., \texttt{G.oper($\cdots$)} a fin de remarcar que tenemos acceso a la estructura de \texttt{G}.
 
 
-\subsection{Algoritmos}
-En esta secci\'on se describir\'a el algoritmo para insertar arista y vertices y el algoritmo para removerlos.
-C\'omo se dijo anteriormente, la estructura del h-graph consiste de tres elementos, \textit{d(v)} que es el grado del v\'ertice, \textit{N(v)} es una lista de sublistas que representa al vecindario de \textit{v}, cada sublista no vac\'ia contiene a los vecinos de determinado grado. Las sublistas est\'an ordenadas. \textit{H(v)} es una la lista que contiene a los vecinos que tienen al menos el grado de v.
+\subsection{G.insert\_vertex(N, info)}
 
-H-graph mantiene un puntero directo a los objetos que representan a los vertices, aristas y listas.
+%IDEA
+El proceso para insertar un nuevo vertice $v$ en $G$ se divide en dos partes.  Primero, la inserción de un nuevo objeto $v$ que representa un vértice aislado.  Segundo, la inserción de una arista entre $v$ y cada uno de los vértices representados por $N$.  Claramente, el grafo obtenido representa a $G + v$.
 
+\subsubsection*{Pseudocódigo}
 
-\subsubsection{Inserci\'on de vertices y aristas}
-
-El algoritmo para insertar una nueva arista vw dentro del grafo G tiene dos fases.
-En la primer fase, se crea la sublista \textit{N(v, d(v))} para mover los vertices con grado \textit{d(v)} desde \textit{H(v)} hacia la nueva sublista \textit{N(v,d(v))} y se mueve a v desde \textit{N(z,d(v)} hacia \textit{N(z, d(v)+1)}, para cada \textit{z}  perteneciente \textit{H(v)}. De igual manera se procede con el v\'ertice w.
-En la segunda fase, se inserta a \textit{v} al final de la sublista \textit{N(w, d(v)+1)}
-y a \textit{w} al final de la sublista \textit{N(v,d(w)+1)}
-
-\subsubsection{Borrar vertices y aristas}
-
-Para remover una arista \textit{vw}, se asume que el \textit{d(v)} es ${\leq}$ a \textit{d(w)} , esto significa que  \textit{w} ${\in}$ \textit{H(v)}.
-El proceso de remoci\'on de la arista comienza deshaciendo la segunda fase de inserci\'on, esto es, remover f\'isicamente la arista \textit{vw}. Para ello se recorre \textit{H(v)} para localizar y borrar el objeto que representa a \textit{w}. Dado que el objeto que representa a \textit{w} guarda un puntero hacia donde est\'a ubicado \textit{v} en \textit{N(w)} es f\'acil remover a \textit{v} desde \textit{N(w,d(v)}.
+\begin{lstlisting}
+G.insert_vertex(N, info):
+    v := G.append((0, [], []))
+    for w in N:
+        G.insert_edge(v, w)
+\end{lstlisting}
 
 
-Despu\'es se deshace la fase 1, que consiste en actualizar  todo \textit{N(z)} ${\in}$ \textit{N(v)} ${\cup}$ \textit{N(w)}. Para eso se mueve a \textit{v} desde \textit{N(z,d(v))} hacia \textit{N(z,d(v)-1)} para cada \textit{z} ${\in}$ \textit{H(v)}, luego se une a  \textit{N(v,d(v)-1)} con \textit{H(v)}. Por \'ultimo se repite el mismo procedimiento con el v\'ertice \textit{w}
+En esta sección se describirá el algoritmo para insertar aristas y vértices y el algoritmo para removerlos.
+Cómo se dijo anteriormente, la estructura del $h$-graph consiste de tres elementos, $d(v)$ que es el grado del vértice, $N(v)$ es una lista de sublistas que representa al vecindario de $v$, cada sublista no vacía contiene a los vecinos de determinado grado. Las sublistas están ordenadas. $H(v)$ es una la lista que contiene a los vecinos que tienen al menos el grado de $v$.
+
+$h$-graph mantiene un puntero directo a los objetos que representan a los vértices, aristas y listas.
 
 
-\section{Codificaci\'on en C++}
-\label{sec4}
+
+\subsubsection{Inserción aristas}
+
+El algoritmo para insertar una nueva arista $vw$ dentro del grafo $G$ tiene dos fases.
+\begin{itemize}
+\item Primer fase : actualizar el vecindario.
+\item Segunda fase : agregar físicamente a $v$ en $w$ y viceversa. Aumentar el grado de $v$ y $w$.
+\end{itemize}
+
+Agregar una nueva arista implica aumentar en uno $d(v)$ y $d(w)$. Por eso, en la primer fase, se actualizan los vecindarios de $v$ y $w$. Recordemos que en $H(v)$ van aquellos vecinos que tienen al menos el grado de $v$ y como $d(v)$ aumentará, obliga a mover hacia $N(v)$ aquellos vecinos que ya no cumplan con la condición. Entonces, para actualizar el vecindario de $v$ se crea en $v$ la sublista $N(v, d(v))$, y se mueven los vecinos que tienen el mismo grado que $v$ desde $H(v)$ hacia la nueva sublista.
+Además es necesario actualizar el vecindario de todos los \emph{vecinos} $\in$ $H(v)$. Esto significa, mover a $v$ desde $N(z,d(v)$) hacia $N(z, d(v)+1)$, para cada $z$  perteneciente $H(v)$.De igual manera se procede con el vértice $w$.
+Teniendo en cuenta que $h$-graph mantiene un puntero directo a los objetos que representan a los vértices, aristas y listas, todos los movimientos de estos objetos implica actualizar dichos punteros.
+La segunda fase consiste en agegar a $v$ al final de $N(w,d(v)+1)$ y a $w$ al final de $N(v,d(w)+1)$. Por último se actualizan el grado de $v$ y $w$.
+
+\begin{lstlisting}
+update_neighborhood(v):
+    for z in H:
+        if d(v) = d(z), then move z from H(v) to N(v,d(v)).
+        Move v from N(z, d(v)+1).
+        if N(z,d()v).isEmpty(), then delete N(z,d(v))
+\end{lstlisting}
+
+
+
+\subsubsection{Borrar  aristas}
+
+Para remover una arista $vw$, asumiremos que el $d(v)$ es ${\leq}$ a $d(w)$ , esto significa que  $w$ ${\in}$ $H(v)$.
+El proceso de remoción de la arista comienza deshaciendo la segunda fase de inserción, esto es, disminuir $d(v)$ y  $d(w)$. Luego,  se remueve físicamente la arista $vw$. Para ello se recorre $H(v)$ para localizar y borrar el objeto que representa a $w$. Dado que el objeto que representa a $w$ guarda un puntero hacia donde está ubicado $v$ en $N(w)$ es fácil y rápido remover a $v$ desde $N(w,d(v))$.
+
+
+
+Después se deshace la fase 1, que consiste en actualizar  los vecindarios de $v$ y $w$. Para eso se mueve a $v$ desde $N(z,d(v))$ hacia $N(z,d(v)-1)$ para cada $z$ ${\in}$ $H(v)$, luego se une a  $N(v,d(v)-1)$ con $H(v)$. Como se hizo en la inserción, se actualizan los punteros ante cada movimiento de los objetos.
+
+Por último se repite el mismo procedimiento con el vértice $w$
+
+
+\section{Implementación en C ++}
+\label{sec:c++}
+
+Vamos a seguir la filosofia de C++ (ver e.g.~\cite{}); punteros son iteradores.  
+
+Los iteradores sirven para recorrer un contenedor, ocultando la estructura interna de éste. Para ello se valen de una interfaz común a todos los objetos iterables. Lo que permite usarlos como punteros seguros a la estructura interna sin exponerla.
+En c++ existen distintos tipos de iteradores 
+
+ \emph{output} e  \emph{input }son los más básicos, ellos pueden realizar operaciones de entrada o salida de manera secuencial. Soportan las operaciones ==, !=, *, ->
+
+ \emph{Forward} esta diseñado para recorrer contenedores cuyos valores puedan ser añadidos y recuperados. Mantienen la restricción de que únicamente se pueden mover hacia delante
+
+El  \emph{bidericcional}  tiene las funcionalidades del \emph{Forward} pero además  pueden avanzar al elemento siguiente o retroceder al elemento anterior.
+
+\emph{Random access} son iteradores que pueden avanzar o retroceder más de una posición de una vez.
+
+Todos los objetos iterables soportan el método \textbf{begin()} que devuelve un iterador al primer elemento a iterar.
+El método \textbf{end()} retorna un iterador al final de la estructura. 
+
+Para obtener el elemento al que apunta el iterador se usa el método de desreferencia *, tal como se hace con los punteros.
+
+Ejemplo de uso de iteradores sobre una lista.
+
+
+
+\lstset{language=C, breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+void show_list( const list<string) & sList){
+	list<string>:: const_iterator pos;
+    
+    //obtenemos un iterador al primer elemento
+    pos = sList.begin();
+    
+    while( pos != sList.end()){ // mientras pos sea distinto al final de la lista
+    	cout<< *pos << endl;
+        pos++;  //avanza el iterador
+    }
+}
+\end{lstlisting}
+
+
 
 \subsection{Interfaz de C++}
 
 
 
 \subsection{Estructura en C++}
-" por qu\'e de las elecciones de iteradores , porque el template.
+" por qué de las elecciones de iteradores , porque el template.
 iteradores provistos"
 
 
@@ -107,9 +248,10 @@ iteradores provistos"
 " Explicaciones detalladas de los algoritmos principales "
 
 
-\section{Resultados de la experimentaci\'on}
+\section{Resultados de la experimentación}
 \label{sec5}
 "tiempo vs complejidad"
+
 
 
 \end{document}
