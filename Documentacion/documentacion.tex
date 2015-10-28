@@ -315,7 +315,7 @@ En c++ existen distintos tipos de iteradores
 
  \emph{Forward} esta diseñado para recorrer contenedores cuyos valores puedan ser añadidos y recuperados. Mantienen la restricción de que únicamente se pueden mover hacia delante
 
-El  \emph{bidericcional}  tiene las funcionalidades del \emph{Forward} pero además  pueden avanzar al elemento siguiente o retroceder al elemento anterior.
+El  \emph{bidireccional}  tiene las funcionalidades del \emph{Forward} pero además  pueden avanzar al elemento siguiente o retroceder al elemento anterior.
 
 \emph{Random access} son iteradores que pueden avanzar o retroceder más de una posición de una vez.
 
@@ -323,6 +323,8 @@ Todos los objetos iterables soportan el método \textbf{begin()} que devuelve un
 El método \textbf{end()} retorna un iterador al final de la estructura. 
 
 Para obtener el elemento al que apunta el iterador se usa el método de desreferencia *, tal como se hace con los punteros.
+
+
 
 Ejemplo de uso de iteradores sobre una lista.
 
@@ -349,9 +351,71 @@ void show_list( const list<string) & sList){
 
 
 
+
 \subsection{Estructura en C++}
-" por qué de las elecciones de iteradores , porque el template.
-iteradores provistos"
+Existe una clase \textbf{Graph} que es la que posee los métodos visibles para el usuario.
+\textbf{Graph} es un template. Los templates permiten crear estructuras de datos que no dependen del tipo de dato que reciban. De esta manera conseguimos una generalización del grafo.
+
+Respetando la naturaleza del $h$-graph el usuario no tiene acceso a los vértices. Por eso se diseñaron varios iteradores para recorrer la estructura.
+Recordemos que los iteradores sirven para recorrer una estructura sin tener en cuenta la forma en que fue implentada y a su vez se pueden utilizar como punteros a la estructura pero sin exponerla.
+
+En la implementación del $h$-graph se provee al usuario tres tipos de iteradores:
+
+\begin{enumerate}
+\item  \textbf{const\_vertex\_iterator} : es un iterador bidireccional que apunta a un vértice. Este iterador se obtiene al agregar un nuevo vértice al grafo. Este iterador le va servir al usuario para manipular el grafo, ya sea para agregar o borrar una arista, borrar un vértice o recorrer todos los vértices del grafo. Sin embargo, el iterador no permite al usuario modificar directamente información del vértice, como por ejemplo el grado.
+
+Para recorrer todos los vértices del grafo, la clase Graph posee los métodos \textit{begin()} y \textit{end()} que retornan el iterador const\_vertex\_iterator.
+
+Ejemplo de uso del \textbf{const\_vertex\_iterator}
+
+\begin{lstlisting}[frame=single]
+tip::Graph<int> G;
+const_vertex_iterator v1 = G.insertVertex(1);
+const_vertex_iterator v2 = G.insertVertex(2);
+
+G.add_edge(v1,v2);
+
+void print_vertices( Graph& G) {
+    for(auto it = G.begin(); it != G.end(); ++it) {
+        cout << *it << endl;
+    }
+}
+\end{lstlisting}
+
+\item \textbf{deg\_iterator}: es un iterador bidireccional que permite iterar los vecinos de determinado grado de un vértice. Este iterador es propio de la clase \textit{Vertex}. El usuario para obtener este iterador, lo hace a través de la clase \textit{Graph} con los métodos 
+\textit{H\_begin()}, \textit{H\_end()}, lo cuales le permiten iterar el \textit{HighNeighborhood} del vértice.
+
+Ejemplo de uso del \textbf{deg\_iterator}
+
+\begin{lstlisting}[frame=single]
+tip::Graph<int> G;
+const_vertex_iterator v1 = G.insertVertex(1);
+const_vertex_iterator v2 = G.insertVertex(2);
+
+for(auto it = G.H_begin(v1); it != G.H_end(v1); ++it) {
+              cout << *it << ',';
+          }
+\end{lstlisting}
+
+
+\item \textbf{neighbor\_iterator}: es un iterador bidireccional que permite iterar todos los vecinos de un vértice. Es un iterador privado de la clase \textit{Vertex}. El usuario tiene acceso a él a través de la clase \textit{Graph} con los métodos \textit{N\_begin(const\_vertex\_iterator v))} y \textit{N\_end(const\_vertex\_iterator v))}
+\end{enumerate}
+			Ejemplo de uso del \textbf{deg\_iterator}
+
+            \begin{lstlisting}[frame=single]
+            tip::Graph<int> G;
+            const_vertex_iterator v1 = G.insertVertex(1);
+            const_vertex_iterator v2 = G.insertVertex(2);
+
+            for(auto it = G.N_begin(v1); it != G.N_end(v1); ++it) {
+                          cout << *it << ',';
+                      }
+            \end{lstlisting}
+
+
+
+
+
 
 
 \subsubsection{Algoritmos en C++}
