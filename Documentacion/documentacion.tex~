@@ -75,26 +75,8 @@ El propósito de esta sección es presentar la interfaz abstracta del objeto gra
 Para describir la interfaz del TAD grafo, vamos a detallar cada una de las operaciones junto con sus propositos y sus requerimientos.  Esta descripción será de alto nivel tal y como se desarrolla en~\cite{}.  La idea de esta descripcion es fijar los conceptos necesarios para la posterior descripcion de su implementación en el lenguaje C++.  Asimismo, mostraremos un ejemplo de su uso potencial y describiremos la complejidad temporal esperada.  Obviamente, esta complejidad está en función de la implementación que describimos en la Seccion~\ref{sec:h-grafo}.  
 
 \subsection{\texttt{create\_graph()}}
-\label{sec:tad grafo:create-graph}
 
-Crea un objeto \texttt{G} que representa un grafo $G$ de elementos \texttt{elem}. Retorna un puntero \texttt{G} al nuevo grafo creado. Este objeto guarda cierta información correspondiente a los vertices y sus vecinos
-
-\begin{description}
-  \item [Propósito:] crea un \texttt{G} sin vertices ni aristas.
-  \item [Retorna:] un puntero \texttt{G} al grafo $G$.
-  \item [Complejidad temporal:]
-\end{description}
-
-\paragraph{Ejemplo de uso}
-
-El siguiente codigo crea un grafo $G$ vacío.
-
-\begin{lstlisting}
-G := create_graph()
-\end{lstlisting}
-
-
-\subsection{\texttt{insert\_vertex(G, info)}}
+\subsection{\texttt{insert\_vertex(G, N, info)}}
 \label{sec:tad grafo:insert-vertex}
 
 Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de insertar un nuevo vértice $v$ en $G$.  Retorna un puntero \texttt{v} al nuevo vértice $v$ agregado.  Este puntero \texttt{v} debe usarse para interactuar con $G$ a fin de modificar sus propiedades.  Notar que el vértice $v$ es un objeto conocido sólo por $G$ y no es compartido con otros grafos.  A este vertice se le puede asociar cierta información que es la reflejada por el parametro \texttt{info}.  Blah
@@ -108,7 +90,7 @@ Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar 
 
 \paragraph{Ejemplo de uso}
 
-El siguiente código crea un grafo $G$ con dos vértices, ambos con la letra ``a'' como información.  Luego, el ciclo imprime ``aa'' como resultado.  Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \texttt{vertex\_iterator}.
+El siguiente codigo crea un grafo $G$ con dos vértices, ambos con la letra ``a'' como información.  Luego, el ciclo imprime ``aa'' como resultado.  Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \texttt{vertex\_iterator}.
 
 \begin{lstlisting}
 G := create_graph()
@@ -119,110 +101,18 @@ for v in vertex_iterator(G):
 \end{lstlisting}
 
 
-\subsection{\texttt{remove\_vertex(G, v)}}
-\label{sec:tad grafo:remove-vertex}
-
-Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de remover el vértice existente \texttt{v} que representa al vertice $v$ en $G$.
+\begin{description}
+  \item [\texttt{insert\_vertex(G, info)}.]  Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de insertar un nuevo vértice $v$ en $G$.  Retorna un puntero \texttt{v} al nuevo vértice $v$ agregado.  Este puntero \texttt{v} debe usarse para interactuar con $G$ a fin de modificar sus propiedades.  Notar que el vértice $v$ es un objeto conocido sólo por $G$ y no es compartido con otros grafos.  A este vertice se le puede asociar cierta información que es la reflejada por el parametro \texttt{info}.  Blah
   
-\begin{description}
-  \item [Parámetros:] \texttt{G} representa un grafo $G$ y \texttt{v} representa un vertice existente $v$ de $G$.
-  \item [Propósito:] modifica \texttt{G} para representar un grafo $G - v$.
-  \item [Complejidad temporal:]
+  
+  
+  \item Inserción de una nueva arista dentro del grafo.
+  \item Borrado de un vértice dentro del grafo.
+  \item Borrado de una arista dentro del grafo.
+  \item Saber el grado de un vértice.
+  \item Recorrer el vecindario de grado n de un vértice.
+  \item Recorrer los vecinos de un vértice.
 \end{description}
-
-\paragraph{Ejemplo de uso}
-
-El siguiente código crea un grafo $G$ con dos vértices, el primero \texttt{v} representa al vértice $v$ con la letra 'a' y el segundo \texttt{w} representa al vértice $w$ con la letra 'b' como infomación. Luego, remueve \texttt{v} del grafo y el ciclo imprime ``b'' como resultado. Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \texttt{vertex\_iterator}.
-
-\begin{lstlisting}
-G := create_graph()
-v := insert_vertex(G, 'a')
-w := insert_vertex(G, 'b')
-remove_vertex(G, v)
-for vt in vertex_iterator(G):
-  print get_info(vt)
-\end{lstlisting}
-
-
-\subsection{\texttt{add\_edge(G, v, w)}}
-\label{sec:tad grafo:add-edge}
-
-Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de agregar la arista $vw$ conformada por \texttt{v} y \texttt{w} que representan los vertices $v$ y $w$ en $G$.
-
-\begin{description}
-  \item [Parámetros:] \texttt{G} representa un grafo $G$, \texttt{v} y \texttt{w} representan los vertices existentes $v$ y $w$ de $G$.
-  \item [Propósito:] modifica \texttt{G} para representar un grafo $G + vw$.
-  \item [Complejidad temporal:]
-\end{description}
-
-\paragraph{Ejemplo de uso}
-
-El siguiente código crea un grafo $G$ con dos vértices, el primero \texttt{v} representa al vértice $v$ con el número 1 y el segundo \texttt{w} representa al vértice $w$ con el número 2 como infomación. Luego, crea la arista $vw$ entre estos dos vertices dentro del grafo $G$. El ciclo imprime cada uno de los valores de los vecinos de $v$, en este caso como $w$ es su único vecino imprime ``2''. Ver Sección~\ref{sec:tad grafo:neighbor-iterator} para más información de \texttt{neghbor\_iterator}.
-
-\begin{lstlisting}
-G := create_graph()
-v := insert_vertex(G, 1)
-w := insert_vertex(G, 2)
-add_edge(G, v, w)
-for n in neighbor_iterator(v):
-  print get_info(n*)
-\end{lstlisting}
-
-
-\subsection{\texttt{remove\_edge(G, v, w)}}
-\label{sec:tad grafo:remove-edge}
-
-Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de remover la arista $vw$ conformada por \texttt{v} y \texttt{w} que representan los vertices $v$ y $w$ en $G$.
-
-\begin{description}
-  \item [Parámetros:] \texttt{G} representa un grafo $G$, \texttt{v} y \texttt{w} representan los vertices existentes $v$ y $w$ de $G$.
-  \item [Propósito:] modifica \texttt{G} para representar un grafo $G - vw$.
-  \item [Complejidad temporal:]
-\end{description}
-
-\paragraph{Ejemplo de uso}
-
-El siguiente código crea un grafo $G$ con dos vértices, el primero \texttt{v} representa al vértice $v$ con el número 1, el segundo \texttt{w} representa al vértice $w$ con el número 2 y el tercero \texttt{x} representa al vértice $x$ con el número 3 como infomación. Luego, crea las aristas $vw$ y $vx$ entre estos tres vertices dentro del grafo $G$ y consecuentemente se elimina la arista $vw$. El ciclo imprime cada uno de los valores de los vecinos de $v$, en este caso como $x$ termina siendo su único vecino imprime ``3''. Ver Sección~\ref{sec:tad grafo:neighbor-iterator} para más información de \texttt{neghbor\_iterator}.
-
-\begin{lstlisting}
-G := create_graph()
-v := insert_vertex(G, 1)
-w := insert_vertex(G, 2)
-x := insert_vertex(G, 3)
-add_edge(G, v, w)
-add_edge(G, v, x)
-remove_edge(G, v, w)
-for n in neighbor_iterator(v):
-  print get_info(n*)
-\end{lstlisting}
-
-
-\subsection{\texttt{add\_vertex(G, info, N)}}
-\label{sec:tad grafo:add-vertex}
-
-Modifica un objeto \texttt{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de agregar un nuevo vertice $v$ cuya información está reflejada en el parámetro \texttt{info} y una lista de punteros \texttt{N} que representa al vecindario $N$ que será asociado a $v$
-
-\begin{description}
-  \item [Parámetros:] \texttt{G} representa un grafo $G$, \texttt{info} es cualquier objeto y \texttt{N} representa el vecindario $N$.
-  \item [Propósito:] modifica \texttt{G} para representar un grafo $G + vn$ donde $n$ es cada elemento de $N$.
-  \item [Retorna:] un puntero \texttt{v} al vértice $v$.
-  \item [Complejidad temporal:]
-\end{description}
-
-\paragraph{Ejemplo de uso}
-
-El siguiente código crea un grafo $G$ con tres vertices, teniendo el tercer vertice, llamado $v$, a los otros dos como vecinos. Luego, el ciclo imprime ``12''.
-
-\begin{lstlisting}
-G := create_graph()
-list<const_vertex_iterator> N;
-N.push_back(insertVertex(G, 1));
-N.push_back(insertVertex(G, 2));
-v := add_vertex(G, 3, {N[1], N[2]})
-for n in neighbor_iterator(v):
-  print get_info(n*)
-\end{lstlisting}
-
 
 
 
