@@ -5,7 +5,7 @@
 1444396824 /home/griselda/Escritorio/GrafoC/Log.h
 	<iostream>
 
-1445800068 source:/home/griselda/Escritorio/GrafoC/test.cpp
+1446813071 source:/home/griselda/Escritorio/GrafoC/test.cpp
 	<iostream>
 	<vector>
 	"Graph.h"
@@ -31,7 +31,7 @@
 	<vector>
 	"Graph.h"
 
-1446000980 source:/home/griselda/Escritorio/GrafoC/generador.cpp
+1446821680 source:/home/griselda/Escritorio/GrafoC/generador.cpp
 	<iostream>
 	<fstream>
 	<vector>

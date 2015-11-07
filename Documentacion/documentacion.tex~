@@ -12,6 +12,18 @@
 
 \newcommand{\Grafo}{\textsc{Grafo}\xspace}
 \newcommand{\Code}[1]{\texttt{#1}}
+\newcommand{\N}{\mathcal{N}}
+
+\lstset{
+  numbers=left,
+  numberstyle=\tiny,
+  tabsize=2,
+  frame=single,
+  basicstyle={\scriptsize},
+  aboveskip={0pt},
+  belowskip={0pt}
+}
+
 
 \begin{document}
 
@@ -245,8 +257,13 @@ Vale remarcar que los vértices son privados del grafo, en el sentido de que no 
 
 En el resto de esta sección describimos cómo implementar, usando la estructura $h$-grafo, cada una de las operaciones que el TAD Grafo soporta (ver Seccion~\ref{}).  Para que quede claro que estamos usando la estructura $h$-grafo, vamos a escribir cada operacion \texttt{oper(G, $\cdots$)} usando la notación punto, i.e., \texttt{G.oper($\cdots$)} a fin de remarcar que tenemos acceso a la estructura de \texttt{G}.
 
+En esta sección se describirá el algoritmo para insertar aristas y vértices y el algoritmo para removerlos.
+Cómo se dijo anteriormente, la estructura del $h$-graph consiste de tres elementos, $d(v)$ que es el grado del vértice, $N(v)$ es una lista de sublistas que representa al vecindario de $v$, cada sublista no vacía contiene a los vecinos de determinado grado. Las sublistas están ordenadas. $H(v)$ es una la lista que contiene a los vecinos que tienen al menos el grado de $v$.
 
-\subsection{G.insert\_vertex(N, info)}
+$h$-graph mantiene un puntero directo a los objetos que representan a los vértices, aristas y listas.
+
+
+\subsection{\texttt{G.insert\_vertex(N, info)}}
 
 %IDEA
 El proceso para insertar un nuevo vertice $v$ en $G$ se divide en dos partes.  Primero, la inserción de un nuevo objeto $v$ que representa un vértice aislado.  Segundo, la inserción de una arista entre $v$ y cada uno de los vértices representados por $N$.  Claramente, el grafo obtenido representa a $G + v$.
@@ -261,37 +278,61 @@ G.insert_vertex(N, info):
 \end{lstlisting}
 
 
-En esta sección se describirá el algoritmo para insertar aristas y vértices y el algoritmo para removerlos.
-Cómo se dijo anteriormente, la estructura del $h$-graph consiste de tres elementos, $d(v)$ que es el grado del vértice, $N(v)$ es una lista de sublistas que representa al vecindario de $v$, cada sublista no vacía contiene a los vecinos de determinado grado. Las sublistas están ordenadas. $H(v)$ es una la lista que contiene a los vecinos que tienen al menos el grado de $v$.
+\subsection{\texttt{G.insert\_edge(v, w)}}
 
-$h$-graph mantiene un puntero directo a los objetos que representan a los vértices, aristas y listas.
+El algoritmo para insertar la nueva arista $vw$ al grafo $G$, siendo $v$ y $w$ vertices de $G$, tiene tres fases bien delimitadas que describimos a continuación.
+\begin{description}
+\item [Primer fase.] La primer fase consiste en actualizar los vecindarios de $v$ y $w$.  Recordemos que $H(v)$ contiene aquellos vecinos de $v$ que tienen grado al menos $d(v)$.  Como $d(v)$ se incrementa en $1$ cuando agregamos la nueva arista $vw$, estamos obligados a sacar de $H(v)$ aquellos vértices cuyo grado es exactamente $d(v)$.  Claramente, cada vértice $z \in H(v)$ que tenemos que sacar tiene grado $d(v)$.  Por lo tanto, tenemos que colocar todos estos vertices en un nueva lista que represente a $N(v, d(v))$.  Entonces, para actualizar el vecindario de $v$,  agregamos a $\N(v)$ una nueva lista $N(v,d(v))$, y movemos cada $z \in H(v)$ de grado $d(v)$ hacia $N(v,d(v))$.  Para mover el vértice $z$, tenemos que actualizar los punteros involucrados.  Notemos que al mover el objeto \texttt{z} que representa a $z$ de $H(v)$ a $N(v, d(v))$, tanto el self pointer de \texttt{z} (que indica dónde se encuentra representado $v$ en $N(z)$) como su list pointer (que indica la lista que contiene a $v$ en $N(z)$) son correcto.  En cambio, tenemos que actualizar el list pointer y el self pointer del objeto \texttt{v} que representa a $v$ en $N(z)$.  Análogamente, para actualizar el vecindario de $w$, agregamos una lista $N(w, d(w))$ a $\N(w)$ y movemos cada $z \in H(w)$ de grado $d(w)$ hacia $N(w, d(w))$.  Vale remarcar que $N(v,d(v))$ (resp.\ $N(w, d(w))$) se crea solo si existe algún vecino de $v$ (resp.\ $w$) con grado $d(v)$ (resp.\ $d(w)$).  
 
-
-
-\subsubsection{Inserción aristas}
-
-El algoritmo para insertar una nueva arista $vw$ dentro del grafo $G$ tiene dos fases.
-\begin{itemize}
-\item Primer fase : actualizar el vecindario.
-\item Segunda fase : agregar físicamente a $v$ en $w$ y viceversa. Aumentar el grado de $v$ y $w$.
-\end{itemize}
-
-Agregar una nueva arista implica aumentar en uno $d(v)$ y $d(w)$. Por eso, en la primer fase, se actualizan los vecindarios de $v$ y $w$. Recordemos que en $H(v)$ van aquellos vecinos que tienen al menos el grado de $v$ y como $d(v)$ aumentará, obliga a mover hacia $N(v)$ aquellos vecinos que ya no cumplan con la condición. Entonces, para actualizar el vecindario de $v$ se crea en $v$ la sublista $N(v, d(v))$, y se mueven los vecinos que tienen el mismo grado que $v$ desde $H(v)$ hacia la nueva sublista.
-Además es necesario actualizar el vecindario de todos los \emph{vecinos} $\in$ $H(v)$. Esto significa, mover a $v$ desde $N(z,d(v)$) hacia $N(z, d(v)+1)$, para cada $z$  perteneciente $H(v)$.De igual manera se procede con el vértice $w$.
-Teniendo en cuenta que $h$-graph mantiene un puntero directo a los objetos que representan a los vértices, aristas y listas, todos los movimientos de estos objetos implica actualizar dichos punteros.
-La segunda fase consiste en agegar a $v$ al final de $N(w,d(v)+1)$ y a $w$ al final de $N(v,d(w)+1)$. Por último se actualizan el grado de $v$ y $w$.
+\item [Segunda fase.]  La segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Notemos que si $v \in H(z)$ antes de la inserción, entonces $v \in H(z)$ luego de inserción, y por lo tanto el objeto que representa a $v$ no debe actualizarse.  En cambio, si $v \not\in H(z)$, entonces $d(v) < d(z)$ en $G$ y $v \in N(z, d(v)) \in \N$.  Por lo tanto, tenemos que mover $v$ desde $N(z,d(v)$) hacia $N(z, d(v)+1)$ para todo $z \in H(v)$ (por simplicidad, consideramos que $N(z, d(z)) = H(z)$).  Para esto, recorremos cada $z \in H(v)$ que tenga grado al mayor a $d(v)$ y movemos el objeto \texttt{v} que representa a $v$ en $N(z)$.  Notemos que dicho objeto \texttt{v} es el apuntado por el self pointer del objeto \texttt{z} que representa a $z$ en $H(v)$.  Por lo tanto, podemos acceder eficientemente a \texttt{v} para moverlo, actualizando los self y list pointers de \texttt{z}.  Una vez finalizado el procesamiento de $H(v)$, tenemos que proceder de manera análoga con $H(w)$.
+%
+\item [Tercer fase.] Por último, tenemos que agregar físicamente a $vw$ en $G$.  Para ello, creamos un objeto \texttt{w} que represente a $v$ en $N(v)$ y otro \texttt{v} que represente a $v$ en $N(w)$, y aumentamos el grado de $v$ y $w$ en $1$.
+\end{description}
+A continuación presentamos el pseudocódigo del algoritmo con sus tres fases correspondientes.
 
 \begin{lstlisting}
-update_neighborhood(v):
-    for z in H:
-        if d(v) = d(z), then move z from H(v) to N(v,d(v)).
-        Move v from N(z, d(v)+1).
-        if N(z,d()v).isEmpty(), then delete N(z,d(v))
+G.insert_edge(v,w):
+  //Fase 1
+  G.update_neighborhood(v)
+  G.update_neighborhood(w)
+  //Fase 2
+  G.update_neighbors(v)
+  G.update_neighbors(w)
+  //Fase 3 (insercion fisica)
+  Insertar un nuevo objeto v al final de N(w, d(v))
+  Insertar un nuevo objeto w al final de N(v, d(w))
+  poner v->self_pointer := ultimo de N(v, d(w))
+  poner v->list_pointer := N(v, d(w))
+  poner w->self_pointer := ultimo de N(w, d(v))
+  poner w->list_pointer := N(w, d(v))
 \end{lstlisting}
 
+\begin{lstlisting}
+G.update_neighborhood(v):
+    crear una nueva lista N(v,d(v))
+    para cada z in H(v) si d(v) = d(z):
+        mover z de H(v) a N(v, d(v))
+        //Obs: z->self_pointer es el objeto que representa a v en N(z)
+        poner z->self_pointer->list_pointer := N(v,d(v))
+    si N(v,d(v)) tiene elementos, entonces insertar N(v,d(v)) al final de N(v) 
+\end{lstlisting}
 
+\begin{lstlisting}
+G.update_neighbors(v):
+    para cada z in H(v) si d(v) < d(z):
+        //Obs: z->self_pointer es el objeto que representa a v en N(z),
+        sea v' := z->self_pointer
+        //     y z->list_pointer es el objeto que representa N(z, d(v)) en N(z)
+        sea N(z,d(v)) := z->list_pointer
+        Si la lista que sigue a N(z, d(v)) en N(z) no corresponde a vertices de grado d(v)+1, entonces
+            Agregar una nueva lista N(z, d(v)+1) a continuacion de N(z,d(v))
+        Mover v' de N(z, d(v)) a N(z, d(v)+1).
+        Si N(z, d(v)) queda vacia, entonces remover N(z,d(v)) de N(z)
+\end{lstlisting}
 
-\subsubsection{Borrar  aristas}
+Ejemplo de una ejecucion.
+
+\subsection{\texttt{G.remove\_edge(v,w)}}
 
 Para remover una arista $vw$, asumiremos que el $d(v)$ es ${\leq}$ a $d(w)$ , esto significa que  $w$ ${\in}$ $H(v)$.
 El proceso de remoción de la arista comienza deshaciendo la segunda fase de inserción, esto es, disminuir $d(v)$ y  $d(w)$. Luego,  se remueve físicamente la arista $vw$. Para ello se recorre $H(v)$ para localizar y borrar el objeto que representa a $w$. Dado que el objeto que representa a $w$ guarda un puntero hacia donde está ubicado $v$ en $N(w)$ es fácil y rápido remover a $v$ desde $N(w,d(v))$.
@@ -306,7 +347,17 @@ Por último se repite el mismo procedimiento con el vértice $w$
 \section{Implementación en C ++}
 \label{sec:c++}
 
-Vamos a seguir la filosofia de C++ (ver e.g.~\cite{}); punteros son iteradores.  
+En esta sección vamos a describir todos los detalles de la implementación de la estructura $h$-grafo en el lenguaje C++.  La Sección~\ref{} describe la interfaz publica, mientras que la Sección~\ref{} describe la estructura interna y sus algoritmos.  
+
+Tal como vimos en la Sección~\ref{}, la estructura $h$-grafo guarda, para cada vertice $v$, una lista $N(v, d)$ que contiene todos los vecinos de $v$ de grado $d$.  Como veremos en la Sección~\ref{}, la idea es utilizar el tipo \texttt{std::list} de C++ para almacenar los vertices en $N(v, d)$.  Pero, cada objeto \texttt{z} de $N(v, d)$ debe contener un puntero al objeto \texttt{v} que representa a $v$ en $N(z, d(v))$.  Obviamente, como los nodos de \texttt{std::list} son privados, no hay forma de obtener un puntero crudo a dicho nodo físico.  Para resolver este problema, tenemos que usar un objeto que nos permita realizar las operaciones que requerimos de la lista, sin romper su estructura.  En C++, los objetos que se comportan como estos \emph{punteros restringidos} son los iteradores.  
+
+Que es un iterador de lista.
+
+En la Sección~\ref{} también mencionamos que \texttt{G.insert\_vertex()} retorna un ``puntero'' al objeto \texttt{v} que representa al nuevo vértice insertado.  Estos punteros no permiten acceder indiscriminadamente a la estructura interna del grafo $G$.  Más aún, el usuario de dicho puntero no debería conocer la estructura interna de $G$.  Para modificar algún aspecto de $v$, el usuario debe invocar un método de $G$ brindando \texttt{v} como parámetro.  Por otra parte, la estructura $h$-grafo ofrece distintos iteradores para recorrer los vértices y las aristas de $G$.  Siguiendo la filosofía de la biblioteca estándar, los punteros que se usan para manipular a $G$ se corresponden con estos iteradores.
+
+
+
+
 
 Los iteradores sirven para recorrer un contenedor, ocultando la estructura interna de éste. Para ello se valen de una interfaz común a todos los objetos iterables. Lo que permite usarlos como punteros seguros a la estructura interna sin exponerla.
 En c++ existen distintos tipos de iteradores 
@@ -333,13 +384,13 @@ Ejemplo de uso de iteradores sobre una lista.
 \lstset{language=C, breaklines=true, basicstyle=\footnotesize}
 \begin{lstlisting}[frame=single]
 void show_list( const list<string) & sList){
-	list<string>:: const_iterator pos;
+        list<string>:: const_iterator pos;
     
     //obtenemos un iterador al primer elemento
     pos = sList.begin();
     
     while( pos != sList.end()){ // mientras pos sea distinto al final de la lista
-    	cout<< *pos << endl;
+        cout<< *pos << endl;
         pos++;  //avanza el iterador
     }
 }
@@ -352,7 +403,6 @@ void show_list( const list<string) & sList){
 
 
 
-\subsection{Estructura en C++}
 Existe una clase \textbf{Graph} que es la que posee los métodos visibles para el usuario.
 \textbf{Graph} es un template. Los templates permiten crear estructuras de datos que no dependen del tipo de dato que reciban. De esta manera conseguimos una generalización del grafo.
 
@@ -400,7 +450,7 @@ for(auto it = G.H_begin(v1); it != G.H_end(v1); ++it) {
 
 \item \textbf{neighbor\_iterator}: es un iterador bidireccional que permite iterar todos los vecinos de un vértice. Es un iterador privado de la clase \textit{Vertex}. El usuario tiene acceso a él a través de la clase \textit{Graph} con los métodos \textit{N\_begin(const\_vertex\_iterator v))} y \textit{N\_end(const\_vertex\_iterator v))}
 \end{enumerate}
-			Ejemplo de uso del \textbf{deg\_iterator}
+                        Ejemplo de uso del \textbf{deg\_iterator}
 
             \begin{lstlisting}[frame=single]
             tip::Graph<int> G;
@@ -414,6 +464,7 @@ for(auto it = G.H_begin(v1); it != G.H_end(v1); ++it) {
 
 
 
+\subsection{Estructura en C++}
 
 
 
