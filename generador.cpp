@@ -1,4 +1,4 @@
-    #include <iostream>
+#include <iostream>
     #include <fstream>
     #include <vector>
     #include "Graph.h"
@@ -28,6 +28,7 @@
     if (ficheroEntrada.is_open()) {
 
     ficheroEntrada >> cant_vertices;
+    //cout<<cant_vertices <<endl;
 
     //agregamos los vertices
     for(char i = '0'; i < cant_vertices; i++) {
