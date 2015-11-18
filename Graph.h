@@ -2,7 +2,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-
+#include <algorithm>
 #include <iostream>
 #include <list>
 #include <iterator>
@@ -223,6 +223,7 @@ namespace tip
             vertices.push_front(Vertex(elem));
             return begin();
         }
+
 
 
         /**
@@ -496,6 +497,12 @@ namespace tip
             return it;
         }
 
+     typename degNeighborhood::iterator find_neighbor_in(typename Neighborhood::iterator neighborhood, typename Vertices::iterator elem){
+        return std::find_if(neighborhood->begin(), neighborhood->end(), [elem](Neighbor& neighbor)->bool{
+        return neighbor.neighbor == elem;
+        });
+    }
+
 
 
         /**
@@ -545,6 +552,7 @@ namespace tip
         void update_after_delete(typename Vertices::iterator x) {
             DEBUG(std::string("BEGIN Graph::update_after_delete(") + std::to_string(x->elem) + ")");
 
+            //segunda fase.
             for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
                 DEBUG(std::string("Entrando al for Graph::update_after_delete(") + std::to_string(it->neighbor->elem) + ")");
                 auto pos_x_in_w = it->neighbor->toPrevList(it->list_pointer, it->self_pointer);
@@ -552,6 +560,8 @@ namespace tip
                 it->self_pointer = pos_x_in_w->begin();
             }
 
+
+            //Tercera fase
             auto prev_high = prev(x->highNeighborhood());
 
             if(x->highNeighborhood() != x->neighborhood.begin() and impl::degree_of(prev_high) >= x->degree){
