@@ -280,11 +280,11 @@ G.insert_vertex(N, info):
 
 \subsection{\texttt{G.insert\_edge(v, w)}}
 
-El algoritmo para insertar la nueva arista $vw$ al grafo $G$, siendo $v$ y $w$ vertices de $G$, tiene tres fases bien delimitadas que describimos a continuación.
+El algoritmo para insertar la nueva arista $vw$ al grafo $G$, siendo $v$ y $w$ vértices de $G$, tiene tres fases bien delimitadas que describimos a continuación.
 \begin{description}
 \item [Primer fase.] La primer fase consiste en actualizar los vecindarios de $v$ y $w$.  Recordemos que $H(v)$ contiene aquellos vecinos de $v$ que tienen grado al menos $d(v)$.  Como $d(v)$ se incrementa en $1$ cuando agregamos la nueva arista $vw$, estamos obligados a sacar de $H(v)$ aquellos vértices cuyo grado es exactamente $d(v)$.  Claramente, cada vértice $z \in H(v)$ que tenemos que sacar tiene grado $d(v)$.  Por lo tanto, tenemos que colocar todos estos vertices en un nueva lista que represente a $N(v, d(v))$.  Entonces, para actualizar el vecindario de $v$,  agregamos a $\N(v)$ una nueva lista $N(v,d(v))$, y movemos cada $z \in H(v)$ de grado $d(v)$ hacia $N(v,d(v))$.  Para mover el vértice $z$, tenemos que actualizar los punteros involucrados.  Notemos que al mover el objeto \texttt{z} que representa a $z$ de $H(v)$ a $N(v, d(v))$, tanto el self pointer de \texttt{z} (que indica dónde se encuentra representado $v$ en $N(z)$) como su list pointer (que indica la lista que contiene a $v$ en $N(z)$) son correcto.  En cambio, tenemos que actualizar el list pointer y el self pointer del objeto \texttt{v} que representa a $v$ en $N(z)$.  Análogamente, para actualizar el vecindario de $w$, agregamos una lista $N(w, d(w))$ a $\N(w)$ y movemos cada $z \in H(w)$ de grado $d(w)$ hacia $N(w, d(w))$.  Vale remarcar que $N(v,d(v))$ (resp.\ $N(w, d(w))$) se crea solo si existe algún vecino de $v$ (resp.\ $w$) con grado $d(v)$ (resp.\ $d(w)$).  
 
-\item [Segunda fase.]  La segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Notemos que si $v \in H(z)$ antes de la inserción, entonces $v \in H(z)$ luego de inserción, y por lo tanto el objeto que representa a $v$ no debe actualizarse.  En cambio, si $v \not\in H(z)$, entonces $d(v) < d(z)$ en $G$ y $v \in N(z, d(v)) \in \N$.  Por lo tanto, tenemos que mover $v$ desde $N(z,d(v)$) hacia $N(z, d(v)+1)$ para todo $z \in H(v)$ (por simplicidad, consideramos que $N(z, d(z)) = H(z)$).  Para esto, recorremos cada $z \in H(v)$ que tenga grado al mayor a $d(v)$ y movemos el objeto \texttt{v} que representa a $v$ en $N(z)$.  Notemos que dicho objeto \texttt{v} es el apuntado por el self pointer del objeto \texttt{z} que representa a $z$ en $H(v)$.  Por lo tanto, podemos acceder eficientemente a \texttt{v} para moverlo, actualizando los self y list pointers de \texttt{z}.  Una vez finalizado el procesamiento de $H(v)$, tenemos que proceder de manera análoga con $H(w)$.
+\item [Segunda fase.]  La segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Notemos que si $v \in H(z)$ antes de la inserción, entonces $v \in H(z)$ luego de inserción, y por lo tanto el objeto que representa a $v$ no debe actualizarse.  En cambio, si $v \not\in H(z)$, entonces $d(v) < d(z)$ en $G$ y $v \in N(z, d(v)) \in \N$.  Por lo tanto, tenemos que mover $v$ desde $N(z,d(v)$) hacia $N(z, d(v)+1)$ para todo $z \in H(v)$ (por simplicidad, consideramos que $N(z, d(z)) = H(z)$).  Para esto, recorremos cada $z \in H(v)$ que tenga grado a mayor a $d(v)$ y movemos el objeto \texttt{v} que representa a $v$ en $N(z)$.  Notemos que dicho objeto \texttt{v} es el apuntado por el self pointer del objeto \texttt{z} que representa a $z$ en $H(v)$.  Por lo tanto, podemos acceder eficientemente a \texttt{v} para moverlo, actualizando los self y list pointers de \texttt{z}.  Una vez finalizado el procesamiento de $H(v)$, tenemos que proceder de manera análoga con $H(w)$.
 %
 \item [Tercer fase.] Por último, tenemos que agregar físicamente a $vw$ en $G$.  Para ello, creamos un objeto \texttt{w} que represente a $v$ en $N(v)$ y otro \texttt{v} que represente a $v$ en $N(w)$, y aumentamos el grado de $v$ y $w$ en $1$.
 \end{description}
@@ -334,20 +334,82 @@ Ejemplo de una ejecucion.
 
 \subsection{\texttt{G.remove\_edge(v,w)}}
 
-Para remover una arista $vw$, asumiremos que el $d(v)$ es ${\leq}$ a $d(w)$ , esto significa que  $w$ ${\in}$ $H(v)$.
-El proceso de remoción de la arista comienza deshaciendo la segunda fase de inserción, esto es, disminuir $d(v)$ y  $d(w)$. Luego,  se remueve físicamente la arista $vw$. Para ello se recorre $H(v)$ para localizar y borrar el objeto que representa a $w$. Dado que el objeto que representa a $w$ guarda un puntero hacia donde está ubicado $v$ en $N(w)$ es fácil y rápido remover a $v$ desde $N(w,d(v))$.
+El algoritmo para remover una arista $vw$ al grafo $G$, siendo $v$ y $w$ vértices de $G$, consiste en deshacer las tres fases de inserción de una arista.
+
+Se comienza deshaciendo de atrás hacia adelante.
+
+\begin{description}
+\item[Deshacer tercer fase]. El proceso de remover la arista  $vw$, comienza revirtiendo la tercer fase de inserción, que consiste en remover físicamente a $vw$ en $G$. Para eso,  asumiremos que el $d(v)$  ${\leq}$   $d(w)$ , esto significa que  $w$ ${\in}$ $H(v)$, Se recorre $H(v)$ hasta localizar al objeto  \texttt{w} que representa al vértice $w$ en $H(v)$. Una vez localizado al objeto \texttt{w} se utiliza el list pointer de éste para ubicar directamente la lista {N(d(v),w)} en donde está \texttt{v} y el self pointer para ubicarlo  dentro de esa lista y así borrar a \texttt{v}. Luego se borra \texttt{w} de $H(v)$.
+Para terminar esta fase se disminuye en 1 el grado de $v$ y $w$.
+
+\item[Deshacer segunda fase]. La segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Tengamos en cuenta que, igualmente que en la inserción,  que si $v \in H(z)$ antes del borrado , entonces $v \in H(z)$ luego del borrado , y por lo tanto el objeto que representa a $v$ no debe actualizarse.  En cambio, si $v \not\in H(z)$, entonces $d(v) < d(z)$ en $G$ y $v \in N(z, d(v)) \in \N$.  Por lo tanto, tenemos que mover $v$ desde $N(z,d(v) +1 $) hacia $N(z, d(v))$ para todo $z \in H(v)$, recordemos que al momento de deshacer la segunda fase, ya se encuentra actualizado el grado del vértice. Entonces recorremos cada $z \in H(v)$, y con el uso de los punteros de $z$  ubicamos eficientemente a \texttt{v} en $N(z,d(v)+1)$ y lo movemos físicamente a $N(z,d(v))$ . Por último queda actualizar los punteros de $z$ , el list pointer apuntará a $N(z,d(v))$ y el self poiner al final de $N(z,d(v))$.
 
 
+\item[Deshacer primer fase]. En esta fase actualizamos el vecindario de $v$ y $w$ . Si en la primer fase de inserción debimos mover de $H(v)$  hacia una nueva lista $N(v,d(v)-1)$  a los vecinos que pasaban a tener menor grado que $v$, debido a que $d(v)$ aumentaba en 1. El deshacer esta fase consiste en mover cada  vértice $z$ $\in N(v,d(v))$  hacia $H(v)$ por disminuir el $d(v)$ . Recordemos que en el $h-graph$  cada lista $N(d(v)) $ es una lista no vacía, por lo tanto, $N(v,d(v))$ es eliminada luego del traspaso de los vecinos.
 
-Después se deshace la fase 1, que consiste en actualizar  los vecindarios de $v$ y $w$. Para eso se mueve a $v$ desde $N(z,d(v))$ hacia $N(z,d(v)-1)$ para cada $z$ ${\in}$ $H(v)$, luego se une a  $N(v,d(v)-1)$ con $H(v)$. Como se hizo en la inserción, se actualizan los punteros ante cada movimiento de los objetos.
+No olvidemos que cada movimiento de \texttt{z} implica actualizar los punteros involucrados. Esto significa usar  el list pointer y el self pointer de \texttt{z} para ubicar a \texttt{v} en $\N(z)$ y modificar el list pointer y el self pointer de \texttt{v} para que apunten hacia $H(v)$.
 
-Por último se repite el mismo procedimiento con el vértice $w$
+a continuación el pseudocódigo.
+\end{description}
+
+\begin{lstlisting}
+G.remove_edge(v,w){
+if grado(v) > grado(w)
+	swap(v,w)
+    
+neighbor_w := buscar w en highNeiborhood(v)
+
+// Sea neighbor_w->list_pointer la lista en donde esta el objeto que representa a v
+// Sea neighbor_w->self_pointer un puntero directo al objeto que representa a v
+//borrar a v
+borrar neighbor_w->list_pointer, neighbor_w->self_pointer.
+
+//borrar a w
+borrar highNeighborhood(w), neighbor_w
+
+disminuir grado(v) - 1.
+disminuir grado(w) - 1.
+
+G.update_after_delete(v)
+G.update_after_delete(w)
+
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+G.update_after_delete(v){
+//revertir seguda fase de insercion
+para cada z en H(v){
+	lista_previa:= prev(z->list_pointer
+    agregar a z a lista_previa.
+    z->list_pointer:= lista_previa
+    z->self_pointer:= lista_previa->begin().
+}
+
+borrar lista_previa.
+
+//revertir primer fase
+
+prev_high = prev(v.highNeighborhood())
+
+para cada z en prev_high{
+	guardar a z en H(v)
+    //neighbor_v es el objeto que representa a v en N(z).
+    neighbor_v:= z->self_pointer.
+    neighbor_v->list_pointer:= v.highNeighborhood()
+    neighbor_v->self_pointer:= v.highNeighborhood().begin()
+}
+ si queda vacia prev_high borrar
+
+
+}
+\end{lstlisting}
 
 
 \section{Implementación en C ++}
 \label{sec:c++}
 
-En esta sección vamos a describir todos los detalles de la implementación de la estructura $h$-grafo en el lenguaje C++.  La Sección~\ref{} describe la interfaz publica, mientras que la Sección~\ref{} describe la estructura interna y sus algoritmos.  
+En esta sección vamos a describir todos los detalles de la implementación de la estructura $h$-grafo en el lenguaje C++.  La Sección~\ref{} describe la interfaz pública, mientras que la Sección~\ref{} describe la estructura interna y sus algoritmos.  
 
 Tal como vimos en la Sección~\ref{}, la estructura $h$-grafo guarda, para cada vertice $v$, una lista $N(v, d)$ que contiene todos los vecinos de $v$ de grado $d$.  Como veremos en la Sección~\ref{}, la idea es utilizar el tipo \texttt{std::list} de C++ para almacenar los vertices en $N(v, d)$.  Pero, cada objeto \texttt{z} de $N(v, d)$ debe contener un puntero al objeto \texttt{v} que representa a $v$ en $N(z, d(v))$.  Obviamente, como los nodos de \texttt{std::list} son privados, no hay forma de obtener un puntero crudo a dicho nodo físico.  Para resolver este problema, tenemos que usar un objeto que nos permita realizar las operaciones que requerimos de la lista, sin romper su estructura.  En C++, los objetos que se comportan como estos \emph{punteros restringidos} son los iteradores.  
 
@@ -451,7 +513,7 @@ for(auto it = G.H_begin(v1); it != G.H_end(v1); ++it) {
 \item \textbf{neighbor\_iterator}: es un iterador bidireccional que permite iterar todos los vecinos de un vértice. Es un iterador privado de la clase \textit{Vertex}. El usuario tiene acceso a él a través de la clase \textit{Graph} con los métodos \textit{N\_begin(const\_vertex\_iterator v))} y \textit{N\_end(const\_vertex\_iterator v))}
 \end{enumerate}
                         Ejemplo de uso del \textbf{deg\_iterator}
-
+\textit{}
             \begin{lstlisting}[frame=single]
             tip::Graph<int> G;
             const_vertex_iterator v1 = G.insertVertex(1);
@@ -465,6 +527,57 @@ for(auto it = G.H_begin(v1); it != G.H_end(v1); ++it) {
 
 
 \subsection{Estructura en C++}
+En esta sección describiremos la estructura interna de la implementación del $h-graph$ en c++.
+En la implementación Existe un template parámetrico \textbf{\textit{Vertex}} que representa una instancia de un vértice v del $h-graph$.  El template \textit{Vertex} depende de la clase Graph, esto significa que permanece oculta para el usuario.
+
+El template Vertex posee el grado del vértice y el vecindario. El vecindario es una lista de listas que representan $N(v, d(0)), ..., N(v, d(k))$ y a $H(v)$, cada lista $N(v, d(i)$ guarda los vecinos de grado d(i) y $H(v)$ guarda el resto de los vecinos. Por comodidad se estableció que $H(v)$ es la última lista del vecindario.
+
+
+Vertex conoce los siguientes tipos:
+
+\begin{itemize}
+\item Graph::degNeighborhood::iterator: degNeighborhood es la coleccion que guarda los vecinos de un grado dado (o el highNeighborhood).
+   
+\item Graph::Neighborhood::iterator: Neighborhood es la colección donde se agrupan todos los degNeighborhood.
+
+\item Graph::elem\_type: es el tipo del elemento de Vertex.
+\end{itemize}
+
+
+DegNeighborhood y Neighborhood tienen la misma interfaz que std::list.
+
+
+El template Vertex tiene los siguientes métodos:
+
+\begin{itemize}
+\item Constructor
+\begin{description}
+\item [Parámetros:]  Recibe un tipo de dato copiable.
+\item [Propósito: ] Crea un Vértice de grado 0, con el highNeighborhood al final del vecindario.
+\end{description}
+
+\item toNextList(lista, vecino)
+\begin{description}
+\item[Parámetro:] lista es un neighborhood::iterator y vecino es un degNeighborhood::iterator. Como mencionamos anteriormente, el neighborhood::iterator apunta a una sublista N(v,d(i)) y el degNeighborhood::iterator apunta a un objeto de la sublista.
+
+\item[Propósito:] Mover a \textit{vecino} desde \textit{lista} hacia la siguiente lista en el Neighborhood porque el grado de \textit{vecino} aumento (Segunda fase de inserción). Si la lista siguiente no existe, la crea y si \textit{lista} queda vacía la borra.
+
+\item[Precondición:] \textit{lista} no es el highNeighborhood.
+
+\item[Retorno:] Retorna un puntero a la nueva lista en que fue insertado el \textit{vecino}.
+\end{description}
+
+
+\end{itemize}
+
+
+
+
+
+
+
+
+
 
 
 
