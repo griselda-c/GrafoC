@@ -1,0 +1,28 @@
+\select@language {spanish}
+\contentsline {section}{\numberline {1}Resumen}{1}{section.1}
+\contentsline {section}{\numberline {2}Introducci\IeC {\'o}n}{1}{section.2}
+\contentsline {section}{\numberline {3}Preliminares}{2}{section.3}
+\contentsline {section}{\numberline {4}El Tipo Grafo}{2}{section.4}
+\contentsline {subsection}{\numberline {4.1}\texttt {create\_graph()}}{3}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}\texttt {insert\_vertex(G, info)}}{3}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}\texttt {remove\_vertex(G, v)}}{3}{subsection.4.3}
+\contentsline {paragraph}{Ejemplo de uso}{4}{section*.2}
+\contentsline {subsection}{\numberline {4.4}\texttt {add\_edge(G, v, w)}}{4}{subsection.4.4}
+\contentsline {paragraph}{Ejemplo de uso}{4}{section*.3}
+\contentsline {subsection}{\numberline {4.5}\texttt {remove\_edge(G, v, w)}}{4}{subsection.4.5}
+\contentsline {paragraph}{Ejemplo de uso}{5}{section*.4}
+\contentsline {subsection}{\numberline {4.6}\texttt {add\_vertex(G, info, N)}}{5}{subsection.4.6}
+\contentsline {paragraph}{Ejemplo de uso}{5}{section*.5}
+\contentsline {subsection}{\numberline {4.7}\lstinline [basicstyle={\tt }]@vertices(G)@}{6}{subsection.4.7}
+\contentsline {subsection}{\numberline {4.8}\lstinline [basicstyle={\tt }]@neighbors(G, v)@}{6}{subsection.4.8}
+\contentsline {subsection}{\numberline {4.9}\lstinline [basicstyle={\tt }]@H_neighbors(G, v)@}{6}{subsection.4.9}
+\contentsline {subsection}{\numberline {4.10}\lstinline [basicstyle={\tt }]@degree(G, v)@}{6}{subsection.4.10}
+\contentsline {section}{\numberline {5}La estructura $h$-grafo}{6}{section.5}
+\contentsline {subsection}{\numberline {5.1}\texttt {G.insert\_vertex(N, info)}}{6}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}\texttt {G.insert\_edge(v, w)}}{6}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}\texttt {G.remove\_edge(v,w)}}{8}{subsection.5.3}
+\contentsline {section}{\numberline {6}Implementaci\IeC {\'o}n en C ++}{9}{section.6}
+\contentsline {subsection}{\numberline {6.1}Interfaz de C++}{10}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Estructura en C++}{11}{subsection.6.2}
+\contentsline {subsubsection}{\numberline {6.2.1}Graph (Graph.h)}{12}{subsubsection.6.2.1}
+\contentsline {subsubsection}{\numberline {6.2.2}Vertex (Vertex.h)}{12}{subsubsection.6.2.2}

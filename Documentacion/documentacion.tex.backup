@@ -530,68 +530,45 @@ En esta sección describiremos la estructura interna de la estructura $h$-grafo,
   \item[\Code{Vertex.h}:] contiene la descripción de lo que es un vértice.
   \item[\Code{Blah}.]
 \end{description}
-A continuación describimos las clases principales del $h$-grafo, indicando el archivo en el que esta definida.
+A continuación describimos cada uno de estos archivos y las estructuras que contienen.
 
-\subsubsection{Graph (Graph.h)}
+\subsubsection{Graph.h}
 
-Recordemos que el tipo Grafo que implementamos es un tipo paramétrico que permite asociar información de algún tipo a cada vértice.  La representación de un grafo, usando la clase \Code{Graph<Elem>} es sencilla en términos conceptuales, ya que simplemente una lista de \Code{Vertex} (ver Seccion~\ref{}).  
+Recordemos que el tipo Grafo que implementamos es un tipo paramétrico que permite asociar información de algún tipo a cada vértice.  La representación de un grafo, usando la clase \Code{Graph<Elem>} es sencilla en términos conceptuales, ya que simplemente una lista de \Code{Vertex} (ver Seccion~\ref{}).  Como veremos en la Sección~\ref{}, la clase \Code{Vertex} mantiene toda la información de los vecinos de un vértice.  En consecuencia, \Code{Vertex} es una componente central de la estructura.  Por este motivo, \Code{Vertex} necesita tener acceso a algunas partes privadas del grafo, razón por la cual, \Code{Graph<Elem>} es \Code{friend} de \Code{Vertex}.  En particular, \Code{Vertex} necesita saber de qué tipo es \Code{Elem} para saber cómo almacenar la información de un vértice.  
 
-La clase \Code{Graph} tambien define las estructuras centrales de representación para los vecindarios
-
-
-Como veremos en la Sección~\ref{}, la clase \Code{Vertex} mantiene toda la información de los vecinos de un vértice.  En consecuencia, \Code{Vertex} es una componente central de la estructura.  Por este motivo, \Code{Vertex} necesita tener acceso a algunas partes privadas del grafo, razón por la cual, \Code{Graph<Elem>} es \Code{friend} de \Code{Vertex}.  En particular, \Code{Vertex} necesita saber de qué tipo es \Code{Elem} para saber cómo almacenar la información de un vértice.  Un inconveniente central a la hora de definir el tipo \Code{Graph<Elem>}, es que el mismo necesita conocer qué es un \Code{Vertex}, mientras que, por lo mencionado anteriormente, \Code{Vertex} necesita conocer el tipo \Code{Elem}.  Con lo cual, hay un inconveniente serio a la hora de decidir qué clase se crea primero.  Una solución simple a este problema es usar el \emph{Curiously recurring template pattern (CRTP)}~\cite{}, que consiste escribir el tipo interno \Code{Vertex} como un tipo paramétrico \Code{Vertex<Graph>} que depende \Code{Graph<Elem>} que lo utilice.  Luego, \Code{Graph<Elem>} puede utilizar una instancia de \Code{Vertex<Graph>}.  Más allá del patrón de implementación, la estructura no deja de ser una lista de vertices.
-
+Un inconveniente central a la hora de definir el tipo \Code{Graph<Elem>}, es que el mismo necesita conocer qué es un \Code{Vertex}, mientras que, por lo mencionado anteriormente, \Code{Vertex} necesita conocer el tipo \Code{Graph<Elem>}.  Con lo cual, hay un inconveniente serio a la hora de decidir qué clase se crea primero.  Una solución simple a este problema es usar el \emph{Curiously recurring template pattern}~\cite{}, que consiste escribir el tipo interno \Code{Vertex} como un tipo paramétrico \Code{Vertex<Graph>} que depende \Code{Graph<Elem>} que lo utilice.  Luego, \Code{Graph<Elem>} puede utilizar una instancia de \Code{Vertex<Graph>}.  Más allá del patrón de implementación, la estructura no deja de ser una lista de vertices.
 
 \begin{lstlisting}[language={C++},caption={Estructura del tipo Grafo en C++.},gobble=2,float=ht,label={lst:c++:graph}]
     template<class Elem> class Graph
     {
-        using elem_type = Elem;
     private:
         friend class impl::Vertex<Graph>;
-        friend class impl::Neighbor<Graph>;
     
         //CRTP: Curiously recurring template pattern
         using Vertex = impl::Vertex<Graph>; 
-        using Neighbor = impl::Neighbor<Graph>;
-        
         using Vertices = std::list<Vertex>;
-        using degNeighborhood = std::list<Neighbor>;
-        using Neighborhood = std::list<degNeighborhood>;
-        using neighbor_iterator = typename Vertex::neighbor_iterator;
-        using deg_iterator = typename Vertex::deg_iterator;
+        Vertices vertices;
     };
 \end{lstlisting}
 
-\subsubsection{Vertex (Vertex.h)}
+\subsubsection{Vertex}
 
 De acuerdo a lo visto en la Sección~\ref{}, \Code{Vertex} es un tipo paramétrico que representa una instancia de un vértice $v$ del $h$-grafo.  El parámetro esperado para el template \Code{Vertex} es un clase de \Code{Graph}.  Vale remarcar que el tipo \Code{Vertex} se usa únicamente dentro de la clase \Code{Graph}, quien no exhibe su interfaz interna.  En otras palabras, \Code{Vertex} es invisible al usuario de \Code{Graph}, más allá de que todos sus miembros sean públicos.
 
-La clase \Code{Vertex} posee la información asociada con el vertice (\Code{elem}), el grado del vértice (\Code{degree}) y su vecindario (\Code{neighborhood}).  Como vimos en la Sección~\ref{}, el vecindario en el $h$-grafo se organiza como una lista de listas, cuyos elementos representan las listas no vacías de $N(v, 0), \ldots, N(v, d(v)-1)$ y $H(v)$.  Cada lista $N(v, i)$ guarda los vecinos de grado $i$ y $H(v)$ guarda los vecinos de grado al menos $d(v)$.  Para la representación en C++, por comodidad, almacenamos $H(v)$ como la última lista \Code{neighborhood}.
+La clase \Code{Vertex} posee el grado del vértice y su vecindario.  Como vimos en la Sección~\ref{}, el vecindario es una lista de listas, cuyos elementos representan las listas no vacías de $N(v, 0), \ldots, N(v, k)$ y $H(v)$.  Cada lista $N(v, i)$ guarda los vecinos de grado $i$ y $H(v)$ guarda el resto de los vecinos. Por comodidad se estableció que $H(v)$ es la última lista del vecindario.
 
-Recordemos que \Code{Graph} concentra las definiciones de qué significa cada tipo, incluyendo qué estructura se usa para representar un vecindario $N(v)$ (\Code{Neighborhood}), qué estructura se usa para representar cada lista $N(v, i)$ y $H(v)$ dentro del vecindario (\Code{degNeighborhood}), y qué estructura se usa para representar un vecino que contiene los self y list pointers (\Code{Neighbor}).  Por simplicidad, renombramos estos tipos dentro de la estructura de \Code{Vertex}.
 
 \begin{lstlisting}[language={C++},caption={Estructura del tipo Grafo en C++.},gobble=2,float=ht,label={lst:c++:graph}]
-  template<class Graph> struct Vertex
-  {
-      //Tipo del elemento que se guarda en los vertice;
-      //notar que es el tipo que el usuario indica en la clase Graph
-      using elem_type = typename Graph::elem_type;
-  
-      //Estructura donde se guardan los vertices
-      using Vertices = typename Graph::Vertices;
-      //Estructura de vecino.
-      using degNeighborhood = typename Graph::degNeighborhood;
-      //Estructura donde se guardan todos los vecindarios de todos los grados.
-      using Neighborhood = typename Graph::Neighborhood;
-      
-      elem_type elem;  //elemento
-      size_t degree;  //grado
-      Neighborhood neighborhood;  //vecindario
-  }
+        template<class Graph>
+        struct Vertex
+        {
+            elem_type elem;  //elemento
+            size_t degree;  //grado
+            Neighborhood neighborhood;  //vecindario
+
 \end{lstlisting}
 
 
-\end{document}
 
 Vertex conoce los siguientes tipos:
 
@@ -599,6 +576,8 @@ Vertex conoce los siguientes tipos:
 \item Graph::degNeighborhood::iterator: degNeighborhood es la coleccion que guarda los vecinos de un grado dado (o el highNeighborhood).
    
 \item Graph::Neighborhood::iterator: Neighborhood es la colección donde se agrupan todos los degNeighborhood.
+
+\item Graph::elem\_type: es el tipo del elemento de Vertex.
 \end{itemize}
 
 
@@ -642,11 +621,6 @@ El template Vertex tiene los siguientes métodos:
 
 \subsubsection{Algoritmos en C++}
 " Explicaciones detalladas de los algoritmos principales "
-
-Add edge
-Remove edge
-Add vertex
-Remove vertex
 
 
 \section{Resultados de la experimentación}
