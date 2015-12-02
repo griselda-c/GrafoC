@@ -13,10 +13,10 @@
 
     int main () {
     fstream ficheroEntrada;
-    char cant_vertices;
-    char vertex;
-    char dim;
-    char vecino;
+    int cant_vertices;
+    int vertex;
+    int dim;
+    int vecino;
 
 
     IntGraph G;
@@ -28,25 +28,22 @@
     if (ficheroEntrada.is_open()) {
 
     ficheroEntrada >> cant_vertices;
-    //cout<<cant_vertices <<endl;
 
     //agregamos los vertices
-    for(char i = '0'; i < cant_vertices; i++) {
+    for(int i = 0; i < cant_vertices; i++) {
     ficheroEntrada >> vertex;
-    int v = vertex -'0'; // convierto el char en int
-    V.push_back(G.insertVertex(v));
+    V.push_back(G.insertVertex(vertex));
     }
 
-    while (! ficheroEntrada.eof() ) { //mientras no termine el archivo
+    while (!ficheroEntrada.eof() ) { //mientras no termine el archivo
 
         //crearmos las aristas.
         ficheroEntrada >> vertex;
-        int vertice = vertex -'0';
-        ficheroEntrada >> vecino;
-        int vec = vecino -'0';
 
-        if(vertex != 'F'){ // porque imprime dos veces la ultima arista
-            G.add_edge(V[vertice], V[vec]);
+        ficheroEntrada >> vecino;
+
+        if(vertex <= cant_vertices){ // porque imprime dos veces la ultima arista
+            G.add_edge(V[vertex], V[vecino]);
         }
     }
 

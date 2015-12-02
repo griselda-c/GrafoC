@@ -12,7 +12,7 @@ def imprimir_grafo(grafo):
              L = list(x)
              for z in L:
                      print(z, end="")
-	     print('F')
+     print('F')
 
 
 imprimir_grafo(G)
