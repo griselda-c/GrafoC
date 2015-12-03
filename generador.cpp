@@ -1,64 +1,95 @@
-#include <iostream>
-    #include <fstream>
-    #include <vector>
-    #include "Graph.h"
-    #include "Log.h"
+#include <bits/stdc++.h>
+#include "Graph.h"
+#include "Log.h"
+#include "triangles.h"
+
+using namespace std;
+using namespace tip;
+
+
+struct Vertex {
+    Vertex(int elem) : elem(elem), marked(false) {}
+
+    int elem;
+    mutable bool marked;
+    
+    void marcar(bool val) const {
+        marked = val;
+    }
+    
+    bool marcado() const {
+        return marked;
+    }
+
+};
+
+using IntGraph = tip::Graph<Vertex>;
+
+ostream& operator<<(ostream& os, const Vertex& v) {
+    return os << v.elem;
+}
+
+ostream& operator<<(ostream& os, IntGraph::const_vertex_iterator v) {
+    return os << v->elem;
+}
 
 
 
-    using namespace std;
-    using namespace tip;
 
-    using IntGraph = tip::Graph<int>;
-
-    int main () {
-    fstream ficheroEntrada;
-    int cant_vertices;
-    int vertex;
-    int dim;
-    int vecino;
+int main(int argc, char*argv[]) {
+    
+    if(argc < 2) {
+        cerr << "Incluir el archivo de entrada" << endl;
+        return 1;
+    }    
+    ifstream ficheroEntrada(argv[1]);
+    if(not ficheroEntrada.is_open()) {
+        cerr << "Fichero inexistente" << endl;
+        return 2;
+    }
 
 
     IntGraph G;
     vector<IntGraph::const_vertex_iterator> V;
 
-
-    ficheroEntrada.open ("graph.txt", ios::in);
-
-    if (ficheroEntrada.is_open()) {
-
-    ficheroEntrada >> cant_vertices;
+    int cant_vertices, cant_aristas;
+    ficheroEntrada >> cant_vertices >> cant_aristas;
 
     //agregamos los vertices
-    for(int i = 0; i < cant_vertices; i++) {
-    ficheroEntrada >> vertex;
-    V.push_back(G.insertVertex(vertex));
+    for(int v = 0; v < cant_vertices; v++) {
+        V.push_back(G.insertVertex(v));
     }
 
-    while (!ficheroEntrada.eof() ) { //mientras no termine el archivo
-
+    for(int i = 0; i < cant_aristas; ++i)
+    {
+        int vertex, vecino;
         //crearmos las aristas.
-        ficheroEntrada >> vertex;
-
-        ficheroEntrada >> vecino;
-
-        if(vertex <= cant_vertices){ // porque imprime dos veces la ultima arista
-            G.add_edge(V[vertex], V[vecino]);
-        }
+        ficheroEntrada >> vertex >> vecino;
+        G.add_edge(V[vertex], V[vecino]);
     }
 
     ficheroEntrada.close();
+    cerr << G << endl;
+    
+    cout << "  [h-graph] storing the graph" << endl;
+    ofstream grafoSalida(string(argv[1]) + string(".graph"));
+    grafoSalida << cant_vertices << " " << cant_aristas << endl;
+    for(auto v = V.begin(); v != V.end(); ++v) {
+        for(auto w = v->begin(); w != v->end(); ++w) {
+            if((*v)->elem < w->elem) {
+                grafoSalida << *v << " " << w << endl;
+            }
+        }
     }
-    else cout << "Fichero inexistente" << endl;
 
-
-    cout << G;
-
-//    auto T = triangles(G);
-//    for(auto t = T.begin(); t != T.end(); ++t) {
-//        cout << t->v->elem << " " << t->w->elem << " " << t->z->elem << endl;
-//    }
-
+    cout << "  [h-graph] searching for triangles" << endl;
+    
+    ofstream ficheroSalida(string(argv[1]) + string(".triangles"));
+    auto T = triangles(G);
+    for(auto t = T.begin(); t != T.end(); ++t) {
+        ficheroSalida << t->v << " " << t->w << " " << t->z << endl;
+    }
+    ficheroSalida.close();
 
     return 0;
-    }
+}

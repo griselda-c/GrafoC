@@ -1,48 +1,33 @@
 import networkx as nx
-from __future__ import print_function
-G = nx.complete_graph(5)
-petersen=nx.petersen_graph()
-bull = nx.bull_graph()
-diamond = nx.diamond_graph()
+from networkx.generators.random_graphs import connected_watts_strogatz_graph as real_world
+import sys
 
 
-
-def imprimir_grafo(grafo):
-     size = len(grafo.nodes())
-     print(size)
-     for i in grafo.nodes():
-             print(i, end=" ")
-     for x in grafo.edges():
-             L = list(x)
-             for z in L:
-                     print(z, end=" ")
-             print("\n")
-     print(size + 1)
+def as_string(grafo):
+    return '\n'.join(str(v) + ' ' + str(w) for v, w in [(grafo.order(), grafo.size())] + grafo.edges())         
+     
 
 
-
-def grabar_grafo(grafo):
-     archi= open('datos.txt','a')
-     size = len(grafo.nodes())
-     archi.write(str(size))
-     archi.write('\n')
-     for i in grafo.nodes():
-             archi.write(str(i))
-             archi.write('  ')
-     for x in grafo.edges():
-             L = list(x)
-             for z in L:
-                     archi.write(str(z))
-                     archi.write('  ')
-             archi.write('\n')
-     archi.write(str(size + 1))
+def grabar_grafo(grafo, filename="datos.txt"):
+     archi= open(filename,'w')
+     archi.write(as_string(grafo))
      archi.close()
 
 
 
 
+if __name__ == '__main__':
 
-imprimir_grafo(G)
- 
+    #G = nx.complete_graph(5)
+    #petersen=nx.petersen_graph()
+    #bull = nx.bull_graph()
+    #diamond = nx.diamond_graph()
 
-
+    ngraphs = 1 if len(sys.argv) == 1 else int(sys.argv[1])
+    filename = "out" if len(sys.argv) <= 2 else sys.argv[2]
+    
+    print "cantidad de grafos a generar:", ngraphs
+    
+    for i in xrange(0,ngraphs):
+        print "   generando grafo", i
+        grabar_grafo(real_world(10+5*i, 4, 0.3), filename + '.' + str(i))
