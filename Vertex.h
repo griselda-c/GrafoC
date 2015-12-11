@@ -96,9 +96,11 @@ namespace tip {
                 auto to_list = std::next(list);
 
                 if(who->degree() + 1 < this->degree and
-                    (to_list == highNeighborhood() || degree_of(to_list) != who->degree()+1))
+                    (to_list == highNeighborhood() || degree_of(to_list) > who->degree()+1))
+                    //cambie degree_of(to_list) > who->degree()+1) != por >
                 {
                     //MESSAGE("Creando la lista de grado", impl::degree(who), +"para albergar a", *who);
+                    MESSAGE(std::string("creando la lista de grado"));
                     to_list = insertDegNeighborhood(to_list);
                 }
                 to_list->push_front(*who);

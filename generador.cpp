@@ -12,11 +12,11 @@ struct Vertex {
 
     int elem;
     mutable bool marked;
-    
+
     void marcar(bool val) const {
         marked = val;
     }
-    
+
     bool marcado() const {
         return marked;
     }
@@ -37,11 +37,15 @@ ostream& operator<<(ostream& os, IntGraph::const_vertex_iterator v) {
 
 
 int main(int argc, char*argv[]) {
-    
+Log::get_instance().set_output(&std::cout);
+Log::get_instance().set_level(Log::Level::NONE);
+
     if(argc < 2) {
         cerr << "Incluir el archivo de entrada" << endl;
         return 1;
-    }    
+    }
+
+
     ifstream ficheroEntrada(argv[1]);
     if(not ficheroEntrada.is_open()) {
         cerr << "Fichero inexistente" << endl;
@@ -70,7 +74,7 @@ int main(int argc, char*argv[]) {
 
     ficheroEntrada.close();
     cerr << G << endl;
-    
+
     cout << "  [h-graph] storing the graph" << endl;
     ofstream grafoSalida(string(argv[1]) + string(".graph"));
     grafoSalida << cant_vertices << " " << cant_aristas << endl;
@@ -83,7 +87,7 @@ int main(int argc, char*argv[]) {
     }
 
     cout << "  [h-graph] searching for triangles" << endl;
-    
+
     ofstream ficheroSalida(string(argv[1]) + string(".triangles"));
     auto T = triangles(G);
     for(auto t = T.begin(); t != T.end(); ++t) {
