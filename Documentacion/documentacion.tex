@@ -369,7 +369,7 @@ El algoritmo para insertar la nueva arista $vw$ al grafo $G$, siendo $v$ y $w$ v
 
 \item [Segunda fase.]  La segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Notemos que si $v \in H(z)$ antes de la inserción, entonces $v \in H(z)$ luego de inserción, y por lo tanto el objeto que representa a $v$ no debe actualizarse.  En cambio, si $v \not\in H(z)$, entonces $d(v) < d(z)$ en $G$ y $v \in N(z, d(v)) \in \N$.  Por lo tanto, tenemos que mover $v$ desde $N(z,d(v)$) hacia $N(z, d(v)+1)$ para todo $z \in H(v)$ (por simplicidad, consideramos que $N(z, d(z)) = H(z)$).  Para esto, recorremos cada $z \in H(v)$ que tenga grado a mayor a $d(v)$ y movemos el objeto \texttt{v} que representa a $v$ en $N(z)$.  Notemos que dicho objeto \texttt{v} es el apuntado por el self pointer del objeto \texttt{z} que representa a $z$ en $H(v)$.  Por lo tanto, podemos acceder eficientemente a \texttt{v} para moverlo, actualizando los self y list pointers de \texttt{z}.  Una vez finalizado el procesamiento de $H(v)$, tenemos que proceder de manera análoga con $H(w)$.
 %
-\item [Tercer fase.] Por último, tenemos que agregar físicamente a $vw$ en $G$.  Para ello, creamos un objeto \texttt{w} que represente a $v$ en $N(v)$ y otro \texttt{v} que represente a $v$ en $N(w)$, y aumentamos el grado de $v$ y $w$ en $1$.
+\item [Tercer fase.] Por último, tenemos que agregar físicamente a $vw$ en $G$.  Para ello, creamos un objeto \texttt{w} que represente a $w$ en $N(v)$ y otro \texttt{v} que represente a $v$ en $N(w)$, y aumentamos el grado de $v$ y $w$ en $1$.
 \end{description}
 A continuación presentamos el pseudocódigo del algoritmo con sus tres fases correspondientes.
 
@@ -421,9 +421,9 @@ Ejemplo de una ejecucion.
 El algoritmo para remover la arista $vw$ del grafo $G$ consiste en deshacer, en el orden inverso, las tres fases que usamos para su inserción (ver Seccion~\ref{sec:hgraph:insert_edge})
 
 \begin{description}
-\item[Deshacer tercer fase.] Recordemos que la tercer fase del proceso de inserción de $vw$ consiste en agregar físicamente la arista $vw$.  Luego, para deshacer la tercer fase tenemos que remover físicamente a $vw$ de $G$.  Supongamos, invirtiendo $v$ con $w$ de ser necesario, que $d(v) \leq d(w)$, i.e., $w$ ${\in}$ $H(v)$.  El primer paso es recorrer $H(v)$ hasta localizar al objeto \texttt{w} que representa a $w$ en $H(v)$.  En el segundo paso, usamos el list y self pointers de \texttt{w}, para acceder y borrar la encarnación \texttt{v} de $v$ en la lista \Code{N(d(v), w)}.  Por último, eliminamos a \texttt{w} de $H(v)$ y decrementamos en $1$ el grado de $v$ y $w$.
+\item[Deshacer tercer fase.] Recordemos que la tercer fase del proceso de inserción de $vw$ consiste en agregar físicamente la arista $vw$.  Luego, para deshacer la tercer fase tenemos que remover físicamente a $vw$ de $G$.  Supongamos, invirtiendo $v$ con $w$ de ser necesario, que $d(v) \leq d(w)$, i.e., $w$ ${\in}$ $H(v)$.  El primer paso es recorrer $H(v)$ hasta localizar al objeto \texttt{w} que representa a $w$ en $H(v)$.  En el segundo paso, usamos el list y self pointers de \texttt{w}, para acceder y borrar la encarnación \texttt{v} de $v$ en la lista \Code{N(w,d(v))}.  Por último, eliminamos a \texttt{w} de $H(v)$ y decrementamos en $1$ el grado de $v$ y $w$.
 
-\item[Deshacer segunda fase.] Al igual que para la inserción, la segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Obviamente, en este caso, la actualización refleja la remoción de $vw$.  Notemos que si $d(v) \geq z$ luego de deshacer la tercer fase, entonces $v \in H(z)$ tanto antes como luego del borrado.  En consecuencia, no hace falta actualizar la encarnación de $v$ en $N(z)$.  En cambio, si $d(v) < d(z)$ luego de deshacer la tercer fase, entonces $z \in H(v)$, con lo cual tenemos que mover la encarnación \Code{v} de $v$ desde $N(z,d(v)+1)$ a $N(z, d(v))$.  (Notar que, en caso en que $v \in H(z)$, \Code{N(z, d(v)+1)} representa a $H(z)$.)  Para ello, recorremos cada encarnación \Code{z} de $z \in H(v)$ y, haciendo uso de sus list y self pointer, accedemos a la encarnación \Code{v} de $v$ en $N(z,d(v)+1)$ y la movemos físicamente a $N(z,d(v))$.  Por último, actualizamos el list pointer de \Code{z} para que apunte a $N(z,d(v))$ y el self pointer de \Code{z} para que apunte a la encarnación de $v$ en $N(z,d(v))$.
+\item[Deshacer segunda fase.] Al igual que para la inserción, la segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Obviamente, en este caso, la actualización refleja la remoción de $vw$.  Notemos que si $d(v) \geq d(z)$ luego de deshacer la tercer fase, entonces $v \in H(z)$ tanto antes como luego del borrado.  En consecuencia, no hace falta actualizar la encarnación de $v$ en $N(z)$.  En cambio, si $d(v) < d(z)$ luego de deshacer la tercer fase, entonces $z \in H(v)$, con lo cual tenemos que mover la encarnación \Code{v} de $v$ desde $N(z,d(v)+1)$ a $N(z, d(v))$.  (Notar que, en caso en que $v \in H(z)$, \Code{N(z, d(v)+1)} representa a $H(z)$.)  Para ello, recorremos cada encarnación \Code{z} de $z \in H(v)$ y, haciendo uso de sus list y self pointer, accedemos a la encarnación \Code{v} de $v$ en $N(z,d(v)+1)$ y la movemos físicamente a $N(z,d(v))$.  Por último, actualizamos el list pointer de \Code{z} para que apunte a $N(z,d(v))$ y el self pointer de \Code{z} para que apunte a la encarnación de $v$ en $N(z,d(v))$.
 
 \item[Deshacer primer fase.] En esta fase actualizamos el vecindario de $v$ y $w$, a fin de reflejar la remoción de $vw$.  Recordemos que en la primer fase de inserción de $vw$ movimos cada $z \in H(v)$  de grado $d(v)$ a una lista $N(v,d(v))$, debido a que $d(v)$ aumentaba en 1. Para deshacer este proceso, movemos cada vértice $z$ $\in N(v,d(v))$  hacia $H(v)$. Recordemos que en el $h$-graph cada lista $N(d(v))$ es una lista no vacía, razón por la cual $N(v,d(v))$ es finalmente eliminada.
 
@@ -512,7 +512,7 @@ void print_vertices( Graph& G) {
 \subsubsection{deg\_iterator}
 \label{sec:deg_iterator}
 
-\textbf{deg\_iterator}: es un iterador bidireccional que permite iterar los vecinos de determinado grado de un vértice. Este iterador es propio de la clase \textit{Vertex}. El usuario para obtener este iterador, lo hace a través de la clase \textit{Graph} con los métodos 
+\textbf{deg\_iterator}: es un iterador bidireccional que permite iterar el highNeighborhood de un vértice. Este iterador es propio de la clase \textit{Vertex}. El usuario para obtener este iterador, lo hace a través de la clase \textit{Graph} con los métodos 
 \textit{H\_begin()}, \textit{H\_end()}, lo cuales le permiten iterar el \textit{HighNeighborhood} del vértice.
 
 Ejemplo de uso del \textbf{deg\_iterator}
@@ -531,7 +531,7 @@ for(auto it = G.H_begin(v1); it != G.H_end(v1); ++it) {
 \label{sec:neighbor iterator}
 \textbf{neighbor\_iterator}: es un iterador bidireccional que permite iterar todos los vecinos de un vértice. Es un iterador privado de la clase \textit{Vertex}. El usuario tiene acceso a él a través de la clase \textit{Graph} con los métodos \textit{N\_begin(const\_vertex\_iterator v))} y \textit{N\_end(const\_vertex\_iterator v))}
 
-                        Ejemplo de uso del \textbf{deg\_iterator}
+                        Ejemplo de uso del \textbf{neighbor\_iterator}
 \textit{}
             \begin{lstlisting}[frame=single]
             tip::Graph<int> G;
@@ -560,7 +560,7 @@ El método no tiene ningún tipo de retorno.
 
 \subsubsection{add\_edge}
 \label{sec:add-edge}
-\Code{add\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: Su propósito es crear la relación entre el vértice \Code{v} y el vértice \Code{w}. Deja en forma consistente el vecindario de \Code{v} y el vecindario de \Code{v}.
+\Code{add\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: Su propósito es crear la relación entre el vértice \Code{v} y el vértice \Code{w}. Deja en forma consistente el vecindario de \Code{v} y el vecindario de \Code{w}.
 
 \subsubsection{remove\_edge}
 \label{sec:remove-edge}
@@ -577,13 +577,6 @@ El método no tiene ningún tipo de retorno.
 
 
 
-
-
-
-
-
-
-\
 
 
 
