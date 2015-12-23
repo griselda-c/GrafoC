@@ -44,7 +44,7 @@ if __name__ == "__main__":
             print "  opening graph file"
             graph = as_graph(open(sys.argv[1] + '.' + str(n)).read())
             print "  calling h-graph program"
-            call(["./triangles", sys.argv[1] + '.' + str(n)])
+            #call(["./triangles", sys.argv[1] + '.' + str(n)])
             print "  testing the integrity of the h-graph",
             hgraph = as_graph(open(sys.argv[1] + '.' + str(n) + '.graph').read())
             if sorted(hgraph.edges()) != sorted(graph.edges()):

@@ -51,7 +51,7 @@
 \section{Introducción}
 \label{sec:introduccion}
 
-Un grafo es un par $G = (V, E)$ donde $V$ son vértices y $E$ son aristas que reflejan la conexión entre un par de vértices.  Los grafos se usan para modelar objetos de aplicaciones reales en forma abstracta.  Por ejemplo, en una red social las personas son representadas por los vértices y las aristas representan las relaciones entre ellas.  La ventaja de los grafos es que proveen una terminología común, blah.  La teoría de grafos se encarga del estudio de grafos y, en particular, la teoria algoritmica de grafos se encarga de los problemas computacionales asociados.
+Un grafo es un par $G = (V, E)$ donde $V$ son vértices y $E$ son aristas que reflejan la conexión entre un par de vértices.  Los grafos se usan para modelar objetos de aplicaciones reales en forma abstracta.  Por ejemplo, en una red social las personas son representadas por los vértices y las aristas representan las relaciones entre ellas.  La ventaja de los grafos es que proveen una terminología común, blah.  La teoría de grafos se encarga del estudio de grafos y, en particular, la teoría algoritmica de grafos se encarga de los problemas computacionales asociados.
 
 
 Este trabajo surge de la necesidad de verificar la viabilidad y dificultad de implementar la estructura $h$-grafo descripta por Lin et al. en~\cite{}``Arboricity, $h$-index, and dynamic algorithms''.   Esta estructura implementa el \emph{tipo abstracto de datos} (TAD) \Grafo.  Esta estructura esta pensada para aplicaciones que utilizan grafos dinámicos.  Por \emph{dinámico} nos referimos a que permite la inserción y borrado de vértices y aristas, a la vez que provee funciones de consulta.  La ventaja de esta estructura es que es muy eficiente en grafos ralos, i.e., grafos que tienen una baja \emph{arboricidad}.  
@@ -65,7 +65,7 @@ Los objetivos principales de este trabajo son:
   \item testear la eficiencia de la estructura en grafos ralos grandes.
 \end{itemize}
 
-El presente documento esta organizado de la siguiente forma.  En la Sección~\ref{} damos blah.  En la Seccion~\ref{} hacemos bleh.
+El presente documento esta organizado de la siguiente forma.  En la Sección \ref{sec:tad grafo} hablaremos sobre el Tipo Grafo donde haremos un repaso de la interfaz que tiene en general todos los grafos.  En la Sección \ref{sec:h-grafo} explicaremos la estructura del $h$-graph y describiremos los diferentes algoritmos para implementar la interfaz del grafo. La Sección \ref{sec:c++} hablaremos sobre la implementación en c++. Esta sección esta dividia en dos subsecciones. En la subsección \ref{sec:c++:interfaz} describiremos la interfaz del $h$-graph en c++. En la subsección \ref{sec:c++:estructura} explicaremos la estructura en $c++$ para implementar el $h$-graph. Por último en la sección \ref{sec:experimentación} expondremos los resultados de la experimentación de medir la eficiencia de la estructura $h$-graph.
 
 \section{Preliminares}
 \label{sec:definiciones}
@@ -79,7 +79,7 @@ Un \emph{grafo} es un par $(V, E)$ donde $V$ \ldots (ver Figura~\ref{fig:definic
   \centering
   \fbox{Figura de un grafo en el que mostramos las definciones}
 
-  \caption{Grafo cuyo conjunto de vertices es $V = $ y cuyo conjunto de aristas es $E =$.  En este grafo.}\label{fig:definiciones}
+  \caption{Grafo cuyo conjunto de vértices es $V = $ y cuyo conjunto de aristas es $E =$.  En este grafo.}\label{fig:definiciones}
 \end{figure}
 
 
@@ -90,11 +90,11 @@ Camino: es cualquier subconjunto de aristas contiguas, es decir, donde se cumpla
 
 \def\lstlistingname{Pseudocódigo}
  
-El propósito de esta sección es presentar la interfaz abstracta del objeto grafo que implementaremos.  Este objeto es dinámico en el sentido \ldots.  Asimismo, ofrece distintas operaciones de consulta, que estan pensadas para poder recorrer eficientemente el vecindario de las distintas aristas del grafo.  Estas operaciones son muy útiles, por ejemplo, cuando uno quiere analizar la estructura local del grafo.  Es decir, cómo se conectan los vecinos de un vertice $v$ dado.  
+El propósito de esta sección es presentar la interfaz abstracta del objeto grafo que implementaremos.  Este objeto es dinámico en el sentido que va cambiando debido a que permite agregar y borrar vértices y aristas.  Asimismo, ofrece distintas operaciones de consulta, que estan pensadas para poder recorrer eficientemente el vecindario de las distintas aristas del grafo.  Estas operaciones son muy útiles, por ejemplo, cuando uno quiere analizar la estructura local del grafo.  Es decir, cómo se conectan los vecinos de un vertice $v$ dado.  
 
-Para describir la interfaz del TAD grafo, vamos a detallar cada una de las operaciones junto con sus propósitos y sus requerimientos.  Esta descripción será de alto nivel tal y como se desarrolla en~\cite{}.  La idea de esta descripcion es fijar los conceptos necesarios para la posterior descripcion de su implementación en el lenguaje C++.  Asimismo, mostraremos un ejemplo de su uso potencial y describiremos la complejidad temporal esperada.  Obviamente, esta complejidad está en función de la implementación que describimos en la Seccion~\ref{sec:h-grafo}.  
+Para describir la interfaz del TAD grafo, vamos a detallar cada una de las operaciones junto con sus propósitos y sus requerimientos.  Esta descripción será de alto nivel tal y como se desarrolla en~\cite{}.  La idea de esta descripcion es fijar los conceptos necesarios para la posterior descripción de su implementación en el lenguaje C++.  Asimismo, mostraremos un ejemplo de su uso potencial y describiremos la complejidad temporal esperada.  Obviamente, esta complejidad está en función de la implementación que describimos en la Seccion~\ref{sec:h-grafo}.  
 
-Aclarar que el tipo grafo es paramétrico, es decir, que almacena objetos de un tipo \texttt{elem}
+l tipo grafo es paramétrico, es decir, que almacena objetos de un tipo \texttt{elem}
 
 \subsection{\texttt{create\_graph()}}
 \label{sec:tad grafo:create-graph}
@@ -489,7 +489,7 @@ En la implementación del $h$-graph se provee al usuario tres tipos de iteradore
 
 \subsubsection{const\_vertex\_iterator}
 \label{sec:vertex iterator}
-El \textbf{const\_vertex\_iterator}r es un iterador bidireccional que apunta a un vértice. Este iterador se obtiene al agregar un nuevo vértice al grafo. Este iterador le va servir al usuario para manipular el grafo, ya sea para agregar o borrar una arista, borrar un vértice o recorrer todos los vértices del grafo. Sin embargo, el iterador no permite al usuario modificar directamente información del vértice, como por ejemplo el grado.
+El \textbf{const\_vertex\_iterator} es un iterador bidireccional que apunta a un vértice. Este iterador se obtiene al agregar un nuevo vértice al grafo. Este iterador le va servir al usuario para manipular el grafo, ya sea para agregar o borrar una arista, borrar un vértice o recorrer todos los vértices del grafo. Sin embargo, el iterador no permite al usuario modificar directamente información del vértice, como por ejemplo el grado.
 
 Para recorrer todos los vértices del grafo, la clase Graph posee los métodos \textit{begin()} y \textit{end()} que retornan el iterador const\_vertex\_iterator.
 
@@ -546,26 +546,30 @@ for(auto it = G.H_begin(v1); it != G.H_end(v1); ++it) {
 Respetando el TAD grafo descripto en la sección \ref{sec:tad grafo} la clase \Code{Graph} ofrece los siguientes métodos:
 \subsubsection{insertVertex}
 \label{sec:insertVertex}
-\Code{insertVertex(const Elem\& elem)}: Que al igual que en \Code{insert\_vertex} del TAD grafo (ver sección \ref{sec:tad grafo:insert-vertex}) inserta un nuevo vértice al grafo.
+\Code{insertVertex(const Elem\& elem)}: Su propósito es insertar un nuevo vértice al grafo.
 El tipo de retorno del método es un iterador \Code{const\_vertex\_iterator} (\ref{sec:vertex iterator}), recordemos que este iterador es el que va a permitir al usuario agregar y borrar aristas.
 
 
 \subsubsection{remove\_vertex}
 \label{sec:remove-vertex}
 
-\Code{remove\_vertex(const\_vertex\_iterator v)}: Para remover el vértice \Code{v} se recorre $N(v)$ para eliminar a \Code{v} de $N(z)$. Como veremos en la sección \ref{sec:c++:estructura:Neighbor.h} cada elemento \Code{z} es una tripla de tres punteros:
-neighbor(puntero al vértice \Code(z)), list\_pointer(puntero a la lista en donde esta \Code{v} en $z$) y el self\_pointer(puntero directo a \Code{v} en \Code{z}). Usando estos punteros ubicamos rápidamente a \Code{v} y lo eliminamos.
+\Code{remove\_vertex(const\_vertex_iterator v)}: Su propósito es eliminar un vértice \Code{v} del grafo y dejar en forma consistente el vecindario de los demás vértices con los que el vértice \Code{v} tenía relación. Esto significa eliminar las aristas que involucraban a \Code{v}.
+El método no tiene ningún tipo de retorno.
 
-Al eliminar \Code{v} de $z$ es necesario disminuir el \Code{d(z)} en 1. Esto conlleva a actualizar el $N(z)$, tal como se detallo en el remove\_edge de la estructura $h$-graph (\ref{sec:hgraph:remove_edge})
 
-Por último se remueve a \Code{v} de la lista de vértices del Grafo.
 
 \subsubsection{add\_edge}
 \label{sec:add-edge}
-
+\Code{add\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: Su propósito es crear la relación entre el vértice \Code{v} y el vértice \Code{w}. Deja en forma consistente el vecindario de \Code{v} y el vecindario de \Code{v}.
 
 \subsubsection{remove\_edge}
 \label{sec:remove-edge}
+\Code{remove\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: su propósito es eliminar la relación entre los vértices \Code{v} y el vértice \Code{w}. Deja en forma consistente los vecindarios de los dos vértices.
+
+Toma como parámetro un iterador que apunta a \Code(v) y otro que apunta a \Code{w}.
+
+El método no tiene ningún tipo de retorno.
+
 
 
 
@@ -659,7 +663,7 @@ Recordemos que \Code{Graph} concentra las definiciones de qué significa cada ti
 
 Los objetos de esta clase se van a almacenar en listas que juntas representan el vecindario $N(v)$ de un vértice $v$.
 
-Cada \Code{Neighbor} representa un vecino $w$ de $v$ que mantiene toda la informacinó necesaria para que sea eficiente eliminar $v$ de $N(w)$ cuando se tiene acceso a $w$ en $N(v)$, como se vio en la seccion ~\ref{sec:hgraph:remove_edge}
+Cada \Code{Neighbor} representa un vecino $w$ de $v$ que mantiene toda la información necesaria para que sea eficiente eliminar $v$ de $N(w)$ cuando se tiene acceso a $w$ en $N(v)$, como se vio en la seccion ~\ref{sec:hgraph:remove_edge}
 
 Esta estructura es simplemente una tripla de tres punteros:
 
@@ -698,6 +702,10 @@ Esta estructura es simplemente una tripla de tres punteros:
             ListPtr list_pointer;
   }
 \end{lstlisting}
+
+\section{Resultados de la experimentación}
+\label{sec:experimentación}
+"tiempo vs complejidad"
 
 
 
