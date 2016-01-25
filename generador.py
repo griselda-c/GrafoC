@@ -1,5 +1,7 @@
 import networkx as nx
 from networkx.generators.random_graphs import connected_watts_strogatz_graph as real_world
+from networkx.generators.random_graphs import gnp_random_graph
+from networkx.generators.random_graphs import dense_gnm_random_graph
 import sys
 
 
@@ -31,3 +33,12 @@ if __name__ == '__main__':
     for i in xrange(0,ngraphs):
         print "   generando grafo", i
         grabar_grafo(real_world(10+5*i, 4, 0.3), filename + '.' + str(i))
+
+    #for i in xrange(0,ngraphs):
+        #print "   generando grafo", i
+        #grabar_grafo(gnp_random_graph(10+5*i,0.01), filename + '.' + str(i))
+
+    #for i in xrange(0,ngraphs):
+        #print "   generando grafo", i
+	#nodos = 100+5*i
+        #grabar_grafo(dense_gnm_random_graph(100+5*i, nodos*2), filename + '.' + str(i))
