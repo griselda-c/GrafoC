@@ -406,64 +406,64 @@ namespace tip {
             }
 
 
-//             /**
-//              * imprime informacion de debugging
-//              */
-//             std::string dump() const {
-//                 {
-//                     std::string res;
-//                     res += "elemento: " + std::to_string(elem) + '\n';
-//                     res += "grado: " + std::to_string(degree) + '\n';
-//                     for(auto it_degn = neighborhood.begin(); it_degn != neighborhood.end(); ++it_degn) {
-//                         if(it_degn != highNeighborhood()) {
-//                             res += "  Vecinos de grado: " + std::to_string(impl::degree(it_degn)) + '\n';
-//                         } else {
-//                             res += "  High neighborhood\n";
-//                         }
-//                         for(auto& neighbor : *it_degn) {
-//                             res += "    neighborhood: " + neighbor.dump();
-//                         }
-//                         res += '\n';
-//                     }
-//                     return res;
-//                 }
-//             }
-//
-//
-//             void invariante_representacion() const {
-//                 check_degree(); check_list_degrees();
-//             }
-//
-//             /**
-//              * retorna true si el grado es igual a la cantidad de elementos en su vecindario
-//              */
-//             void check_degree() const {
-//                 int vecinos = 0;
-//                 for(auto& degn : neighborhood) {
-//                     vecinos += degn.size();
-//                 }
-//                 assert(vecinos == degree);
-//             }
-//
-//             /**
-//              * retorna true si todos en una lista tienen el mismo grado, ninguna lista es vacia,
-//              * las listas estan en orden creciente y todos los de la ultima lista tienen grado mayor al de v
-//              * y los anteriores menor
-//              */
-//             void check_list_degrees() const {
-//                 for(auto itn = neighborhood.begin(); itn != highNeighborhood(); ++itn) {
-//                     assert(itn->size() != 0 &&
-//                     (std::next(itn) == highNeighborhood() ||
-//                     impl::degree(*itn) < impl::degree(*std::next(itn))) &&
-//                     degree > impl::degree(*itn));
-//
-//                     for(auto w = itn->begin(); w != itn->end(); ++w) {
-//                         assert(impl::degree(w) == impl::degree(*itn));
-//                     }
-//                 }
-//                 for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
-//                     assert(impl::degree(w) >= degree);
-//             }
+             /**
+              * imprime informacion de debugging
+              */
+             std::string dump() const {
+                 {
+                     std::string res;
+                     res += "elemento: " + std::to_string(elem) + '\n';
+                     res += "grado: " + std::to_string(degree) + '\n';
+                     for(auto it_degn = neighborhood.begin(); it_degn != neighborhood.end(); ++it_degn) {
+                         if(it_degn != highNeighborhood()) {
+                             res += "  Vecinos de grado: " + std::to_string(Graph::degree(it_degn)) + '\n';
+                         } else {
+                             res += "  High neighborhood\n";
+                         }
+                         for(auto& neighbor : *it_degn) {
+                             res += "    neighborhood: " + neighbor.dump();
+                         }
+                         res += '\n';
+                     }
+                     return res;
+                 }
+             }
+
+
+             void invariante_representacion() const {
+                 check_degree(); check_list_degrees();
+             }
+
+             /**
+              * retorna true si el grado es igual a la cantidad de elementos en su vecindario
+              */
+             void check_degree() const {
+                 int vecinos = 0;
+                 for(auto& degn : neighborhood) {
+                     vecinos += degn.size();
+                 }
+                 assert(vecinos == degree);
+             }
+
+             /**
+              * retorna true si todos en una lista tienen el mismo grado, ninguna lista es vacia,
+              * las listas estan en orden creciente y todos los de la ultima lista tienen grado mayor al de v
+              * y los anteriores menor
+              */
+             void check_list_degrees() const {
+                 for(auto itn = neighborhood.begin(); itn != highNeighborhood(); ++itn) {
+                     assert(itn->size() != 0 &&
+                     (std::next(itn) == highNeighborhood() ||
+                     Graph::degree(*itn) < Graph::degree(*std::next(itn))) &&
+                     degree > Graph::degree(*itn));
+
+                     for(auto w = itn->begin(); w != itn->end(); ++w) {
+                         assert(w->degree() == Graph::degree(*itn));
+                     }
+                 }
+                 for(auto w = highNeighborhood()->begin(); w != highNeighborhood()->end(); ++w)
+                     assert(w->degree() >= degree);
+             }
 
         }; //class Vertex
 

@@ -462,11 +462,11 @@ namespace tip
 
 
 
-//         void invariante_representacion() const {
-//             for(auto& vertex : vertices) {
-//                 vertex.invariante_representacion();
-//             }
-//         }
+         void invariante_representacion() const {
+             for(auto& vertex : vertices) {
+                 vertex.invariante_representacion();
+             }
+         }
 
 
     private:
@@ -550,11 +550,11 @@ namespace tip
 
 
         void update_after_delete(typename Vertices::iterator x) {
-            DEBUG(std::string("BEGIN Graph::update_after_delete(") + std::to_string(x->elem) + ")");
+            //DEBUG(std::string("BEGIN Graph::update_after_delete(") + std::to_string(x->elem) + ")");
 
             //segunda fase.
             for(auto it = x->highNeighborhood()->begin(); it != x->highNeighborhood()->end(); ++it){
-                DEBUG(std::string("Entrando al for Graph::update_after_delete(") + std::to_string(it->neighbor->elem) + ")");
+//                DEBUG(std::string("Entrando al for Graph::update_after_delete(") + std::to_string(it->neighbor->elem) + ")");
                 auto pos_x_in_w = it->neighbor->toPrevList(it->list_pointer, it->self_pointer);
                 it->list_pointer = pos_x_in_w;
                 it->self_pointer = pos_x_in_w->begin();
@@ -572,15 +572,18 @@ namespace tip
                     //actualizamos el neighbor_x que esta en w
                     neighbor_x->list_pointer = x->highNeighborhood();
                     neighbor_x->self_pointer = x->highNeighborhood()->begin();
-                    n = prev_high->erase(n);
+                    prev_high->erase(n);
+                    n--;
                 }
 
                 x->neighborhood.erase(prev_high);
             }
 
-            DEBUG(std::string("END Graph::update_after_delete(") + std::to_string(x->elem) + ")");
+//            DEBUG(std::string("END Graph::update_after_delete(") + std::to_string(x->elem) + ")");
             DUMP(*this);
         }
+
+
 
 
 

@@ -39,6 +39,7 @@
 		<Unit filename="Vertex.h" />
 		<Unit filename="generador.cpp" />
 		<Unit filename="test.cpp" />
+		<Unit filename="test_erase.cpp" />
 		<Unit filename="triangles.cpp" />
 		<Extensions>
 			<code_completion />

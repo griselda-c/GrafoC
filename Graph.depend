@@ -1,13 +1,13 @@
 # depslib dependency file v1.0
-1449027239 source:/home/griselda/Escritorio/GrafoC/Log.cpp
+1453686860 source:/home/griselda/Escritorio/GrafoC/Log.cpp
 	"Log.h"
 
-1449027239 /home/griselda/Escritorio/GrafoC/Log.h
+1453686860 /home/griselda/Escritorio/GrafoC/Log.h
 	<iostream>
 
-1449027239 source:/home/griselda/Escritorio/GrafoC/test.cpp
+1453686860 source:/home/griselda/Escritorio/GrafoC/test.cpp
 
-1449455038 /home/griselda/Escritorio/GrafoC/Graph.h
+1453771681 /home/griselda/Escritorio/GrafoC/Graph.h
 	<algorithm>
 	<iostream>
 	<list>
@@ -17,24 +17,30 @@
 	"Neighbor.h"
 	"Vertex.h"
 
-1449027239 /home/griselda/Escritorio/GrafoC/Neighbor.h
+1453686860 /home/griselda/Escritorio/GrafoC/Neighbor.h
 
-1449456530 /home/griselda/Escritorio/GrafoC/Vertex.h
+1453771531 /home/griselda/Escritorio/GrafoC/Vertex.h
 	<list>
 	"Log.h"
 
-1449370853 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
+1453686860 source:/home/griselda/Escritorio/GrafoC/triangles.cpp
 	<list>
 	<vector>
 	"Graph.h"
 
-1450837418 source:/home/griselda/Escritorio/GrafoC/generador.cpp
-	<bits/stdc++.h>
-	"Graph.h"
-	"Log.h"
-	"triangles.h"
+1453771075 source:/home/griselda/Escritorio/GrafoC/generador.cpp
 
 1449370515 /home/griselda/Escritorio/GrafoC/triangles.h
 	<list>
 	"Graph.h"
+
+1453771716 source:/home/griselda/Escritorio/GrafoC/test_erase.cpp
+	<iostream>
+	<vector>
+	<string>
+	<tuple>
+	<cstdlib>
+	"Graph.h"
+	"Log.h"
+	<bits/stdc++.h>
 
