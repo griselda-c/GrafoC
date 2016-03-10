@@ -29,16 +29,36 @@ if __name__ == '__main__':
     filename = "out" if len(sys.argv) <= 2 else sys.argv[2]
     
     print "cantidad de grafos a generar:", ngraphs
+
     
     for i in xrange(0,ngraphs):
         print "   generando grafo", i
+	nodos = 10+5*i
+        grabar_grafo(nx.newman_watts_strogatz_graph(nodos,4,0.3), filename + '.' + str(i))
+    
+    '''
+    for i in xrange(0,ngraphs):
+        print "   generando grafo", i
+	nodos = 10+5*i
+        grabar_grafo(nx.erdos_renyi_graph(nodos,0.035), filename + '.' + str(i))
+    '''
+    
+    
+ 
+    '''
+    for i in xrange(0,ngraphs):
+        print "   generando grafo", i
         grabar_grafo(real_world(10+5*i, 4, 0.3), filename + '.' + str(i))
+    '''
+    '''
+    for i in xrange(0,ngraphs):
+        print "   generando grafo", i
+        grabar_grafo(gnp_random_graph(10+5*i,0.03), filename + '.' + str(i))
+    '''
+    '''
+    for i in xrange(0,ngraphs):
+        print "   generando grafo", i
+	nodos = 100+5*i
+        grabar_grafo(dense_gnm_random_graph(10+5*i, nodos*2), filename + '.' + str(i))
 
-    #for i in xrange(0,ngraphs):
-        #print "   generando grafo", i
-        #grabar_grafo(gnp_random_graph(10+5*i,0.01), filename + '.' + str(i))
-
-    #for i in xrange(0,ngraphs):
-        #print "   generando grafo", i
-	#nodos = 100+5*i
-        #grabar_grafo(dense_gnm_random_graph(100+5*i, nodos*2), filename + '.' + str(i))
+   '''

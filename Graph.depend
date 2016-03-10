@@ -28,19 +28,18 @@
 	<vector>
 	"Graph.h"
 
-1453771075 source:/home/griselda/Escritorio/GrafoC/generador.cpp
+1454953924 source:/home/griselda/Escritorio/GrafoC/generador.cpp
 
-1449370515 /home/griselda/Escritorio/GrafoC/triangles.h
+1453686860 /home/griselda/Escritorio/GrafoC/triangles.h
 	<list>
 	"Graph.h"
 
-1453771716 source:/home/griselda/Escritorio/GrafoC/test_erase.cpp
-	<iostream>
-	<vector>
-	<string>
-	<tuple>
-	<cstdlib>
+1453858946 source:/home/griselda/Escritorio/GrafoC/test_erase.cpp
+
+1457402382 source:/home/griselda/Escritorio/GrafoC/tiempo.cpp
+	<bits/stdc++.h>
 	"Graph.h"
 	"Log.h"
-	<bits/stdc++.h>
+	"triangles.h"
+	<chrono>
 
