@@ -103,9 +103,12 @@ namespace tip {
                     MESSAGE(std::string("creando la lista de grado"));
                     to_list = insertDegNeighborhood(to_list);
                 }
-                to_list->push_front(*who);
-                MESSAGE("Borrando a", *who, "de su lista");
-                erase(list, who);
+//                 to_list->push_front(*who);
+//                 MESSAGE("Borrando a", *who, "de su lista");
+//                 erase(list, who);
+                to_list->splice(to_list->begin(), *list, who);
+                if(list->empty()) neighborhood.erase(list);
+
                 DEBUG("END OF Graph::toNextList");
                 return to_list;
             }
@@ -133,8 +136,8 @@ namespace tip {
                 } else {
                     to_list = std::prev(list);
                 }
-                erase(list, who);
                 to_list->push_front(*who);
+                erase(list, who);
                 DEBUG("END Graph::toPrevList(", *who, ")");
                 return to_list;
 
@@ -152,6 +155,7 @@ namespace tip {
                 }
                 DEBUG("END OF Graph::erase");
             }
+
 
             typename Neighborhood::iterator insertDegNeighborhood(typename Neighborhood::iterator pos) {
                 return neighborhood.insert(pos, degNeighborhood());

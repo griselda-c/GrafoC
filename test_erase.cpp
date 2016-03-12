@@ -41,7 +41,7 @@
 //Log::get_instance().set_output(&std::cout);
 //Log::get_instance().set_level(Log::Level::NONE);
 //
-//auto fin = 0;
+//auto fin = 99;
 //
 //for(int i = 0; i <= fin; ++i){
 //

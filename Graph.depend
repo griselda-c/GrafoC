@@ -2,12 +2,12 @@
 1453686860 source:/home/griselda/Escritorio/GrafoC/Log.cpp
 	"Log.h"
 
-1453686860 /home/griselda/Escritorio/GrafoC/Log.h
+1457746588 /home/griselda/Escritorio/GrafoC/Log.h
 	<iostream>
 
-1453686860 source:/home/griselda/Escritorio/GrafoC/test.cpp
+1457747197 source:/home/griselda/Escritorio/GrafoC/test.cpp
 
-1453771681 /home/griselda/Escritorio/GrafoC/Graph.h
+1457746687 /home/griselda/Escritorio/GrafoC/Graph.h
 	<algorithm>
 	<iostream>
 	<list>
@@ -17,9 +17,9 @@
 	"Neighbor.h"
 	"Vertex.h"
 
-1453686860 /home/griselda/Escritorio/GrafoC/Neighbor.h
+1457746969 /home/griselda/Escritorio/GrafoC/Neighbor.h
 
-1453771531 /home/griselda/Escritorio/GrafoC/Vertex.h
+1457746793 /home/griselda/Escritorio/GrafoC/Vertex.h
 	<list>
 	"Log.h"
 
@@ -28,18 +28,18 @@
 	<vector>
 	"Graph.h"
 
-1454953924 source:/home/griselda/Escritorio/GrafoC/generador.cpp
-
-1453686860 /home/griselda/Escritorio/GrafoC/triangles.h
-	<list>
-	"Graph.h"
-
-1453858946 source:/home/griselda/Escritorio/GrafoC/test_erase.cpp
-
-1457402382 source:/home/griselda/Escritorio/GrafoC/tiempo.cpp
+1457748051 source:/home/griselda/Escritorio/GrafoC/generador.cpp
 	<bits/stdc++.h>
 	"Graph.h"
 	"Log.h"
 	"triangles.h"
 	<chrono>
+
+1453686860 /home/griselda/Escritorio/GrafoC/triangles.h
+	<list>
+	"Graph.h"
+
+1457747122 source:/home/griselda/Escritorio/GrafoC/test_erase.cpp
+
+1457747005 source:/home/griselda/Escritorio/GrafoC/tiempo.cpp
 

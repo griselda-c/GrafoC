@@ -40,19 +40,19 @@ namespace tip {
     };
 
     template<typename... Targs>
-    void DUMP(Targs... message) {
+    void DUMP(const Targs&... message) {
         Log::get_instance().print(Log::Level::DUMP, message..., '\n');
     }
     template<typename... Targs>
-    void MESSAGE(Targs... message) {
+    void MESSAGE(const Targs&... message) {
         Log::get_instance().print(Log::Level::MESSAGE,  message..., '\n');
     }
     template<typename... Targs>
-    void DEBUG(Targs... message) {
+    void DEBUG(const Targs&... message) {
         Log::get_instance().print(Log::Level::DEBUG,  message..., '\n');
     }
     template<typename... Targs>
-    void CRITICAL(Targs... message) {
+    void CRITICAL(const Targs&... message) {
         Log::get_instance().print(Log::Level::CRITICAL, message..., '\n');
     }
 }

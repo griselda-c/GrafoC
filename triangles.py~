@@ -61,8 +61,8 @@ if __name__ == "__main__":
                 print "  FAILED!!!!:",
                 print str([t for t in test if not t in the_triangles]), "appear in test but are not triangles, while",
                 print str([t for t in the_triangles if not t in test]), "are triangles but do not appear in test."                
-            else: 
-                print "  TEST OK!!!"
+            #else: 
+                #print "  TEST OK!!!"
                 
             n += 1
         except:

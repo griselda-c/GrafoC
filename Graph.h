@@ -65,6 +65,11 @@ namespace tip
 
     public:
 
+        /** CONSTRUCTORES **/
+        Graph() = default;
+        Graph(const Graph<Elem>&) = delete;
+
+
         /**
          * Iterador de los vertices del grafo const
          */
@@ -171,44 +176,6 @@ namespace tip
 
             typename Vertices::const_iterator it;
         };// fin iterator vertex const
-
-
-
-        /**
-         * Iterador de las aristas
-         */
-        class const_edge_iterator
-        {
-        public:
-
-        private:
-        };
-
-        //Constructor por defecto
-        //Graph() { }
-
-        //Destructor.  Libera todos los recursos.
-        //~Graph() {}
-
-        //Constructor por copia
-        //Graph(const Graph& other);
-        //Graph H; //constructor por defecto
-        //Graph G(H); constructor por copia
-        //Graph G{H}; constructor por copia
-        //Graph G = H; constructor por copia.
-
-        //operador de asignacion
-        //Graph& operator=(const Graph& graph);
-        //G = H;
-
-        //Move constructor
-        //Graph(Graph&& other);
-        //Graph G = f() donde f() retorna un grafo por copia (evita la copia)
-
-        //Asignacion por movimiento
-        //Graph& operator=(Graph&& other)
-        //G = f() donde f() retorna un grafo por copia (evita la copia)
-        //G = std::move(H
 
         /**
          * Inserta un nuevo vertice al grafo y retorna un iterador al elemento agregado.
@@ -395,15 +362,6 @@ namespace tip
 
 
         /**
-         * Pertenencia de la arista vw
-         *
-         * @param v
-         * @param w
-         * @return true si la arista pertenece al grafo.
-         */
-        const_edge_iterator find_edge(const_vertex_iterator v, const_vertex_iterator w) const;
-
-        /**
          * Retorna un iterador a los vecinos de v
          *
          * @param args
@@ -527,20 +485,22 @@ namespace tip
                     } else {
                         to_list = std::prev(x->highNeighborhood());
                     }
-                    to_list->push_front(*it);
+
+                    auto to_splice = it; --it;
+                    to_list->splice(to_list->begin(), *(x->highNeighborhood()), to_splice);
 
                     //actualizo el list_pointer  y el self_pointer del neighbor de x en w
-                    auto neighobor_x = it->self_pointer;// donde esta x en w
+                    auto neighobor_x = to_splice->self_pointer;// donde esta x en w
 
                     neighobor_x->list_pointer = to_list;
-                    neighobor_x->self_pointer = to_list->begin();
+                    //neighobor_x->self_pointer = to_list->begin(); no necesario por el splice
 
                     //it = x->highNeighborhood()->erase(it);
-                    x->highNeighborhood()->erase(it);
-                    --it;
+                    //x->highNeighborhood()->erase(it);
+                    //--it;
                 } else {
                     it->list_pointer = it->neighbor->toNextList(it->list_pointer, it->self_pointer);
-                    it->self_pointer = it->list_pointer->begin();
+                    //it->self_pointer = it->list_pointer->begin();
                 }
                 DUMP(*this);
             }
