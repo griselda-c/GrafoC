@@ -1,100 +1,100 @@
-10 ;1 ;0.153402; ms
-15 ;2 ;0.214338; ms
-20 ;4 ;0.465261; ms
-25 ;11 ;3.08597; ms
-30 ;13 ;2.19946; ms
-35 ;19 ;6.80486; ms
-40 ;22 ;4.64365; ms
-45 ;26 ;4.692; ms
-50 ;32 ;5.32778; ms
-55 ;64 ;14.5718; ms
-60 ;57 ;12.6901; ms
-65 ;53 ;10.7944; ms
-70 ;80 ;21.6468; ms
-75 ;78 ;23.9855; ms
-80 ;89 ;27.1257; ms
-85 ;97 ;32.229; ms
-90 ;125 ;51.6508; ms
-95 ;137 ;61.8212; ms
-100 ;160 ;77.1059; ms
-105 ;151 ;70.8466; ms
-110 ;192 ;109.134; ms
-115 ;189 ;104.387; ms
-120 ;222 ;141.348; ms
-125 ;237 ;157.723; ms
-130 ;256 ;183.604; ms
-135 ;267 ;201.557; ms
-140 ;287 ;241.625; ms
-145 ;336 ;321.447; ms
-150 ;314 ;273.224; ms
-155 ;366 ;393.575; ms
-160 ;360 ;365.464; ms
-165 ;404 ;438.003; ms
-170 ;432 ;514.106; ms
-175 ;439 ;538.07; ms
-180 ;468 ;614.129; ms
-185 ;501 ;696.699; ms
-190 ;574 ;918.535; ms
-195 ;564 ;896.902; ms
-200 ;568 ;894.507; ms
-205 ;660 ;1224.9; ms
-210 ;672 ;1238.17; ms
-215 ;654 ;1169.9; ms
-220 ;715 ;1422.7; ms
-225 ;747 ;1562.95; ms
-230 ;801 ;1811.68; ms
-235 ;819 ;1894.39; ms
-240 ;825 ;1916.8; ms
-245 ;872 ;2161.27; ms
-250 ;924 ;2406.61; ms
-255 ;963 ;2735.48; ms
-260 ;1023 ;3130.95; ms
-265 ;1087 ;3459.18; ms
-270 ;1093 ;3542.56; ms
-275 ;1222 ;4540.62; ms
-280 ;1229 ;4574.12; ms
-285 ;1181 ;4095.73; ms
-290 ;1282 ;4876.82; ms
-295 ;1232 ;4424.14; ms
-300 ;1297 ;4954.54; ms
-305 ;1472 ;6639.36; ms
-310 ;1358 ;5497.31; ms
-315 ;1465 ;6464.05; ms
-320 ;1540 ;7219.58; ms
-325 ;1601 ;7849.7; ms
-330 ;1614 ;7900.28; ms
-335 ;1712 ;9183.29; ms
-340 ;1669 ;8706.95; ms
-345 ;1767 ;9982.27; ms
-350 ;1855 ;11002; ms
-355 ;1883 ;11223.5; ms
-360 ;1834 ;10540.8; ms
-365 ;1945 ;12090.5; ms
-370 ;2075 ;14171.6; ms
-375 ;2125 ;14469.8; ms
-380 ;2110 ;14327.7; ms
-385 ;2190 ;15486.3; ms
-390 ;2210 ;15757.9; ms
-395 ;2263 ;16483.3; ms
-400 ;2336 ;17873.4; ms
-405 ;2411 ;19041.2; ms
-410 ;2523 ;21257.6; ms
-415 ;2575 ;22035.8; ms
-420 ;2611 ;22597.8; ms
-425 ;2716 ;25029.5; ms
-430 ;2767 ;25974; ms
-435 ;2864 ;28017.4; ms
-440 ;2959 ;30230.8; ms
-445 ;3000 ;31097.1; ms
-450 ;3046 ;32291.3; ms
-455 ;3004 ;30994; ms
-460 ;3206 ;36555.2; ms
-465 ;3188 ;35572.6; ms
-470 ;3335 ;39595.2; ms
-475 ;3327 ;39023.8; ms
-480 ;3500 ;44001.1; ms
-485 ;3533 ;45178.5; ms
-490 ;3614 ;47315; ms
-495 ;3668 ;49472.7; ms
-500 ;3696 ;50204.8; ms
-505 ;3809 ;53073.8; ms
+10 ;2 ;0.082068;ms ; 0.0444444;density;2;degeneraty;1;operation
+15 ;13 ;0.302354;ms ; 0.12381;density;26;degeneraty;3;operation
+20 ;18 ;0.187351;ms ; 0.0947368;density;36;degeneraty;4;operation
+25 ;25 ;0.335052;ms ; 0.0833333;density;50;degeneraty;5;operation
+30 ;46 ;0.557978;ms ; 0.105747;density;138;degeneraty;6;operation
+35 ;47 ;0.530952;ms ; 0.0789916;density;94;degeneraty;6;operation
+40 ;73 ;0.995317;ms ; 0.0935897;density;219;degeneraty;8;operation
+45 ;100 ;2.18095;ms ; 0.10101;density;400;degeneraty;10;operation
+50 ;111 ;2.98833;ms ; 0.0906122;density;333;degeneraty;10;operation
+55 ;148 ;1.95555;ms ; 0.0996633;density;592;degeneraty;12;operation
+60 ;185 ;3.76759;ms ; 0.10452;density;740;degeneraty;13;operation
+65 ;183 ;1.73525;ms ; 0.0879808;density;732;degeneraty;13;operation
+70 ;221 ;2.59928;ms ; 0.0915114;density;884;degeneraty;14;operation
+75 ;275 ;3.83683;ms ; 0.0990991;density;1375;degeneraty;16;operation
+80 ;323 ;4.49431;ms ; 0.102215;density;1615;degeneraty;17;operation
+85 ;371 ;5.55156;ms ; 0.103922;density;2226;degeneraty;19;operation
+90 ;385 ;5.18134;ms ; 0.0961298;density;2310;degeneraty;19;operation
+95 ;438 ;5.89586;ms ; 0.0980963;density;2628;degeneraty;20;operation
+100 ;516 ;6.66919;ms ; 0.104242;density;3612;degeneraty;22;operation
+105 ;514 ;6.57632;ms ; 0.0941392;density;3598;degeneraty;22;operation
+110 ;591 ;7.90174;ms ; 0.0985821;density;4728;degeneraty;24;operation
+115 ;662 ;9.29102;ms ; 0.100992;density;5296;degeneraty;25;operation
+120 ;710 ;9.9089;ms ; 0.0994398;density;5680;degeneraty;26;operation
+125 ;813 ;12.4477;ms ; 0.104903;density;7317;degeneraty;28;operation
+130 ;890 ;14.3286;ms ; 0.106142;density;8010;degeneraty;29;operation
+135 ;917 ;14.9072;ms ; 0.101382;density;8253;degeneraty;30;operation
+140 ;996 ;17.4082;ms ; 0.102364;density;9960;degeneraty;31;operation
+145 ;1073 ;19.456;ms ; 0.102778;density;10730;degeneraty;32;operation
+150 ;1113 ;20.8362;ms ; 0.0995973;density;11130;degeneraty;33;operation
+155 ;1222 ;23.5189;ms ; 0.102388;density;13442;degeneraty;34;operation
+160 ;1335 ;26.8222;ms ; 0.104953;density;16020;degeneraty;36;operation
+165 ;1377 ;28.1495;ms ; 0.101774;density;16524;degeneraty;37;operation
+170 ;1445 ;30.1104;ms ; 0.100592;density;17340;degeneraty;38;operation
+175 ;1531 ;32.5485;ms ; 0.100558;density;18372;degeneraty;39;operation
+180 ;1602 ;34.6843;ms ; 0.0994413;density;19224;degeneraty;40;operation
+185 ;1713 ;39.2445;ms ; 0.100646;density;22269;degeneraty;41;operation
+190 ;1811 ;44.9096;ms ; 0.100863;density;23543;degeneraty;42;operation
+195 ;1892 ;44.0565;ms ; 0.100026;density;24596;degeneraty;43;operation
+200 ;1994 ;46.7074;ms ; 0.100201;density;27916;degeneraty;44;operation
+205 ;2126 ;51.3653;ms ; 0.101674;density;31890;degeneraty;46;operation
+210 ;2178 ;51.5882;ms ; 0.0992481;density;32670;degeneraty;46;operation
+215 ;2276 ;54.2555;ms ; 0.098935;density;34140;degeneraty;47;operation
+220 ;2382 ;58.2637;ms ; 0.0988792;density;35730;degeneraty;48;operation
+225 ;2529 ;63.5187;ms ; 0.100357;density;40464;degeneraty;50;operation
+230 ;2704 ;67.891;ms ; 0.102677;density;45968;degeneraty;52;operation
+235 ;2776 ;61.5388;ms ; 0.100964;density;47192;degeneraty;52;operation
+240 ;2898 ;68.0638;ms ; 0.101046;density;52164;degeneraty;53;operation
+245 ;3013 ;69.6901;ms ; 0.100803;density;54234;degeneraty;54;operation
+250 ;3066 ;67.4859;ms ; 0.098506;density;55188;degeneraty;55;operation
+255 ;3206 ;80.3084;ms ; 0.0989964;density;57708;degeneraty;56;operation
+260 ;3432 ;90.6185;ms ; 0.10193;density;65208;degeneraty;58;operation
+265 ;3470 ;96.7732;ms ; 0.0991995;density;65930;degeneraty;58;operation
+270 ;3674 ;108.089;ms ; 0.10117;density;73480;degeneraty;60;operation
+275 ;3809 ;110.953;ms ; 0.101102;density;76180;degeneraty;61;operation
+280 ;3868 ;105.81;ms ; 0.0990271;density;77360;degeneraty;62;operation
+285 ;4039 ;105.064;ms ; 0.0998023;density;84819;degeneraty;63;operation
+290 ;4201 ;110.569;ms ; 0.100251;density;88221;degeneraty;64;operation
+295 ;4307 ;114.393;ms ; 0.0993197;density;90447;degeneraty;65;operation
+300 ;4473 ;123.637;ms ; 0.0997324;density;98406;degeneraty;66;operation
+305 ;4617 ;149.339;ms ; 0.0995902;density;101574;degeneraty;67;operation
+310 ;4789 ;150.624;ms ; 0.0999896;density;110147;degeneraty;69;operation
+315 ;5058 ;168.026;ms ; 0.102275;density;121392;degeneraty;71;operation
+320 ;5070 ;145.884;ms ; 0.0993339;density;116610;degeneraty;71;operation
+325 ;5335 ;155.198;ms ; 0.10133;density;128040;degeneraty;73;operation
+330 ;5375 ;155.756;ms ; 0.0990145;density;129000;degeneraty;73;operation
+335 ;5669 ;172.457;ms ; 0.101332;density;141725;degeneraty;75;operation
+340 ;5915 ;178.598;ms ; 0.102638;density;147875;degeneraty;76;operation
+345 ;5862 ;176.892;ms ; 0.0987867;density;146550;degeneraty;76;operation
+350 ;6108 ;187.523;ms ; 0.100008;density;158808;degeneraty;78;operation
+355 ;6296 ;209.802;ms ; 0.100199;density;169992;degeneraty;79;operation
+360 ;6488 ;241.479;ms ; 0.100402;density;168688;degeneraty;80;operation
+365 ;6629 ;223.459;ms ; 0.0997893;density;178983;degeneraty;81;operation
+370 ;6802 ;262.007;ms ; 0.0996411;density;183654;degeneraty;82;operation
+375 ;7021 ;240.933;ms ; 0.100121;density;196588;degeneraty;83;operation
+380 ;7194 ;240.681;ms ; 0.0999028;density;201432;degeneraty;84;operation
+385 ;7421 ;265.469;ms ; 0.100392;density;215209;degeneraty;86;operation
+390 ;7531 ;273.922;ms ; 0.0992815;density;218399;degeneraty;86;operation
+395 ;7804 ;294.937;ms ; 0.100289;density;226316;degeneraty;88;operation
+400 ;8062 ;301.596;ms ; 0.101028;density;241860;degeneraty;89;operation
+405 ;8187 ;308.69;ms ; 0.100073;density;253797;degeneraty;90;operation
+410 ;8230 ;327.714;ms ; 0.0981573;density;246900;degeneraty;90;operation
+415 ;8606 ;365.67;ms ; 0.10018;density;266786;degeneraty;92;operation
+420 ;8806 ;334.707;ms ; 0.10008;density;272986;degeneraty;93;operation
+425 ;9123 ;387.988;ms ; 0.101254;density;291936;degeneraty;95;operation
+430 ;9311 ;395.582;ms ; 0.100949;density;297952;degeneraty;96;operation
+435 ;9396 ;413.916;ms ; 0.0995392;density;310068;degeneraty;96;operation
+440 ;9670 ;433.835;ms ; 0.100124;density;328780;degeneraty;98;operation
+445 ;9907 ;439.836;ms ; 0.100283;density;326931;degeneraty;99;operation
+450 ;10228 ;451.218;ms ; 0.101242;density;347752;degeneraty;101;operation
+455 ;10321 ;480.451;ms ; 0.0999274;density;361235;degeneraty;101;operation
+460 ;10573 ;499.967;ms ; 0.100152;density;370055;degeneraty;102;operation
+465 ;10758 ;471.805;ms ; 0.0997219;density;376530;degeneraty;103;operation
+470 ;11096 ;536.074;ms ; 0.100676;density;399456;degeneraty;105;operation
+475 ;11271 ;552.667;ms ; 0.10012;density;405756;degeneraty;106;operation
+480 ;11530 ;594.103;ms ; 0.100296;density;426610;degeneraty;107;operation
+485 ;11642 ;536.423;ms ; 0.0991906;density;430754;degeneraty;107;operation
+490 ;12176 ;615.056;ms ; 0.101632;density;462688;degeneraty;110;operation
+495 ;12154 ;565.768;ms ; 0.099407;density;461852;degeneraty;110;operation
+500 ;12375 ;635.552;ms ; 0.0991984;density;470250;degeneraty;111;operation
+505 ;12518 ;642.788;ms ; 0.0983656;density;475684;degeneraty;111;operation
