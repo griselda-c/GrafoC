@@ -18,54 +18,30 @@ def grabar_grafo(grafo, filename="datos.txt"):
      archi.write(as_string(grafo))
      archi.close()
 
+def generar_grafo(ngraphs,filename):
+    for i in xrange(0,ngraphs):
+        print "   generando grafo", i
+        nodos = 10+5*i
+	#newman = nx.newman_watts_strogatz_graph(nodos,4,0.3)
+        #erdos = nx.erdos_renyi_graph(nodos,0.15)
+	#real = real_world(nodos, 4, 0.3)
+        #gnp = gnp_random_graph(nodos,0.10)
+	dense = dense_gnm_random_graph(10+5*i, (100+5*i)*2)
+        grabar_grafo(gnp, filename + '.' + str(i))
 
 
 
 if __name__ == '__main__':
 
-    #G = nx.complete_graph(5)
-    #petersen=nx.petersen_graph()
-    #bull = nx.bull_graph()
-    #diamond = nx.diamond_graph()
+    
 
     ngraphs = 1 if len(sys.argv) == 1 else int(sys.argv[1])
     filename = "out" if len(sys.argv) <= 2 else sys.argv[2]
     
     print "cantidad de grafos a generar:", ngraphs
+    
+    generar_grafo(ngraphs,filename)
 
-    '''
-    for i in xrange(0,ngraphs):
-        print "   generando grafo", i
-	nodos = 10+5*i
-        grabar_grafo(nx.newman_watts_strogatz_graph(nodos,4,0.3), filename + '.' + str(i))
-    '''
-    
-    '''
-    for i in xrange(0,ngraphs):
-        print "   generando grafo", i
-	nodos = 10+5*i
-        grabar_grafo(nx.erdos_renyi_graph(nodos,0.15), filename + '.' + str(i))
-    
-    '''
-    
- 
-    '''
-    for i in xrange(0,ngraphs):
-        print "   generando grafo", i
-        grabar_grafo(real_world(10+5*i, 4, 0.3), filename + '.' + str(i))
-    
-    '''
-    '''
-    for i in xrange(0,ngraphs):
-        print "   generando grafo", i
-        grabar_grafo(gnp_random_graph(10+5*i,0.10), filename + '.' + str(i))
-    
-    '''
-    
-    for i in xrange(0,ngraphs):
-        print "   generando grafo", i
-	nodos = 100+5*i
-        grabar_grafo(dense_gnm_random_graph(10+5*i, nodos*2), filename + '.' + str(i))
     
    
 

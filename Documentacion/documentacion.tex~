@@ -29,21 +29,35 @@
 \usepackage{xspace} %espacios despues de un comando
 \usepackage{listings} %para escribir codigo C++
 \usepackage{graphicx} % figuras
-\usepackage[pdftitle={},pdfauthor={},pdfcreator={},pdfsubject={},pdfkeywords={},colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref} %hiperlinks
 \usepackage{amsmath,amsthm,amssymb} %matematica
+\usepackage{booktabs}%tablas bonitas
+\usepackage{xspace}%espacios inteligentes
+\usepackage{relsize}%para poder formatear bien C++ incluso en headers
+\usepackage[pdftitle={},pdfauthor={},pdfcreator={},pdfsubject={},pdfkeywords={},colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref} %hiperlinks
+
+%fuentes 
+% \usepackage{palatino,mathpazo,eulervm}    %texto y matematica
+\usepackage[scaled=0.8]{beramono} %codigo
 
 \newtheorem{theorem}{Teorema}
 
 \newcommand{\Grafo}{\textsc{Grafo}\xspace}
-\newcommand{\Code}[1]{\lstinline[basicstyle={\tt}]@#1@}
+\newcommand{\Code}[1]{\lstinline[breaklines=true,breakindent=2ex,breakatwhitespace=true,basicstyle={\ttfamily}]@#1@}
+\newcommand{\CPPCode}[1]{\lstinline[language=C++,basicstyle={\ttfamily}]@#1@}
 \newcommand{\N}{\mathcal{N}}
+\newcommand{\Graph}{\CPPCode{Graph}\xspace}
+
+\DeclareRobustCommand{\CPP}{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-3}\textbf{++}}\xspace}
+\pdfstringdefDisableCommands{%
+  \def\CPP{C++}%
+}
 
 \lstset{
   numbers=left,
-  numberstyle=\small,
+  numberstyle={\small\ttfamily},
   tabsize=2,
   frame=BRtl,
-  basicstyle={\small\tt},
+  basicstyle={\small\ttfamily},
   aboveskip={12pt},
   belowskip={12pt},
   captionpos=b,
@@ -65,7 +79,7 @@
 \vspace*{\stretch{1}}
 
 \begin{center}
-\includegraphics[width=9cm, keepaspectratio]{./logo-unq.jpg}\\
+\includegraphics[width=9cm, keepaspectratio]{logo-unq.jpg}\\
 
 \medskip
 
@@ -78,7 +92,7 @@ Tecnicatura Universitaria en Programación Informática\\
 
 \vspace{1.5cm}
 
-{\large \bf \hspace{\stretch{3}}Griselda Cardozo\hspace{\stretch{1}}Alejandro Merlo\hspace{\stretch{3}}}
+{\large \bfseries \hspace{\stretch{3}}Griselda Cardozo\hspace{\stretch{1}}Alejandro Merlo\hspace{\stretch{3}}}
 
 \end{center}
 
@@ -162,14 +176,14 @@ La estructura $h$-grafo es una estructura general que se puede usar para represe
 
 Los objetivos específicos de este este trabajo son:
 \begin{enumerate}
-  \item describir una interfaz apropiada para el TAD \Grafo, siguiendo los usos y costumbres de nuestro lenguaje de implementación (C++),
+  \item describir una interfaz apropiada para el TAD \Grafo, siguiendo los usos y costumbres de nuestro lenguaje de implementación (\CPP),
   \item desarrollar el TAD grafo implementado con la estructura $h$-grafo, aprovechando la biblioteca estándar de nuestro lenguaje,
   \item verificar que la eficiencia teórica coincide con la de nuestra implementación para algunos grafos, y
   \item probar la eficiencia de la estructura en algunos grafos ralos grandes.
 \end{enumerate}
 Como objetivo a futuro quedará el análisis de la estructura en aplicaciones reales de gran escala.
 
-El presente documento esta organizado de la siguiente forma.  En el Capítulo~\ref{sec:tad grafo} describimos el TAD \Grafo, desde un punto de vista agnóstico con respecto al lenguaje, haciendo un repaso de su interfaz.  En el Capítulo \ref{sec:h-grafo} explicamos la estructura $h$-grafo, a la vez que describiremos los diferentes algoritmos que implementan las distintas operaciones del TAD \Grafo.  Este Capítulo también está presentado en forma independiente al lenguaje.  Luego, en el Capítulo~\ref{sec:c++}, nos centraremos en la implementación del TAD usando el lenguaje C++. Este capítulo está dividido en dos secciones. La primera, Sección~\ref{sec:c++:interfaz}, da cuenta de la interfaz del $h$-grafo siguiendo los lineamientos de C++. La segunda, Sección~\ref{sec:c++:estructura}, explica cómo se implementa la estructura en C++ aprovechando la biblioteca estándar.  El Capítulo~\ref{sec:experimentación} presenta brevemente algunos resultados en los que medimos la eficiencia de la estructura $h$-graph.  Finalmente, el Capítulo~\ref{sec:final} presenta un breve resumen de lo logrado junto con las posibilidades de desarrollo a futuro.
+El presente documento esta organizado de la siguiente forma.  En el Capítulo~\ref{sec:tad grafo} describimos el TAD \Grafo, desde un punto de vista agnóstico con respecto al lenguaje, haciendo un repaso de su interfaz.  En el Capítulo \ref{sec:h-grafo} explicamos la estructura $h$-grafo, a la vez que describiremos los diferentes algoritmos que implementan las distintas operaciones del TAD \Grafo.  Este Capítulo también está presentado en forma independiente al lenguaje.  Luego, en el Capítulo~\ref{sec:c++}, nos centraremos en la implementación del TAD usando el lenguaje \CPP. Este capítulo está dividido en dos secciones. La primera, Sección~\ref{sec:c++:interfaz}, da cuenta de la interfaz del $h$-grafo siguiendo los lineamientos de \CPP. La segunda, Sección~\ref{sec:c++:estructura}, explica cómo se implementa la estructura en \CPP aprovechando la biblioteca estándar.  El Capítulo~\ref{sec:experimentación} presenta brevemente algunos resultados en los que medimos la eficiencia de la estructura $h$-graph.  Finalmente, el Capítulo~\ref{sec:final} presenta un breve resumen de lo logrado junto con las posibilidades de desarrollo a futuro.
 
 \section{Preliminares}
 \label{sec:definiciones}
@@ -177,9 +191,18 @@ El presente documento esta organizado de la siguiente forma.  En el Capítulo~\r
 Como mencionamos en la sección anterior, el objetivo central de este trabajo es implementar un TAD \Grafo que explote la estructura de datos $h$-grafo.  El TAD \Grafo es una representación computacional del objeto abstracto \emph{grafo}, que es el que se estudia en teoría de grafos.  En esta sección incluimos definiciones de la teoría de grafos que son necesarias para comprender nuestro trabajo (ver Figura~\ref{fig:definiciones} en donde se ejemplifican muchas de las definiciones de esta sección).
 
 %Definiciones matematicas
-Un \emph{grafo} es un par $G = (V, E)$ donde $V$ es un conjunto finito de \emph{vértices} y $E$ es un conjunto de pares no ordenados, llamados \emph{aristas}.  Vamos a escribir $V(G)$ y $E(G)$ para denotar a $V$ y $E$, mientras que al par no ordenado formado por $v$ y $w$ lo vamos a escribir como $vw$.  Para cada $vw \in E$, decimos que $v$ y $w$ son \emph{vecinos} o \emph{adyacentes}.  El grado $d(v)$ de un vértice $v$ es la cantidad de vecinos que tiene $v$.  El $k$-vecindario de $v$ es el conjunto $N(v, k)$ de todos los vecinos de $v$ que tienen grado $k$, para algun $k \in \mathbb{N}$.  Obviamente, $N(v,k) = \emptyset$ para todo $k \geq n$.  Al conjunto $N(v)$ de todos los vecinos de $v$ lo llamamos, simplemente, su \emph{vecindario}.  Notar que $N(v)$ es la unión de todos los $k$-vecindarios de $v$, i.e., $N(v) = \bigcup_{i=0}^{n-1}N(v,k)$.
+Un \emph{grafo} es un par $G = (V, E)$ donde $V$ es un conjunto finito de \emph{vértices} y $E$ es un conjunto de pares no ordenados, llamados \emph{aristas}.  Vamos a escribir $V(G)$ y $E(G)$ para denotar a $V$ y $E$, mientras que al par no ordenado formado por $v$ y $w$ lo vamos a escribir como $vw$.  Para cada $vw \in E$, decimos que $vw$ \emph{incide} tanto en $v$ como en $w$ y que, por lo tanto, $v$ y $w$ son \emph{vecinos} o \emph{adyacentes}.  El grado $d(v)$ de un vértice $v$ es la cantidad de vecinos que tiene $v$.  El $k$-vecindario de $v$ es el conjunto $N(v, k)$ de todos los vecinos de $v$ que tienen grado $k$, para algun $k \in \mathbb{N}$.  Obviamente, $N(v,k) = \emptyset$ para todo $k \geq n$.  Al conjunto $N(v)$ de todos los vecinos de $v$ lo llamamos, simplemente, su \emph{vecindario}, mientras que $H(v)$ contiene a todos los vecinos de grado al menos $d(v)$.  Notar que $N(v)$ (resp.\ $H(v)$)es la unión de todos los $k$-vecindarios de $v$ (resp.\ con grado al menos $d(v)$, i.e., $N(v) = \bigcup_{i=0}^{n-1}N(v,k)$ y $H(v) = \bigcup_{i=d(v)}^{n-1}N(v,k)$.
 
-Un grafo $H$ es un \emph{subgrafo} de $G$ cuando $V(H) \subseteq V(G)$ y $E(H) \subseteq E(G)$.  Si $V(H) = V(G)$, entonces $H$ es un subgrafo \emph{generador} de $G$.  Un \emph{camino} de $G$ es una secuencia de vértices distintos $v_1, \ldots, v_k$ tal que $v_iv_{i+1} \in E(G)$ para todo $1 \leq i < k$.  Un ciclo es una secuencia $v_1, \ldots, v_k, v_1$ tal que $v_1, \ldots, v_k$ es un camino.  Los \emph{bosques} son aquellos grafos que no tienen ciclos.  La \emph{arboricidad} $\alpha(G)$ de un grafo $G$ es la mínima cantidad de bosques generadores en las que se puede particionar $E(G)$.  Los siguientes resultados relacionan la arboricidad de $G$ con su cantidad de aristas.
+Un grafo $G'$ es un \emph{subgrafo} de $G$ cuando $V(G') \subseteq V(G)$ y $E(G') \subseteq E(G)$.  Si $V(G') = V(G)$, entonces $G'$ es un subgrafo \emph{generador} de $G$, mientras que si $E(G') = \{vw \in E(G) \mid v,w \in V(G')\}$, entonces $G'$ es un subgrafo \emph{inducido} de $G$.  Sean $V \subseteq V(G)$, $E \subseteq E(G)$, $v \in V(G)$ y $vw \in E(G)$.  Para simplificar la notación de los algoritmos, vamos a escribir:
+\begin{itemize}
+  \item $G \setminus E$ para referirnos al subgrafo de $G$ generado por $E(G) \setminus E$, 
+  \item $G \setminus V$ para referirnos al subgrafo de $G$ inducido por $V(G) \setminus V$, 
+  \item $G - vw$ para referirnos a $G \setminus \{vw\}$, y 
+  \item $G - v$ para referirnos a $G \setminus \{v\}$.
+\end{itemize}
+En otras palabras, $G \setminus E$ (resp.\ $G - \{vw\}$) se obtiene eliminando las aristas de $E$ (resp.\ la arista $vw$), mientras que $G \setminus V$ (resp.\ $G - v$) se obtiene eliminando los vértices de $V$ (resp.\ el vértice $v$) y las aristas que inciden en algún vértice de $V$ (resp.\ en $v$). Análogamente, escribimos $H + vw$ para indicar que $G = H - vw$ y, únicamente en caso en que $N(v) = \emptyset$, $H = G + v$ para indicar que $G = H - v$.  
+
+Un \emph{camino} de $G$ es una secuencia de vértices distintos $v_1, \ldots, v_k$ tal que $v_iv_{i+1} \in E(G)$ para todo $1 \leq i < k$.  Un ciclo es una secuencia $v_1, \ldots, v_k, v_1$ tal que $v_1, \ldots, v_k$ es un camino.  Los \emph{bosques} son aquellos grafos que no tienen ciclos.  La \emph{arboricidad} $\alpha(G)$ de un grafo $G$ es la mínima cantidad de bosques generadores en las que se puede particionar $E(G)$.  Los siguientes resultados relacionan la arboricidad de $G$ con su cantidad de aristas.
 
 \begin{theorem}[\cite{Nash-WilliamsJLMS1964}]
   Para todo grafo $G$ ocurre que
@@ -209,7 +232,7 @@ Un grafo $H$ es un \emph{subgrafo} de $G$ cuando $V(H) \subseteq V(G)$ y $E(H) \
  
 El propósito de esta sección es presentar la interfaz del tipo abstracto \Grafo que implementaremos.  Cada instancia de este TAD es \emph{dinámica}, en el sentido que la instancia va mutando de acuerdo la inserción de vértices y aristas.  Asimismo, el TAD ofrece distintas operaciones de consulta, que están pensadas para poder recorrer eficientemente el vecindario de las distintas aristas del grafo.  Estas operaciones son muy útiles, por ejemplo, cuando uno quiere analizar la estructura ``local'' del grafo.  Es decir, cómo se conectan los vecinos de un vértice $v$ dado entre sí.  
 
-Para describir la interfaz del TAD \Grafo, vamos a detallar cada una de las operaciones junto con sus propósitos y sus requerimientos (precondiciones).  Esta descripción será de alto nivel, tal y como se desarrolla en~\cite{LinSoulignacSzwarcfiterTCS2012}.  La idea de esta sección es fijar los conceptos necesarios para la posterior descripción de su implementación en el lenguaje C++.  Asimismo, mostraremos ejemplos  de uso de las distintas operaciones y describiremos la complejidad temporal esperada.  Obviamente, esta complejidad está en función de la implementación que se pospone al Capítulo~\ref{sec:h-grafo}.  
+Para describir la interfaz del TAD \Grafo, vamos a detallar cada una de las operaciones junto con sus propósitos y sus requerimientos (precondiciones).  Esta descripción será de alto nivel, tal y como se desarrolla en~\cite{LinSoulignacSzwarcfiterTCS2012}.  La idea de esta sección es fijar los conceptos necesarios para la posterior descripción de su implementación en el lenguaje \CPP.  Asimismo, mostraremos ejemplos  de uso de las distintas operaciones y describiremos la complejidad temporal esperada.  Obviamente, esta complejidad está en función de la implementación que se pospone al Capítulo~\ref{sec:h-grafo}.  
 % * <griseldavcardozo@gmail.com> 2016-01-17T19:15:12.371Z:
 %
 % Arriba hay una cita y no sé que poner
@@ -227,7 +250,7 @@ Crea un objeto \Code{G} que representa un grafo $G$ de elementos \Code{elem}. Re
 \begin{description}
   \item [Propósito:] crea un \Code{G} sin vertices ni aristas.
   \item [Retorna:] un puntero \Code{G} al grafo $G$.
-  \item [Complejidad temporal: O(1)]
+  \item [Complejidad temporal:]  $O(1)$.
 \end{description}
 
 
@@ -235,22 +258,22 @@ Crea un objeto \Code{G} que representa un grafo $G$ de elementos \Code{elem}. Re
   G := create_graph()
 \end{lstlisting}
 
-\subsection{\texttt{insert\_vertex(G, info)}}
+\section{\texttt{insert\_vertex(G, info)}}
 \label{sec:tad grafo:insert-vertex}
 
-Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de insertar un nuevo vértice $v$ en $G$.  A este vértice $v$ se le puede asociar cierta información que es la reflejada por el parémetro \Code{info}.  Retorna un puntero \Code{v} al nuevo vértice $v$ agregado.  Este puntero \Code{v} debe usarse para interactuar con $G$ a fin de modificar sus propiedades.  Notar que el puntero \Code{v} es un objeto conocido sólo por \Code{G} y no es compartido con otras instancias del TAD Grafos.  En particular, el uso de \Code{v} con otra instancia que no sea \Code{G} conduce a un comportamiento indefinido.  
+Modifica un objeto \Code{G} que representa un grafo $G$ a fin de representar el grafo $G + v$.  Al vértice $v$ se le puede asociar cierta información que está reflejada por el parámetro \Code{info}.  Retorna un \Code{vertex_iterador} \Code{v} que está posicionado en el vértice $v$ agregado.  Decimos que \Code{v} \emph{representa} o \emph{apunta} a $v$.  Este iterador \Code{v} debe usarse para interactuar con $G$ a fin de modificar sus propiedades.  Notar que el iterador \Code{v} es un objeto conocido sólo por \Code{G} y no es compartido con otras instancias del TAD \Grafo.  En particular, el uso de \Code{v} con otra instancia que no sea \Code{G} conduce a un comportamiento indefinido.
 
-El \lstlistingname~\ref{lst:pseudo:insert_vertex} muestra cómo usar \texttt{insert\_vertex}.
+El \lstlistingname~\ref{lst:pseudo:insert_vertex} muestra cómo usar \Code{insert_vertex}.
   
 \begin{description}
   \item [Parámetros:] \Code{G} representa un grafo $G$ e \Code{info} es cualquier objeto.
-  \item [Propósito:] modifica \Code{G} para representar un grafo $G + v$.
-  \item [Retorna:] un puntero \Code{v} al vértice $v$.
-  \item [Complejidad temporal: O(n)]
+  \item [Propósito:] modifica \Code{G} para representar al grafo $G + v$.
+  \item [Retorna:] un \Code{vertex_iterator} \Code{v} al vértice $v$.
+  \item [Complejidad temporal: O(n)]  {\huge Esta complejidad esta mal. Revisar.}
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de insert\_vertex.  Crea un grafo $G$ con dos vértices, ambos con la letra ``a'' como información.  Luego, el ciclo imprime ``aa''. Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \texttt{vertex\_iterator}.},gobble=2,float=ht,label={lst:pseudo:insert_vertex},emph={insert_vertex}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{insert_vertex}.  Crea un grafo $G$ con dos vértices, ambos con la letra `a' como información.  Luego, el ciclo imprime ``aa''. Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \Code{vertex_iterator}.},gobble=2,float=ht,label={lst:pseudo:insert_vertex},emph={insert_vertex}]
   G := create_graph()
   v := insert_vertex(G, `a')
   w := insert_vertex(G, `a')
@@ -259,19 +282,26 @@ El \lstlistingname~\ref{lst:pseudo:insert_vertex} muestra cómo usar \texttt{ins
 \end{lstlisting}
 
 
-\subsection{\texttt{remove\_vertex(G, v)}}
+\section{\texttt{remove\_vertex(G, v)}}
 \label{sec:tad grafo:remove-vertex}
 
-Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de remover el vértice existente \Code{v} que representa al vértice $v$ en $G$.  Como resultado de esta operación, se invalidan aquellos iteradores que están relacionados con $v$ (es decir: iteradores de vértices que apuntan a $v$, iteradores de vecindarios de $v$, iteradores de vecindarios de cualquier vértice $w \in N(v)$ que circunstancialmente este recorriendo a $v$, e iteradores de vecindarios que circunstancialmente esten recorriendo algún $w \in N(v)$).
+Modifica un objeto \Code{G} que representa un grafo $G$ a fin de representar al grafo $G - v$.  Para ello, \Code{v} debe ser un \Code{vertex_iterator} que represente a $v$; el resultado de la operación está indefinido cuando \Code{v} no representa a un vértice de $G$.  Como resultado de esta operación, se invalidan aquellos iteradores que están relacionados con $v$.  Esto incluye a cualquier:
+\begin{itemize}
+  \item \Code{vertex_iterator} que apunte a $v$, 
+  \item \Code{neighbor_iterator} o \Code{H_neighbor_iterator} asociado a $v$, y 
+  \item \Code{neighbor_iterator} o \Code{H_neighbor_iterator} asociado a $w \in N(v)$ que apunte a $v$.
+\end{itemize}
+  
+El \lstlistingname~\ref{lst:pseudo:remove_vertex} muestra cómo usar \Code{remove_vertex}.
   
 \begin{description}
-  \item [Parámetros:] \Code{G} representa un grafo $G$ y \Code{v} representa un vértice existente $v$ de $G$.
-  \item [Propósito:] modifica \Code{G} para representar un grafo $G - v$.
-  \item [Complejidad temporal: O(n)]
+  \item [Parámetros:] \Code{G} representa un grafo $G$ y \Code{v} representa a $v \in V(G)$.
+  \item [Propósito:] modifica \Code{G} para representar al grafo $G - v$.
+  \item [Complejidad temporal: O(n)] {\huge Esta complejidad esta mal. Revisar.}
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de remove\_vertex. El código crea un grafo $G$ con dos vértices, el primero \texttt{v} representa al vértice $v$ con la letra 'a' y el segundo \texttt{w} representa al vértice $w$ con la letra 'b' como infomación. Luego, remueve \texttt{v} del grafo y el ciclo imprime ``b'' como resultado. Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \texttt{vertex\_iterator}.},gobble=2,float=ht,label={lst:pseudo:remove_vertex},emph={remove_vertex}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{remove_vertex}. El código crea un grafo $G$ con dos vértices, el primero \Code{v} representa al vértice $v$ (letra `a') y el segundo \Code{w} representa al vértice $w$ (letra `b').  Luego, remueve \Code{v} del grafo y, en consecuencia, el ciclo imprime `b' como resultado. Ver Sección~\ref{sec:tad grafo:vertex-iterator} para más información de \Code{vertex_iterator}.},gobble=2,float=ht,label={lst:pseudo:remove_vertex},emph={remove_vertex}]
   G := create_graph()
   v := insert_vertex(G, 'a')
   w := insert_vertex(G, 'b')
@@ -281,20 +311,21 @@ Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el
 \end{lstlisting}
 
 
-\subsection{\texttt{add\_edge(G, v, w)}}
+\section{\texttt{add\_edge(G, v, w)}}
 \label{sec:tad grafo:add-edge}
 
-Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de agregar la arista $vw$ conformada por \Code{v} y \Code{w} que representan los vértices $v$ y $w$ en $G$.
+Modifica un objeto \Code{G} que representa un grafo $G$ a fin de representar el grafo $G + vw$.   Para ello, \Code{v} y \Code{w} deben ser \Code{vertex_iterator} que representen a $v$ y $w$, respectivamente; el resultado de la operación está indefinido cuando \Code{v} o \Code{w} no representan a vértices de $G$.  
 
+El \lstlistingname~\ref{lst:pseudo:add_edge} muestra cómo usar \Code{add_edge}.
 
 \begin{description}
-  \item [Parámetros:] \Code{G} representa un grafo $G$, \Code{v} y \Code{w} representan los vértices existentes $v$ y $w$ de $G$.
+  \item [Parámetros:] \Code{G} representa un grafo $G$, \Code{v} y \Code{w} representan a $v, w \in V(G)$, respectivamente.
   \item [Propósito:] modifica \Code{G} para representar un grafo $G + vw$.
-  \item [Complejidad temporal:]
+  \item [Complejidad temporal:] {\huge Falta}
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de add\_edge. El código crea un grafo $G$ con dos vértices, el primero \texttt{v} representa al vértice $v$ con el número 1 y el segundo \texttt{w} representa al vértice $w$ con el número 2 como infomación. Luego, crea la arista $vw$ entre estos dos vértices dentro del grafo $G$. El ciclo imprime cada uno de los valores de los vecinos de $v$, en este caso como $w$ es su único vecino imprime ``2''. Ver Sección~\ref{sec:tad grafo:neighbor-iterator} para más información de \texttt{neghbor\_iterator}.},gobble=2,float=ht,label={lst:pseudo:add_edge},emph={add_edge}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{add_edge}. El código crea un grafo $G$ con vértices $v$ (número 1) y $w$ (número 2) y agrega la arista $vw$.  El ciclo imprime la información de los vecinos de $v$; en este caso el número 2. Ver Sección~\ref{sec:tad grafo:neighbor-iterator} para más información de \Code{neghbor_iterator}.},gobble=2,float=ht,label={lst:pseudo:add_edge},emph={add_edge}]
   G := create_graph()
   v := insert_vertex(G, 1)
   w := insert_vertex(G, 2)
@@ -304,15 +335,16 @@ Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el
 \end{lstlisting}
 
 
-\subsection{\texttt{remove\_edge(G, v, w)}}
+\section{\texttt{remove\_edge(G, v, w)}}
 \label{sec:tad grafo:remove-edge}
 
-Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de remover la arista $vw$ conformada por \Code{v} y \Code{w} que representan los vértices $v$ y $w$ en $G$.
-Como resultado de esta operación, se invalidan aquellos iteradores de vecindarios que están relacionados con $v$ o $w$ (es decir:  iteradores de vecindarios de $v$ o $w$, e iteradores de vecindarios de otros vértices que circunstancialmente estén recorriendo algún $z \in N(v) \cup N(w)$).
+Modifica un objeto \Code{G} que representa un grafo $G$ a fin de representar el grafo $G - vw$.  Para ello, \Code{v} y \Code{w} deben ser \Code{vertex_iterator} que representen a $v$ y $w$, respectivamente; el resultado de la operación está indefinido cuando \Code{v} o \Code{w} no representan a vértices de $G$.  Como resultado de esta operación, se invalidan todos los \Code{neighbor_iterator} o \Code{H_neighbor_iterator} asociados a $v$ o $w$ que apunten a $v$ o $w$.
+
+El \lstlistingname~\ref{lst:pseudo:remove_edge} muestra cómo usar \Code{remove_edge}.
 
 \begin{description}
   \item [Parámetros:] \Code{G} representa un grafo $G$, \Code{v} y \Code{w} representan vértices adyacentes $v$ y $w$ de $G$, respectivamente.
-  \item [Propósito:] modifica \Code{G} para representar un grafo $G - \{vw\}$.
+  \item [Propósito:] modifica \Code{G} para representar al grafo $G - \{vw\}$.
   \item [Complejidad temporal:]
 \end{description}
 
@@ -330,20 +362,22 @@ Como resultado de esta operación, se invalidan aquellos iteradores de vecindari
 \end{lstlisting}
 
 
-\subsection{\texttt{add\_vertex(G, info, N)}}
+\section{\texttt{add\_vertex(G, info, N)}}
 \label{sec:tad grafo:add-vertex}
 
-Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el grafo $H$ que se obtiene de agregar un nuevo vértice $v$ cuya información está reflejada en el parámetro \Code{info} y una lista de punteros \Code{N} que representa al vecindario $N$ que será asociado a $v$
+Modifica un objeto \Code{G} que representa un grafo $G$ a fin de representar un grafo $H$ tal que $G = H - v$, donde la información de $v$ está reflejada en el parámetro \Code{info}.  Para construir $H$, \Code{N} debe ser una lista de \Code{vertex_iterator} de $G$, de forma tal que $N(v)$ en $H$ coincide con los vértices representados por \Code{N}.   Intuitivamente, \Code{add_vertex(G, info, N)} representa la grafo que se obtiene de agregar un nuevo vértice $v$ cuyo vecindario esta representado por \Code{N}.  Retorna un \Code{vertex_iterador} \Code{v} que representa al vértice $v$ agregado.
+
+El \lstlistingname~\ref{lst:pseudo:add_vertex_with_N} muestra cómo usar \Code{add_vertex}.
 
 \begin{description}
-  \item [Parámetros:] \Code{G} representa un grafo $G$, \Code{info} es cualquier objeto y \Code{N} representa el vecindario $N$.
-  \item [Propósito:] modifica \Code{G} para representar un grafo $G + vn$ donde $n$ es cada elemento de $N$.
-  \item [Retorna:] un puntero \Code{v} al vértice $v$.
-  \item [Complejidad temporal: O(1)]
+  \item [Parámetros:] \Code{G} representa un grafo $G$, \Code{info} es cualquier objeto y \Code{N} es una lista de \Code{vertex_iterator} de \Code{G} que representa al vecindario $N$.
+  \item [Propósito:] modifica \Code{G} para representar un grafo $G + \{vw \mid w \in N\}$.
+  \item [Retorna:] un \Code{vertex_iterator} \Code{v} al vértice $v$.
+  \item [Complejidad temporal: O(1)] {\huge Esta mal, revisar}
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de \Code{add_vertex}. El código crea un grafo $G$ con tres vertices, teniendo el tercer vertice, llamado $v$, a los otros dos como vecinos. Luego, el ciclo imprime ``12''.},gobble=2,float=ht,label={lst:pseudo:add_vertex},emph={add_vertex}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{add_vertex}. El código crea un grafo $G$ con vertices $x$, $y$ y $v$, donde $v$ es vecino de $x$ y $z$. Luego, el ciclo imprime ``12''.},gobble=2,float=ht,label={lst:pseudo:add_vertex_with_N},emph={add_vertex}]
   G := create_graph()
   x := insertVertex(G, 1);
   y := insertVertex(G, 2);
@@ -353,20 +387,22 @@ Modifica un objeto \Code{G} que representa un grafo $G$, a fin de representar el
 \end{lstlisting}
 
 
-\subsection{\Code{vertex_iterator(G)}}%iterador
+\section{\Code{vertex_iterator(G)}}%iterador
 \label{sec:tad grafo:vertex-iterator}
 
-Provee de un puntero que permite desplazarse a través de los distintos vertices del objeto \texttt{G} que representa un grafo $G$ y acceder a ellos, a fin de poder manipularlos de una forma rápida y simple.
+Provee de un \Code{vertex_iterador} que permite desplazarse a través de los vértices del objeto \texttt{G} que representa un grafo $G$.  Además del recorrido, cada \Code{vertex_iterator} puede usarse para manipularlos al vértices que apunta de forma eficiente.  Tener en cuenta que el iterador se invalida si se elimina el vértice apuntado por él.  Las inserciones o remociones de otros vértices y aristas no tienen efectos en el iterador.
+
+El \lstlistingname~\ref{lst:pseudo:vertex_iterator} muestra cómo usar \Code{vertex_iterator}.
 
 \begin{description}
   \item [Parámetros:] \Code{G} representa un grafo $G$.
   \item [Propósito:] proveer al usuario de un mecanismo para iterar los vertices de $G$.
-  \item [Retorna:] un iterador \Code{i} a los vértices de $G$.
+  \item [Retorna:] un \Code{vertex_iterador} \Code{i} que apunta al ``primer'' vértice de $G$.
   \item [Complejidad temporal:]
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de \Code{vertex_iterator}. El código crea un grafo $G$ con el vertice 1 y el vertice 2. Luego, mediante el iterador de $G$ se recorre sus vertices y el ciclo imprime ``12''.},gobble=2,float=ht,label={lst:pseudo:vertex_iterator},emph={vertex_iterator}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{vertex_iterator}. El código imprime alguna permutación de la secuencia 1,2.},gobble=2,float=ht,label={lst:pseudo:vertex_iterator},emph={vertex_iterator}]
   G := create_graph()
   x := insertVertex(G, 1);
   y := insertVertex(G, 2);
@@ -375,20 +411,22 @@ Provee de un puntero que permite desplazarse a través de los distintos vertices
 \end{lstlisting}
 
 
-\subsection{\Code{neighbor_iterator(v)}}%iterador
+\section{\Code{neighbor_iterator(v)}}%iterador
 \label{sec:tad grafo:neighbor-iterator}
 
-Provee de un puntero que permite desplazarse a través de los vecinos del vértice $v$ representado por el objeto \texttt{v}, a fin de acceder y manipular cada vecino de forma rápida y simple.  Si bien no está implementado en esta versión, dicho iterador tambien podría usarse para eliminar directamente la arista entre $v$ y $w$ para cada $w \in N(v)$ que se recorre.
+Provee de un iterador, llamado \Code{neighbor_iterator}, que permite recorrer los vecinos del vértice $v$ representado por el \Code{vertex_iterator} \Code{v}.  De esta forma se puede acceder eficientemente a cada vecino de $v$.  Decimos que el iterador está \emph{asociado} a $v$, mientras que apunta a un vértice $w \in N(v)$ correspondiente a la posición actual del iterador.  Si bien no está implementado en esta versión, un \Code{neighbor_iterator} también podría usarse para eliminar directamente la arista entre $v$ y $w$, donde $w$ es el vértice apuntado por el iterador.  Tener en cuenta que el \Code{neighbor_iterator} asociado a $v$ que apunta a $w$ se invalida cuando se elimina $vw$.  Más aún, las operaciones que alteren a $N(v) \cup N(w)$ (i.e., inserciones y remociones de vecinos de $v$ o $w$) pueden alterar el orden en el que se recorren los vértices.
+
+El \lstlistingname~\ref{lst:pseudo:neighbor_iterator} muestra cómo usar \Code{neighbor_iterator}.
 
 \begin{description}
   \item [Parámetros:] \Code{v} representa un vértice $v$.
   \item [Propósito:] proveer al usuario de un mecanismo para iterar los vecinos de $v$.
-  \item [Retorna:] un iterador \Code{i} a los vecinos de menor grado de $v$.
-  \item [Complejidad temporal:]
+  \item [Retorna:] un \Code{neighbor_iterator} \Code{w} para recorrer $N(v)$.
+  \item [Complejidad temporal:] {\huge Falta}
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de neighbor\_iterator. El código crea un grafo $G$ con el vértice 1, el vértice 2 y el vértice 3. Luego, mediante el iterador de $v$ se recorre sus vecinos de menor grado y el ciclo imprime ``12''.},gobble=2,float=ht,label={lst:pseudo:neighbor_iterator},emph={neighbor_iterator}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{neighbor_iterator}. El código imprime un permutación de 1,2.},gobble=2,float=ht,label={lst:pseudo:neighbor_iterator},emph={neighbor_iterator}]
   G := create_graph()
   x := insertVertex(G, 1);
   y := insertVertex(G, 2);
@@ -398,20 +436,23 @@ Provee de un puntero que permite desplazarse a través de los vecinos del vérti
 \end{lstlisting}
 
 
-\subsection{\Code{H_neighbor_iterator(v)}}%iterador
+\section{\Code{H_neighbor_iterator(v)}}%iterador
 \label{sec:tad grafo:H-neighbors}
 
-Provee de un puntero que permite desplazarse a través de los distintos vecinos de grado mayor o igual al vértice $v$ representado por el objeto \texttt{v}, a fin de poder acceder y manipular cada vecino de forma rápida y simple.  Si bien no está implementado en esta versión, dicho iterador tambien podría usarse para eliminar directamente la arista entre $v$ y $w$ para cada $w \in N(v)$ que se recorre.
+Provee de un iterador, llamado \Code{H_neighbor_iterator}, que permite recorrer $H(v)$ para el vértice $v$ representado por el \Code{vertex_iterator} \Code{v}.  De esta forma se puede acceder eficientemente a cada vecino ``grande'' de $v$.  Decimos que el iterador está \emph{asociado} a $v$, mientras que \emph{apunta} a un vértice $w \in H(v)$ correspondiente a la posición actual del iterador.  Si bien no está implementado en esta versión, un \Code{H_neighbor_iterator} también podría usarse para eliminar directamente la arista entre $v$ y $w$, donde $w$ es el vértice apuntado por el iterador.  Tener en cuenta que el \Code{H_neighbor_iterator} asociado a $v$ que apunta a $w$ se invalida cuando se elimina $vw$.  Más aún, las operaciones que alteren a $N(v) \cup N(w)$ (i.e., inserciones y remociones de vecinos de $v$ o $w$) pueden alterar el orden en el que se recorren los vértices.  En particular, el iterador podría dejar de recorrer $H(v)$, con lo cual se desaconseja su uso ante alteraciones.
+
+El \lstlistingname~\ref{lst:pseudo:H_neighbors} muestra cómo usar \Code{H_neighbor_iterator}.
+
 
 \begin{description}
   \item [Parámetros:] \Code{v} representa un vértice $v$.
-  \item [Propósito:] proveer al usuario de un mecanismo para iterar los vecinos de grado mayor o igual al de $v$.
-  \item [Retorna:] un iterador \Code{i} a los vecinos de grado mayor o igual al de $v$.
+  \item [Propósito:] proveer al usuario de un mecanismo para iterar los vecinos de grado al menos $d(v)$.
+  \item [Retorna:] un iterador \Code{i} apuntando al ``primer'' vértice de $H(v)$.
   \item [Complejidad temporal:]
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de \Code{H_neighbor_iterator}. El código crea un grafo $G$ con el vértice 1, el vértice 2 y el vértice 3. Luego, mediante el iterador de $x$ se recorre sus vecinos de mayor o igual grado y el ciclo imprime ``3''.},gobble=2,float=ht,label={lst:pseudo:H_neighbors},emph={H_neighbors}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{H_neighbor_iterator}. El código imprime 3.},gobble=2,float=ht,label={lst:pseudo:H_neighbors},emph={H_neighbors}]
   G := create_graph()
   x := insertVertex(G, 1);
   y := insertVertex(G, 2);
@@ -420,20 +461,20 @@ Provee de un puntero que permite desplazarse a través de los distintos vecinos 
       print get_info(w)
 \end{lstlisting}
 
-
-\subsection{\Code{degree(v)}}
+\section{\Code{degree(v)}}
 \label{sec:tad grafo:degree}
 
-Dado un objeto \Code{v} que representa un vértice $v$ devuelve la cantidad de vecinos de dicho vértice. 
+Dado un \Code{vertex_iterator} \Code{v} que representa un vértice $v$ de un grafo $G$, devuelve el grado de $v$ en $G$.  El \lstlistingname~\ref{lst:pseudo:degree} muestra cómo usar \Code{degree}.
+
 
 \begin{description}
-  \item [Parámetros:] \Code{v} representa un vértice $v$.
-  \item [Retorna:] un número que denota la cantidad de vecinos de $v$.
+  \item [Parámetros:] \Code{v} representando un vértice $v$.
+  \item [Retorna:] $d(v)$.
   \item [Complejidad temporal: O(1)]
 \end{description}
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de degree. El código crea un grafo $G$ con el vértice 1, el vértice 2 y el vértice 3. Luego se imprime el grado de $v$, es decir, ``2''.},gobble=2,float=ht,label={lst:pseudo:degree},emph={degree}]
+\begin{lstlisting}[caption={Ejemplo de uso de \Code{degree}. El algoritmo imprime $d(v) = 2$.},gobble=2,float=ht,label={lst:pseudo:degree},emph={degree}]
   G := create_graph()
   x := insertVertex(G, 1);
   y := insertVertex(G, 2);
@@ -442,80 +483,130 @@ Dado un objeto \Code{v} que representa un vértice $v$ devuelve la cantidad de v
 \end{lstlisting}
 
 
+
 \chapter{La estructura $h$-grafo}
 \label{sec:h-grafo}
 
-En esta sección describimos la estructura $h$-grafo que usamos para implementar el TAD grafo descripto en la Seccion~\ref{sec:tad grafo}.  Esta estructura es particularmente apropiada para grafos ralos, i.e., grafos cuya arboricidad es baja.  Esto se ve reflejado en  las complejidades temporales esperadas, dado que las mismas dependen de la cantidad de aristas y la arboricidad del grafo.  La descripción la hacemos a alto nivel tal como en el paper.  La idea es explicar, a continuación, como esta compuesta la estructura interna del $h$-grafo y luego detallar cada uno de sus operaciones.
+En esta sección describimos la estructura $h$-grafo que usamos para implementar el TAD \Grafo descripto en la Seccion~\ref{sec:tad grafo}.  Esta estructura está diseñada para grafos ralos, i.e., grafos cuya arboricidad es baja.  Esto se ve reflejado en  las complejidades temporales esperadas, dado que las mismas dependen de la cantidad de aristas y la arboricidad del grafo.  La descripción la hacemos a alto nivel tal como en el artículo que introduce la estructura~\cite{LinSoulignacSzwarcfiterTCS2012}.  La idea es explicar, a continuación, como esta compuesta la estructura interna del $h$-grafo y luego detallar cada uno de sus operaciones.
 
 
-Conceptualmente, la estructura mantiene un objeto \texttt{v} para cada vértice $v$ del grafo $G$.  Este objeto \emph{representa} a $v$ y mantiene la tripla $(d(v), N(v), H(v))$.  Recordemos que:   
+La estructura $h$-grafo \Code{G} que representa a un grafo $G$ es simplemente un lista \Code{G.vertices} que tiene un objeto \Code{v} para cada vértice $v$ del grafo $G$.  Este objeto \emph{representa} a $v$ y mantiene la tripla $(d(v), \N(v), H(v))$, donde $\N(v)$ es la secuencia que se obtiene de eliminar los conjuntos vacíos de $N(v,1), \ldots, N(v, d(v)-1)$.  Recordemos que:   
 \begin{itemize}
-\item $d(v)$ se refiere al grado del vértice
-\item $N(v)$ representa a los vecinos de $v$ que tienen menor grado que $v$
-1\item $H(v)$ representa a los vecinos de $v$ que tienen al menos el grado de $v$.
+\item $d(v)$ es el grado de $v$, i.e., su cantidad de vecinos,
+\item $N(v,k)$ es el $k$-vecindario de $v$, i.e., el conjunto de vecinos de $v$ que tienen grado $k$, y
+\item $H(v)$ es el \emph{vecindario alto} de $v$, i.e., el conjunto de vecinos de $v$ que tienen grado al menos $d(v)$.
+\end{itemize}
+Asimismo, recordemos que nuestra implementación almacena cierta información asociada a cada vértice $v$.
+
+La Figura~\ref{fig:h-grafo} muestra cómo se representa el $h$-grafo \Code{G} de $G$.  Obviamente, el objeto \Code{v} que representa a $v \in V(G)$ mantiene un número \Code{v.deg} para representar a $d(v)$ y un puntero \Code{v.info} para representar la información asociada a $v$. Para representar a $H(v)$ utiliza una lista doblemente enlazada \Code{v.high}.  Por último, para representar $\N(v)$, el $h$-grafo mantiene una lista doblemente enlazada \Code{v.low}, donde cada elemento \Code{v.low(k)} representa un $k$-vecindario $N(v,k)$.  En esta lista los $k$-vecindarios de $v$ aparecen ordenados de acuerdo al grado de sus elementos; observar que \Code{v.low(k)} no es necesariamente el $k$-ésimo elemento, ya que los $k$-vecindarios vacíos no se almacenan en \Code{v.low}.  Por último, cada objeto \Code{w} de alguna lista \Code{v.low(k)} $\cup$ \Code{v.high}, que representa a $w \in N(v)$, mantiene los punteros (iteradores, ver abajo) \Code{w.neighbor_pointer}, \Code{w.list_pointer} y \Code{w.self_pointer} tales que:
+\begin{itemize}
+  \item \Code{w.neighbor_pointer} apunta al objeto de \Code{G.V} que representa a $w$,
+  \item \Code{w.list_pointer} apunta a la lista \Code{N} de \Code{w.low} $\cup$ \Code{w.high} que contiene al objeto \Code{v'} que representa a $v$, y
+  \item \Code{w.self_pointer} apunta a la posición de \Code{v'} dentro de \Code{N}.  En otras palabras, \Code{w.self_pointer} apunta a la encarnación de $v$ en el vecindario de $w$.
 \end{itemize}
 
- Obviamente $d(v)$ se representa usando un número. Para representar $N(v)$, el $h$-grafo mantiene (ver Figura) una lista con objetos que representan vecinos que tienen igual grado entre sí. Cada uno de estos vecinos, llamémoslo $w$,  guarda un puntero a la lista $H(w)$ y otro puntero al lugar exacto dónde esta $v$ en $H(w)$.
+\newcommand{\caja}[1]{\fbox{\!\scriptsize#1\!}}
+\newcommand{\VV}[3]{v_{#1}\caja{#2}=\left\{\parbox{12cm}{\ensuremath{#3}}\right.}
+\newcommand{\NNN}[1]{\mathcal{N}=\left\{\parbox{12cm}{\ensuremath{#1}}\right.}
+\newcommand{\NNNEmpty}{\mathcal{N}=\emptyset}
+\newcommand{\neigh}[5]{#1\caja{#2}: \mathtt{s}=#3, \mathtt{l}=#4, \mathtt{n}=#5}
+\newcommand{\NN}[3]{\mathtt{N}(#1)\caja{#2}=[#3]}
+\newcommand{\NH}[2]{\mathtt{H}\caja{#1}=[#2]}
 
-Vale remarcar que los vértices son privados del grafo, en el sentido de que no se pueden manipular directamente.  En su lugar, el usuario modifica $v$ a través de un \emph{puntero} que obtiene al insertar el vértice (ver ~\ref{sec:tad grafo:vertex-iterator} ).  Remarcamos que este puntero es un objeto inteligente en el sentido que no muestra la implementacion al usuario.
-
-En el resto de esta sección describimos cómo implementar, usando la estructura $h$-grafo, cada una de las operaciones que el TAD Grafo soporta (ver Seccion~\ref{sec:tad grafo}).  Para que quede claro que estamos usando la estructura $h$-grafo, vamos a escribir cada operacion \texttt{oper(G, $\cdots$)} usando la notación punto, i.e., \texttt{G.oper($\cdots$)} a fin de remarcar que tenemos acceso a la estructura de \texttt{G}.
-
-En esta sección se describirá el algoritmo para insertar aristas y vértices y el algoritmo para removerlos.
-Cómo se dijo anteriormente, la estructura del $h$-graph consiste de tres elementos, $d(v)$ que es el grado del vértice, $N(v)$ es una lista de sublistas que representa al vecindario de $v$, cada sublista no vacía contiene a los vecinos de determinado grado. Las sublistas están ordenadas. $H(v)$ es una la lista que contiene a los vecinos que tienen al menos el grado de $v$.
-
-$h$-graph mantiene un puntero directo a los objetos que representan a los vértices, aristas y listas.
+\begin{figure}[htb!]
+\parindent=0pt\small
+% \begin{center}
 
 
-\subsection{\texttt{G.insert\_vertex(N, info)}}
+
+$\VV{1}{1}{\mathtt{d}=1\\
+           \NNNEmpty\\
+           \NH{7}{\neigh{v_2}{8}{10}{9}{2}}}$\\[2mm]
+$\VV{2}{2}{\mathtt{d}=4\\
+           \NNN{\NN{1}{9}{\neigh{v_1}{10}{8}{7}{1}},\\
+                \NN{2}{11}{\neigh{v_3}{12}{17}{16}{3}, \neigh{v_4}{13}{20}{19}{4}}}\\
+           \NH{14}{\neigh{v_5}{15}{28}{27}{5}}}$\\[2mm]
+$\VV{3}{3}{\mathtt{d}=2\\
+           \NNNEmpty \\
+           \NH{16}{\neigh{v_2}{17}{12}{11}{2}, \neigh{v_5}{18}{25}{24}{5}}}$\\[2mm]
+$\VV{4}{4}{\mathtt{d}=2\\
+           \NNNEmpty \\
+           \NH{19}{\neigh{v_2}{20}{13}{11}{2}, \neigh{v_5}{21}{26}{24}{5}}}$\\[2mm]
+$\VV{5}{5}{\mathtt{d}=4\\
+           \NNN{\NN{1}{22}{\neigh{v_6}{23}{30}{29}{6}} \\
+                \NN{2}{24}{\neigh{v_3}{25}{18}{16}{3}, \neigh{v_4}{26}{21}{19}{4}}}\\
+                \NH{27}{\neigh{v_2}{28}{15}{14}{2}}}$\\[2mm]
+$\VV{6}{6}{\mathtt{d}=1\\
+           \NNNEmpty \\
+           \NH{29}{\neigh{v_5}{30}{23}{22}{5}}}$%
+%
+% \end{center}%
+
+\caption{Estado de los objetos almacenados por un $h$-grafo para representar al grafo de la Figura~\ref{}.  A la izquierda de cada signo $=$ se muestra un objeto representando al vértice $v_i$, para $i = 1, \ldots, 6$. La posición de cada uno de estos objetos en la memoria de la máquina se muestra en una caja; por ejemplo, el objeto representando a $v_1$ ocupa la celda 1 de la memoria.  La información que se mantiene para cada vértice se muestra a la derecha de su signo $=$.  Aquí también la posición de cada objeto en la memoria aparece en una caja, pero sólo para aquellos objetos que están apuntados por algún puntero.  Por ejemplo, el objeto \Code{H} correspondiente a $v_1$ ocupa la celda $7$.  Las letras $\mathtt{s}$, $\mathtt{l}$ y $\mathtt{n}$ representan a los \Code{self_pointer}, \Code{list_pointer} y \Code{neighbor_pointer}, respectivamente.} \label{fig:h-grafo}
+\end{figure}
+
+Como discutimos en la Sección~\ref{sec:introduccion}, uno de los objetivos del trabajo es utilizar las estructuras que provee la biblioteca estándar del lenguaje de implementación.  En particular, queremos utilizar el tipo lista que esta biblioteca provee.  Como parte de nuestra estructura, necesitamos almacenar punteros a los ``nodos'' de la lista.  Este es un inconveniente no menor, ya que no tenemos acceso a la estructura interna de la lista.  Sin embargo, observando el uso que se hace de dichos punteros, vemos que alcanza con que el tipo lista provea algunas funciones que permitan crear, borrar y mover los objetos (i.e., nodos) eficientemente, para lo cual no necesitamos conocer la estructura de la lista.  Cada lenguaje provee un mecanismo distinto para resolver este problema.  En el lenguaje que elegimos (\CPP), la solución es usar iteradores de la lista, ya que proveen esta interfaz de \emph{puntero restringido}.  
+
+Bajo la misma filosofía de ocultamiento de la información, la estructura del tipo \Grafo está oculta al usuario.  En particular, los objetos de cada grafo son privados, en el sentido de que un usuario no pueden manipular estos objetos directamente.  En su lugar, el usuario modifica $v$ a través de un puntero que obtiene al insertar el vértice (ver Sección~\ref{sec:tad grafo:vertex-iterator}).  Siguiendo el ejemplo de la biblioteca estándar de \CPP, vamos a utilizar iteradores para proveer este comportamiento de puntero restringido.  Es decir, usamos iteradores para brindar acceso en $O(1)$ a los elemento sin mostrar la estructura interna al usuario.  Vamos a suponer que existe una operación \Code{vertex_iterator} que dado un objeto \Code{v} de \Code{G.vertices} crea un iterador \Code{it_v} que apunta a \Code{v}.  Luego, usando el operador \Code{it_v->X} podemos acceder al campo (o método) \Code{X} de \Code{v}.  Asimismo, suponemos la existencia de las funciones
+\begin{itemize}
+  \item \Code{v.neighbors()} que retorna un iterador a los vértices de \Code{G.vertices} que pertenecen a \Code{v.low} $\cup$ \Code{v.high}, y 
+  \item \Code{v.H_neighbors()} que retorna un iterador a los vértices de \Code{G.vertices} que pertenecen a \Code{v.high}.
+\end{itemize}
+
+En el resto de esta sección describimos cómo implementar las operaciones principales del TAD \Grafo (ver Seccion~\ref{sec:tad grafo}) usando la estructura $h$-grafo.  Para que quede claro que estamos usando la estructura $h$-grafo, vamos a escribir la signatura de cada operación \texttt{oper(G, $\cdots$)} usando la notación punto, i.e., \texttt{G.oper($\cdots$)} a fin de remarcar que tenemos acceso a la estructura interna de \Code{G}.  Asimismo, vamos a suponer la existencia de las siguientes funciones básicas sobre listas.  Vale remarcar que estas funciones existen en la biblioteca estándar de nuestro lenguaje de implementación.
+\begin{itemize}
+  \item \Code{L.append(what, pos = None)}: agrega \Code{what} inmediatamente atrás de la posición de \Code{L} apuntada por el iterador \Code{pos}.  Si \Code{pos = None}, entonces lo agrega al final.
+  \item \Code{L.prepend(what, pos = None)}: agrega \Code{what} inmediatamente antes de la posición de \Code{L} apuntada por el iterador\Code{pos}.  Si \Code{pos = None}, entonces lo agrega al inicio.
+  \item \Code{L.first()}: retorna un iterador al primer elemento de \Code{L}.
+  \item \Code{L.last()}: retorna un iterador al último elemento de \Code{L}. 
+  \item \Code{L.empty()}: indica si la \Code{L} está vacía.
+  \item \Code{L.erase(pos)}: elimina el elemento de \Code{L} apuntado por el iterador \Code{pos}.
+  \item \Code{L.transfer(z)}: mueve el objeto apuntado por el iterador \Code{z} hacia el inicio de \Code{L}.  La lista que antes contenía a \Code{z} ya no lo contiene más.  Esta operación no afecta a los iteradores.
+\end{itemize}
+
+\section{\texttt{G.insert\_vertex(N = $\emptyset$, info = None)}}
 \label{sec:hgraph:insert_vertex}
 
 %IDEA
-El proceso para insertar un nuevo vértice $v$ en $G$ se divide en dos partes.  Primero, la inserción de un nuevo objeto $v$ que representa un vértice aislado.  Segundo, la inserción de una arista entre $v$ y cada uno de los vértices representados por $N$.  Claramente, el grafo obtenido representa a $G + v$.
 
-\subsubsection*{Pseudocódigo}
+El proceso para insertar un nuevo vértice $v$ en $G$ se divide en dos partes.  Primero, se inserta un nuevo objeto \Code{v} que representa a $v$ en el grafo $H = G + v$.  Segundo, se inserta una arista $vw$ en $H$ para cada $w$ que este representado por uno de los objetos de $N$.  Claramente, el grafo $H$ así obtenido es tal que $N(v)$ se representa con \Code{N}.  El \lstlistingname~\ref{lst:pseudo:G.insert_vertex} muestra cómo está implementado \Code{insert_vertex}.
 
-\begin{lstlisting}[float=h]
-G.insert_vertex(N, info):
-    v := G.append((0, [], []))
-    for w in N:
-        G.insert_edge(v, w)
+\begin{lstlisting}[caption={Implementación de \Code{insert_vertex}.},float=ht,label={lst:pseudo:G.insert_vertex}]
+G.insert_vertex(N = [], info = None):
+  v := G.vertices.append({deg = 0, high = [], low = [], info = info})
+  for w in N:
+    G.insert_edge(v, w)
+  return vertex_iterator(v)
 \end{lstlisting}
 
-\subsection{\texttt{G.remove\_vertex(v)}}
+\section{\texttt{G.remove\_vertex(v)}}
 \label{sec:hgraph:remove_vertex}
 
-El proceso de remover un vértice $v$ en $G$ consiste en primer lugar en remover las aristas en las que esta involucrado el vértice $v$. Para eso es necesario recorrer todo el vecindario de $v$ y aplicar la función \Code{G.remove\_edge(v,w)} ( ver:~\ref{sec:hgraph:remove_edge}) para cada $w$ $\in N(v)$.
+Para remover un vértice $v$ de $G$ revertimos el proceso de inserción.  Es decir, en primer lugar removemos las aristas que inciden en $v$ y luego eliminamos físicamente al objeto \Code{v} de \Code{G.vertices} que representa a $v$.  Para eliminar las aristas, se recorre el vecindario de $v$ y se aplica la función \Code{G.remove_edge(v,w)} (ver Sección~\ref{sec:hgraph:remove_edge}) para cada $w \in N(v)$.  El \lstlistingname~\ref{lst:pseudo:G.remove_vertex} muestra cómo está implementado \Code{remove_vertex}.
 
-Por último se elimina físicamente al objeto \texttt{v} que representa a $v$ en $G$.
-
-\subsubsection*{Pseudocódigo}
-
-\begin{lstlisting}[float=h]
+\begin{lstlisting}[caption={Implementación de \Code{remove_vertex}.},float=ht,label={lst:pseudo:G.remove_vertex}]
 G.remove_vertex(v):
-    para cada w en N(v):
-        para cada z en N(v,d(z)).
-                remove_edge(w,z)
-            
-borrar v de la lista de vertices de G.
+  for w in v->neighbors():
+    G.remove_edge(v,w)
+  G.vertices.erase(v)
 \end{lstlisting}
 
 
 
-\subsection{\texttt{G.insert\_edge(v, w)}}
+\section{\texttt{G.insert\_edge(v, w)}}
 \label{sec:hgraph:insert_edge}
 
-El algoritmo para insertar la nueva arista $vw$ al grafo $G$, siendo $v$ y $w$ vértices de $G$, tiene tres fases bien delimitadas que describimos a continuación.
+El algoritmo para insertar una nueva arista $vw$ al grafo $G$ (para $v, w \in V(G)$) tiene tres fases bien delimitadas que describimos a continuación.  En esta descripción suponemos que \Code{v} y \Code{w} son los \Code{vertex_iterator} que representan a $v$ y $w$.
 \begin{description}
-\item [Primer fase.] La primer fase consiste en actualizar los vecindarios de $v$ y $w$.  Recordemos que $H(v)$ contiene aquellos vecinos de $v$ que tienen grado al menos $d(v)$.  Como $d(v)$ se incrementa en $1$ cuando agregamos la nueva arista $vw$, estamos obligados a sacar de $H(v)$ aquellos vértices cuyo grado es exactamente $d(v)$.  Claramente, cada vértice $z \in H(v)$ que tenemos que sacar tiene grado $d(v)$.  Por lo tanto, tenemos que colocar todos estos vértices en un nueva lista que represente a $N(v, d(v))$.  Entonces, para actualizar el vecindario de $v$,  agregamos a $\N(v)$ una nueva lista $N(v,d(v))$, y movemos cada $z \in H(v)$ de grado $d(v)$ hacia $N(v,d(v))$.  Para mover el vértice $z$, tenemos que actualizar los punteros involucrados.  Notemos que al mover el objeto \texttt{z} que representa a $z$ de $H(v)$ a $N(v, d(v))$, tanto el self pointer de \texttt{z} (que indica dónde se encuentra representado $v$ en $N(z)$) como su list pointer (que indica la lista que contiene a $v$ en $N(z)$) son correcto.  En cambio, tenemos que actualizar el list pointer y el self pointer del objeto \texttt{v} que representa a $v$ en $N(z)$.  Análogamente, para actualizar el vecindario de $w$, agregamos una lista $N(w, d(w))$ a $\N(w)$ y movemos cada $z \in H(w)$ de grado $d(w)$ hacia $N(w, d(w))$.  Vale remarcar que $N(v,d(v))$ (resp.\ $N(w, d(w))$) se crea solo si existe algún vecino de $v$ (resp.\ $w$) con grado $d(v)$ (resp.\ $d(w)$).  
+\item [Primer fase.] La primer fase consiste en actualizar los vecindarios de $v$ y $w$.  Recordemos que $H(v)$ contiene aquellos vecinos de $v$ que tienen grado al menos $d(v)$.  Como $d(v)$ se incrementa en $1$ cuando agregamos la nueva arista $vw$, estamos obligados a sacar de $H(v)$ aquellos vértices cuyo grado es exactamente $d(v)$.  Claramente, cada vértice $z \in H(v)$ que tenemos que sacar tiene grado $d(v)$.  Por lo tanto, tenemos que colocar todos estos vértices en un nueva lista \Code{N} que represente a $N(v, d(v))$.  Luego, para actualizar el vecindario de $v$, agregamos \Code{N} al final de \Code{v->low} y movemos cada \Code{z'} de \Code{v->high} con \Code{z->deg = v->deg} hacia \Code{N}, donde \Code{z = z'->neighbor_pointer} es el objeto que representa a $z$ en \Code{G.vertices}. Al mover \Code{z'}, tenemos que actualizar los iteradores asociados \Code{z'} y al objeto \Code{v'} que representa a $v$ en el vecindario de \Code{z}.  Tanto \Code{z'->neighbor_pointer} (que apunta a \Code{z}), como \Code{z'->list_pointer} (que indica la lista de \Code{z->low} $\cup$ \Code{z->high} donde se encuentra \Code{v'}) y \Code{z->self_pointer} (que indica la posición de \Code{v'} en \Code{z'->list_pointer}) son correctos.  Análogamente, \Code{v'->neighbor_pointer} es correcto y, si uno tiene cuidado de mover \Code{z'} de forma tal de no invalidar los iteradores que lo apuntan, entonces también \Code{v'->self_pointer} es correcto.  En cambio, hay que actualizar \Code{v'->list_pointer} a fin de apuntar a la nueva lista \Code{N}.  Notemos que \Code{v'} se obtiene eficientemente accediendo a \Code{z'->self_pointer}.  Una vez actualizado el vecindario de $v$, se procede análogamente con $w$.  Es decir, agregamos la lista $N(w, d(w))$ a $\N(w)$ y movemos cada $z \in H(w)$ de grado $d(w)$ hacia $N(w, d(w))$.  Vale remarcar que $N(v,d(v))$ (resp.\ $N(w, d(w))$) se crea sólo si existe algún vecino de $v$ (resp.\ $w$) con grado $d(v)$ (resp.\ $d(w)$).  
 
-\item [Segunda fase.]  La segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Notemos que si $v \in H(z)$ antes de la inserción, entonces $v \in H(z)$ luego de inserción, y por lo tanto el objeto que representa a $v$ no debe actualizarse.  En cambio, si $v \not\in H(z)$, entonces $d(v) < d(z)$ en $G$ y $v \in N(z, d(v)) \in \N$.  Por lo tanto, tenemos que mover $v$ desde $N(z,d(v)$) hacia $N(z, d(v)+1)$ para todo $z \in H(v)$ (por simplicidad, consideramos que $N(z, d(z)) = H(z)$).  Para esto, recorremos cada $z \in H(v)$ que tenga grado a mayor a $d(v)$ y movemos el objeto \texttt{v} que representa a $v$ en $N(z)$.  Notemos que dicho objeto \texttt{v} es el apuntado por el self pointer del objeto \texttt{z} que representa a $z$ en $H(v)$.  Por lo tanto, podemos acceder eficientemente a \texttt{v} para moverlo, actualizando los self y list pointers de \texttt{z}.  Una vez finalizado el procesamiento de $H(v)$, tenemos que proceder de manera análoga con $H(w)$.
+\item [Segunda fase.]  La segunda fase consiste en actualizar el vecindario $N(z)$, para cada vértice $z$ que sea vecino de $v$ o $w$.  Notemos que si $v \in H(z)$ antes de la inserción, entonces $v \in H(z)$ luego de inserción, y por lo tanto el objeto \Code{v'} que representa a $v$ no debe actualizarse.  En cambio, si $v \not\in H(z)$, entonces $d(v) < d(z)$ en $G$ y $v \in N(z, d(v)) \in \N(z)$.  Por lo tanto, tenemos que mover \Code{v'} desde \Code{z->low(d(v))} hacia \Code{z->low(d(v)+1)} (o \Code{z->high} si \Code{v->deg + 1 = z->deg}) para todo \Code{z = z'->neighbor_pointer} tal que \Code{z'} pertenece a \Code{v->high}.  Notemos que \Code{v'} es el objeto apuntado por \Code{z'->self_pointer}.  Por lo tanto, podemos acceder eficientemente a \Code{v'} para moverlo.  Al igual que en la primer fase, tenemos que actualizar \Code{z'->list_pointer} para apuntar a la nueva lista que contiene a \Code{v'}.  Una vez finalizado el procesamiento de $H(v)$, tenemos que proceder de manera análoga con $H(w)$.
 %
-\item [Tercer fase.] Por último, tenemos que agregar físicamente a $vw$ en $G$.  Para ello, creamos un objeto \texttt{w} que represente a $w$ en $N(v)$ y otro \texttt{v} que represente a $v$ en $N(w)$, y aumentamos el grado de $v$ y $w$ en $1$.
+\item [Tercer fase.] Por último, tenemos que agregar físicamente a $vw$ en $G$.  Supongamos que $d(v) \leq d(w)$.  Primero creamos un objeto \Code{w'} en \Code{v->high} que represente a $w$.  Luego, buscamos la lista \Code{N} que representa a $N(w, d(v))$, recorriendo \Code{w->low} (si $d(v) < d(w)$) o tomando \Code{N = w->high} (si $d(v) = d(w)$).  Finalmente, insertamos un objeto \Code{v'} que represente a $v$ en $N(w)$ e  incrementamos \Code{v->deg} y \Code{w->deg} en $1$.  
 \end{description}
-A continuación presentamos el pseudocódigo del algoritmo con sus tres fases correspondientes.
+El \lstlistingname~\ref{lst:pseudo:G.insert_edge} resume la implementación del algoritmo.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Implementación de \Code{insert_edge}.},float=ht,label={lst:pseudo:G.insert_edge}]
 G.insert_edge(v,w):
   //Fase 1
   G.update_neighborhood(v)
@@ -523,64 +614,70 @@ G.insert_edge(v,w):
   //Fase 2
   G.update_neighbors(v)
   G.update_neighbors(w)
-  //Fase 3 (insercion fsica)
-  Insertar un nuevo objeto v al final de N(w, d(v))
-  Insertar un nuevo objeto w al final de N(v, d(w))
-  poner v->self_pointer := ultimo de N(v, d(w))
-  poner v->list_pointer := N(v, d(w))
-  poner w->self_pointer := ultimo de N(w, d(v))
-  poner w->list_pointer := N(w, d(v))
-\end{lstlisting}
+  //Fase 3 (insercion fisica)
+  if v->deg > w->deg: swap(v, w)
+  w' = v->high.prepend({neighbor_pointer=w})
+  if v->deg < w->deg: ubicar N := w->low(v->deg) recorriendo w->low
+  else: N := w->high
+  v' = N.prepend({neighbor_pointer=v})
+  v'->self_pointer := N.first()
+  v'->list_pointer := N
+  w'->self_pointer := v->high.first()
+  w'->list_pointer := v->high
+  v->deg += 1; w->deg += 1
 
-\begin{lstlisting}
 G.update_neighborhood(v):
-    crear una nueva lista N(v,d(v))
-    para cada z in H(v) si d(v) = d(z):
-        mover z de H(v) a N(v, d(v))
-        //Obs: z->self_pointer es el objeto que representa a v en N(z)
-        poner z->self_pointer->list_pointer := N(v,d(v))
-    si N(v,d(v)) tiene elementos, entonces insertar N(v,d(v)) al final de N(v) 
+  N := []
+  for z' in v->high if v->deg = z'->neighbor_pointer->deg:
+    N.transfer(z')
+    //Obs: z'->self_pointer apunta a v dentro de z.high
+    z'->self_pointer->list_pointer := N
+  if not N.empty(): v->low.append(N)
+
+G.update_neighbors(v):
+  for z' in v->high if v->deg < z'->neighbor_pointer->deg:
+    //Obs: z'->neighbor_pointer representa a z en G.vertices
+    z = z'->neighbor_pointer
+    //     z'->self_pointer representa a v en z->low,
+    v' := z'->self_pointer
+    //     y z'->list_pointer representa z->low(d(v))
+    N_d := z'->list_pointer
+     
+    if v->deg + 1 < z->deg y z->low.next(N_d) != z->low(v->deg+1):
+      N := z->low.append([], pos = N_d)
+    if v->deg + 1 = z->deg:
+      N := z->high
+    N.transfer(v')
+    Si N_d = []: z->low.erase(N_d)
 \end{lstlisting}
 
-\begin{lstlisting}
-G.update_neighbors(v):
-    para cada z in H(v) si d(v) < d(z):
-        //Obs: z->self_pointer es el objeto que representa a v en N(z),
-        sea v' := z->self_pointer
-        //     y z->list_pointer es el objeto que representa N(z, d(v)) en N(z)
-        sea N(z,d(v)) := z->list_pointer
-        Si la lista que sigue a N(z, d(v)) en N(z) no corresponde a vertices de grado d(v)+1, entonces
-            Agregar una nueva lista N(z, d(v)+1) a continuacion de N(z,d(v))
-        Mover v' de N(z, d(v)) a N(z, d(v)+1).
-        Si N(z, d(v)) queda vacia, entonces remover N(z,d(v)) de N(z)
-\end{lstlisting}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Ejemplo de una ejecucion.
 
 \subsection{\texttt{G.remove\_edge(v,w)}}
 \label{sec:hgraph:remove_edge}
 
-El algoritmo para remover la arista $vw$ del grafo $G$ consiste en deshacer, en el orden inverso, las tres fases que usamos para su inserción (ver Seccion~\ref{sec:hgraph:insert_edge})
+El algoritmo para remover la arista $vw$ del grafo $G$ consiste en deshacer, en el orden inverso, las tres fases que usamos para su inserción (ver Seccion~\ref{sec:hgraph:insert_edge}).  Sean \Code{v} y \Code{w} los \Code{vertex_iterator} que representan a $v$ y $w$.
 
 \begin{description}
-\item[Deshacer tercer fase.] Recordemos que la tercer fase del proceso de inserción de $vw$ consiste en agregar físicamente la arista $vw$.  Luego, para deshacer la tercer fase tenemos que remover físicamente a $vw$ de $G$.  Supongamos, invirtiendo $v$ con $w$ de ser necesario, que $d(v) \leq d(w)$, i.e., $w$ ${\in}$ $H(v)$.  El primer paso es recorrer $H(v)$ hasta localizar al objeto \texttt{w} que representa a $w$ en $H(v)$.  En el segundo paso, usamos el list y self pointers de \texttt{w}, para acceder y borrar la encarnación \texttt{v} de $v$ en la lista \Code{N(w,d(v))}.  Por último, eliminamos a \texttt{w} de $H(v)$ y decrementamos en $1$ el grado de $v$ y $w$.
+\item[Deshacer tercer fase.] Recordemos que la tercer fase del proceso de inserción de $vw$ consiste en agregar físicamente la arista $vw$.  Luego, para deshacer la tercer fase tenemos que remover físicamente a $vw$ de $G$.  Supongamos, intercambiando $v$ con $w$ de ser necesario, que $d(v) \leq d(w)$, i.e., $w \in H(v)$.  El primer paso es recorrer \Code{v->high} hasta localizar al objeto \Code{w'} que representa a $w$.  En el segundo paso, usamos \Code{w'->list_pointer} y \Code{w'->self_pointer} para acceder y borrar al objeto que representa a $v$ en la lista \Code{w->low(d(v))} (o \Code{w->high} cuando $d(v) = d(w)$).  Por último, eliminamos \Code{w'} de \Code{v->high} y decrementamos \Code{v->deg} y \Code{w->deg} en $1$.
 
-\item[Deshacer segunda fase.] Al igual que para la inserción, la segunda fase consiste en actualizar el vecindario $N(z)$ de cada vértice $z$ que sea vecino de $v$ o $w$.  Obviamente, en este caso, la actualización refleja la remoción de $vw$.  Notemos que si $d(v) \geq d(z)$ luego de deshacer la tercer fase, entonces $v \in H(z)$ tanto antes como luego del borrado.  En consecuencia, no hace falta actualizar la encarnación de $v$ en $N(z)$.  En cambio, si $d(v) < d(z)$ luego de deshacer la tercer fase, entonces $z \in H(v)$, con lo cual tenemos que mover la encarnación \Code{v} de $v$ desde $N(z,d(v)+1)$ a $N(z, d(v))$.  (Notar que, en caso en que $v \in H(z)$, \Code{N(z, d(v)+1)} representa a $H(z)$.)  Para ello, recorremos cada encarnación \Code{z} de $z \in H(v)$ y, haciendo uso de sus list y self pointer, accedemos a la encarnación \Code{v} de $v$ en $N(z,d(v)+1)$ y la movemos físicamente a $N(z,d(v))$.  Por último, actualizamos el list pointer de \Code{z} para que apunte a $N(z,d(v))$ y el self pointer de \Code{z} para que apunte a la encarnación de $v$ en $N(z,d(v))$.
+\item[Deshacer segunda fase.] Al igual que para la inserción, la segunda fase consiste en actualizar $N(z)$ para cada vértice $z$ que sea vecino de $v$ o $w$.  Obviamente, en este caso, la actualización refleja la remoción de $vw$.  Notemos que si $d(v) \geq d(z)$ luego de deshacer la tercer fase, entonces $v \in H(z)$ tanto antes como luego del borrado.  En consecuencia, no hace falta actualizar al objeto \Code{v'} que representa a $v$ en $N(z)$.  En cambio, si $d(v) < d(z)$, entonces tenemos que mover \Code{v'} desde \Code{z->low(d(v)+1)} (si $d(v)+1 < d(z)$) o \Code{z->high} (si $d(v)+1=d(z)$) hacia la lista \Code{z->low(d(v))}, donde \Code{z} el el objeto que representa a $z$ en \Code{G.vertices}.  Notemos que $z \in H(v)$ en este caso.  En consecuencia, obtenemos cada \Code{z = z'->neighbor_pointer} recorriendo \Code{v->high}.  Para obtener y mover a \Code{v'}, utilizamos \Code{z'->list_pointer} y \Code{z'->self_pointer} como en la segunda fase de la inserción.  Finalmente, actualizamos \Code{z'->list_pointer} para reflejar el movimiento.
 
 \item[Deshacer primer fase.] En esta fase actualizamos el vecindario de $v$ y $w$, a fin de reflejar la remoción de $vw$.  Recordemos que en la primer fase de inserción de $vw$ movimos cada $z \in H(v)$  de grado $d(v)$ a una lista $N(v,d(v))$, debido a que $d(v)$ aumentaba en 1. Para deshacer este proceso, movemos cada vértice $z$ $\in N(v,d(v))$  hacia $H(v)$. Recordemos que en el $h$-graph cada lista $N(d(v))$ es una lista no vacía, razón por la cual $N(v,d(v))$ es finalmente eliminada.
-
-a continuación el pseudocódigo.
 \end{description}
+El \lstlistingname~\ref{lst:pseudo:G.remove_edge} resume la implementación del algoritmo.
 
-\begin{lstlisting}[caption={Implementación de \Code{remove_edge}, deshaciendo las tres fases de la \Code{insert_edge}.},name=remove_edge,gobble=2,float=ht,label={lst:hgraph:remove_edge},commentstyle={\color{red}},morecomment={[l]{//}}]
+
+\begin{lstlisting}[caption={Implementación de \Code{remove_edge}.},name=remove_edge,gobble=2,float=ht,label={lst:pseudo:G.remove_edge}]
   G.remove_edge(v,w) {
-      if grado(v) > grado(w): swap(v,w)
+      if v->deg > w->deg: swap(v,w)
       //Deshacer Fase 3
-      w := buscar w en H(v)
-      borrar a w->self_pointer de w->list_pointer
-      borrar w de H(v)
-      grado(v) := grado(v) - 1.
-      grado(w) := grado(w) - 1.
+      buscar w' tal que w'->neighbor_pointer = w en v->high
+      w'->list_pointer->erase(w'->self_pointer)
+      v->high.erase(w')
+      v->deg -= 1; w->deg -= 1
       //Deshacer Fase 2
       G.update_neighbors_delete(v)
       G.update_neighbors_delete(w)
@@ -590,67 +687,70 @@ a continuación el pseudocódigo.
   }
   
   G.update_neighbors_delete(v) {
-      para cada z en H(v) {
-          Mover z->self_pointer de z->list_pointer al inicio de prev(z->list_pointer)
-          Borrar z->list_pointer si queda vacia
-          z->list_pointer := prev(z->list_pointer)
-          z->self_pointer := primero de z->list_pointer
-      }
+    for z' en v->high:
+      z := z'->neighbor_pointer
+      v' := z'->self_pointer
+      N := z'->list_pointer
+      P := if v->deg + 1 = z->deg then prev(N) else z->low.last() 
+      if P != z->low(d(v)): P := z->low.append([], P)
+      P->transfer(z'->self_pointer)
+      if N = [] and v->deg+1 < z->deg: z->low.erase(N)
+      z'->list_pointer := P
   }
   
   G.update_neighborhood_delete(v){
-      Si los vertices en prev(H(v)) no tienen grado d(v), retornar
-      para cada z en prev(H(v)) {
-          mover z al inicio de H(v)
-          //z->self_pointer es el objeto que representa a v en N(z).
-          z->self_pointer->list_pointer := H(v)
-          z->self_pointer->self_pointer := primero de H(v)
-      }
-      Borrar prev(H(v))
+    if v->low.last() != v->low(v->deg): return
+    for z' in v->low.last():
+      v->high.transfer(z')
+      //z'->self_pointer representa a v en N(z).
+      z->self_pointer->list_pointer := v->high
+    v->low.erase(v->low.last())
   }
 \end{lstlisting}
 
 
-\chapter{Implementación en C ++}
+\chapter{Implementación en \CPP}
 \label{sec:c++}
 
-En esta sección vamos a describir todos los detalles de la implementación de la estructura $h$-grafo en el lenguaje C++.  La Sección~\ref{sec:c++:interfaz} describe la interfaz pública, mientras que la Sección~\ref{sec:c++:estructura} describe la estructura interna y sus algoritmos.  
+En esta sección vamos a describir todos los detalles de la implementación de la estructura $h$-grafo en el lenguaje \CPP.  Este capítulo imita la estructura de los Capítulos~\ref{sec:tad grafo}~y~\ref{sec:h-grafo}, salvo que se omite la implementación de los algoritmos.\footnote{Los mismos pueden encontrarse en el código \CPP que se adjunta a este documento.}  Primero describimos la interfaz publica (Sección~\ref{sec:c++:interfaz}) y luego la la estructura interna (Sección~\ref{sec:c++:estructura}).  
 
-Tal como vimos en la Sección~\ref{sec:h-grafo}, la estructura $h$-grafo guarda, para cada  vértice $v$, una lista $N(v, d)$ que contiene todos los vecinos de $v$ de grado $d$.  Como veremos en la Sección~\ref{sec:c++:estructura}, la idea es utilizar el tipo \texttt{std::list} de C++ para almacenar los vértices en $N(v, d)$.  Pero, cada objeto \texttt{z} de $N(v, d)$ debe contener un puntero al objeto \texttt{v} que representa a $v$ en $N(z, d(v))$.  Obviamente, como los nodos de \texttt{std::list} son privados, no hay forma de obtener un puntero crudo a dicho nodo físico.  Para resolver este problema, tenemos que usar un objeto que nos permita realizar las operaciones que requerimos de la lista, sin romper su estructura.  En C++, los objetos que se comportan como estos \emph{punteros restringidos} son los iteradores.  
 
-En la Sección~\ref{sec:hgraph:insert_vertex} también mencionamos que \texttt{G.insert\_vertex()} retorna un ``puntero'' al objeto \texttt{v} que representa al nuevo vértice insertado.  Estos punteros no permiten acceder indiscriminadamente a la estructura interna del grafo $G$.  Más aún, el usuario de dicho puntero no debería conocer la estructura interna de $G$.  Para modificar algún aspecto de $v$, el usuario debe invocar un método de $G$ brindando \texttt{v} como parámetro.  Por otra parte, la estructura $h$-grafo ofrece distintos iteradores para recorrer los vértices y las aristas de $G$.  Siguiendo la filosofía de la biblioteca estándar, los punteros que se usan para manipular a $G$ se corresponden con estos iteradores.
-
-\subsection{Interfaz de C++}
+\section{Interfaz de \CPP}
 \label{sec:c++:interfaz}
-Tal como mencionamos anteriormente, en esta sección describiremos la interfaz pública del tipo \textbf{Graph} que está implementado con un $h$-grafo.  La clase \textbf{Graph} de C++ es la que posee los métodos visibles para el usuario, que fueron descriptos en alto nivel en la Sección~\ref{sec:tad grafo}.
-Tal cual se observa en la Sección~\ref{sec:tad grafo}, el usuario no tiene acceso directo a los vértices del $h$-grafo, sino que accede y manipula los mismos a través de \emph{punteros}\footnote{No confundir el concepto de puntero con una dirección de memoria.  Conceptualmente los punteros son objetos que referencian a otros objetos, pero no necesariamente permiten modificar el objeto referenciado.}.  Siguiendo la política de la biblioteca estándar de C++, estos punteros se representan usando iteradores (ver Sección~\ref{sec:tad grafo}).
-Recordemos que la ventaja de los iteradores es que sirven para recorrer la estructura sin saber cómo fue implentada, a la vez que se pueden utilizar como punteros ``seguros'' que no exponen la estructura interna.
 
-Debido a la importancia de los iteradores en la definición de la interfaz pública, en esta sección empezamos describiendo los tres tipos de iteradores que se proveen.
+En esta sección describiremos la interfaz pública de la clase \Graph que implementa al TAD \Grafo usando la estructura $h$-grafo.  La interfaz publica de \Graph contiene, en lenguaje \CPP, las funciones que fueron descriptas en alto nivel en la Sección~\ref{sec:tad grafo}.
+Tal cual se observa y explicita en las Secciónes~\ref{sec:tad grafo}~y~\ref{sec:h-grafo}, el usuario no tiene acceso directo a los objetos que representan a los vértices del grafo en la estructura interna, sino que accede a los mismos a través de \emph{punteros restringidos}.  Siguiendo la política de la biblioteca estándar de \CPP, estos punteros se representan usando iteradores.  Es deseable que estos iteradores se encuadren en la jerarquía estándar de iteradores de \CPP.
 
-\subsubsection{const\_vertex\_iterator}
-\label{sec:vertex iterator}
-
-El tipo \textbf{const\_vertex\_iterator} es un iterador al conjunto de los vértices del grafo.  Siguiendo la terminología de la Sección~\ref{sec:tad grafo}, este iterador es el que se obtiene, por ejemplo, al aplicar la función \Code{vertex_iterator}.  Conceptualmente, el tipo \textbf{const\_vertex\_iterator} representa un iterador bidireccional típico de C++.\footnote{Los iteradores bidireccionales permiten recorrer la estructura hacia adelante y atrás.  El iterador en todo momento apunta o bien a un vértice del grafo o bien a una posición indeterminada que representa el final de la secuencia iterada.}  En consecuencia provee todas las funciones requeridas de este tipo de iteradores (e.g., \Code{operator++} para avanzar, \Code{operator--} para retroceder, etc.).  
-
-Además de las funciones típicas de un iterador, el tipo \textbf{const\_vertex\_iterator} provee las siguientes funciones que permiten acceder al vecindario del vértice $v$ apuntado por el iterador:
-\begin{itemize}
- \item \Code{neighbor_iterator begin() const} y \Code{neighbor_iterator end() const}: implementan la función \Code{neighbor_iterator} que permite recorrer el vecindario de $v$.  En particular, \Code{begin} retorna un iterador al inicio de $N(v)$ (visto como una secuencia) y \Code{end} retorna un iterador a la posición que le sigue al último elemento de $N(v)$.  El tipo (\Code{neighbor_iterator}) de este iterador se describe en la Sección~\ref{sec:neighbor iterator}. 
- \item \Code{deg_iterator H_begin() const} y \Code{deg_iterator H_end() const}: implementan la función \Code{H_neighbor_iterator} que permite recorrer los vecinos de grado al menos $d(v)$.  En particular, \Code{begin} retorna un iterador al inicio de $H(v)$ (visto como una secuencia) y \Code{end} retorna un iterador a la posición que le sigue al último elemento de $H(v)$.  El tipo (\Code{deg_iterator}) de este iterador se describe en la Sección~\ref{sec:deg_iterator}. 
-\end{itemize}
-
-Como mencionamos en la Sección~\ref{sec:tad grafo}, las funciones que manipulan un vértice $v$ del grafo requieren un punteros a $v$.  En la implementación, este punteros es un \textbf{const\_vertex\_iterator} cuyo \Code{operator*} denota a $v$.  Hay dos formas para obtener dicho puntero: 1) cuando se inserta un nuevo vértice se obtiene un puntero al vértice agregado, 2) invocando directamente al método \Code{begin} del grafo.  El Codigo~\ref{lst:c++:const_vertex_iterator} muestra un ejemplo del uso.
+Debido a la importancia de los iteradores en la definición de la interfaz pública, en esta sección empezamos describiendo los tres tipos de iteradores que se proveen en este trabajo.  (Si bien no forma parte de este trabajo, es posible implementar otros iteradores, e.g. iteradores para recorrer y borrar aristas.)
 
 \def\lstlistingname{Código}
+\subsection{\CPPCode{Graph::vertex_iterator}}
+\label{sec:vertex iterator}
+
+La clase \CPPCode{Graph::vertex_iterator}, o simplemente \CPPCode{vertex_iterator}, define los iteradores que apuntan al conjunto de los vértices del grafo.  Este iterador es el que se obtiene, por ejemplo, al aplicar las funciones \Code{vertex_iterator} (Sección~\ref{sec:tad grafo:vertex-iterator}) y \Code{add_vertex} (Sección~\ref{sec:tad grafo:add-vertex}).  Formalmente, la clase \CPPCode{vertex_iterator} implementa un iterador bidireccional constante de acuerdo a la jerarquía de \CPP.\footnote{Los iteradores bidireccionales permiten recorrer la estructura hacia adelante y atrás.  El iterador en todo momento apunta o bien a un vértice del grafo o bien a una posición indeterminada que representa el final de la secuencia iterada.  Al ser constante, el iterador no permite modificar la información asociada a un vértice.}  En consecuencia, su interfaz provee todas las funciones requeridas de este tipo de iteradores (e.g., \CPPCode{operator++} para avanzar, \CPPCode{operator--} para retroceder, etc.).  
+
+Además de las funciones típicas de un iterador, la clase \CPPCode{vertex_iterator} provee las siguientes funciones que permiten acceder al vecindario del vértice $v$ apuntado por el iterador:
+\begin{itemize}
+ \item \CPPCode{operator*() const}: retorna la información asociada al vértice.
+ \item \CPPCode{neighbor_iterator begin() const} y \CPPCode{neighbor_iterator end() const}: implementan la función \Code{neighbor_iterator} (ver Sección~\ref{sec:tad grafo:neighbor-iterator}) que permite recorrer el vecindario de $v$.  En particular, \CPPCode{begin} retorna un iterador al inicio de $N(v)$ (visto como una secuencia) y \CPPCode{end} retorna un iterador a la posición que le sigue al último elemento de $N(v)$.  La clase \CPPCode{neighbor_iterator} se describe en la Sección~\ref{sec:deg_iterator}. 
+ \item \CPPCode{deg_iterator H_begin() const} y \CPPCode{deg_iterator H_end() const}: implementan la función \Code{H_neighbor_iterator} (Sección~\ref{sec:tad grafo:H-neighbors}) que permite recorrer los vecinos de grado al menos $d(v)$.  En particular, \CPPCode{begin} retorna un iterador al inicio de $H(v)$ (visto como una secuencia) y \CPPCode{end} retorna un iterador a la posición que le sigue al último elemento de $H(v)$.  El clase \CPPCode{deg_iterator} se describe en la Sección~\ref{sec:deg_iterator}. 
+\end{itemize}
+
+Hay dos formas para obtener una instancia de la clase \CPPCode{vertex_iterator}:
+\begin{enumerate}[1.]
+  \item Invocando el método \CPPCode{Graph::add_vertex}, que implementa la función \Code{add_vertex} (Seccion~\ref{sec:tad grafo:add-vertex}) para agregar un nuevo vértice, y
+  \item Invocando alguno de los métodos \CPPCode{Graph::begin} o \CPPCode{Graph::end} que juntos implementan \Code{vertex_iterator} (Sección~\ref{sec:vertex iterator}).
+\end{enumerate}
+El \lstlistingname~\ref{lst:c++:const_vertex_iterator} muestra cómo usar un \CPPCode{vertex_iterator}.
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de \Code{const_vertex_iterator} para manipular el grafo.  En el ejemplo, se crean dos vértices unidos por una arista y se imprime dicha arista.},name=const_vertex_iterator,gobble=2,float=ht,label={lst:c++:const_vertex_iterator},language=C++]
+\begin{lstlisting}[caption={Ejemplo de uso de \CPPCode{vertex_iterator} para manipular el grafo.  En el ejemplo, se crean dos vértices unidos por una arista y se imprimen los dos vértices.},name=const_vertex_iterator,gobble=2,float=ht,label={lst:c++:const_vertex_iterator},language=C++]
   void ejemplo_const_vertex_iterator() {
       Graph<int> G;
-      const_vertex_iterator v1 = G.insertVertex(1);
-      const_vertex_iterator v2 = G.insertVertex(2);
+      Graph<int>::vertex_iterator v = G.insertVertex(1);
+      Graph<int>::vertex_iterator w = G.insertVertex(2);
       //notar el uso de iteradores para agregar arista
-      G.add_edge(v1,v2);
+      G.add_edge(v,w);
 
       for(auto it = G.begin(); it != G.end(); ++it) {
           cout << *it << endl;
@@ -658,23 +758,31 @@ Como mencionamos en la Sección~\ref{sec:tad grafo}, las funciones que manipulan
   }
 \end{lstlisting}
 
-\subsubsection{deg\_iterator}
+\subsection{\CPPCode{Vertex::deg_iterator} y \CPPCode{Vertex::neighbor_iterator}}
 \label{sec:deg_iterator}
 
-El tipo \textbf{deg\_iterator} es un iterador al \emph{high neighborhood} $H(v)$ de un vértice $v$ dado.  Siguiendo la terminología de la Sección~\ref{}, \textbf{deg\_iterator} es el tipo de iterador que se obtiene al aplicar la función \Code{H_neighbor_iterator}\footnote{La razón por la que se llama \textbf{deg\_iterator} en lugar de \textbf{h\_iterator} es que la misma implementación se podria usar para recorrer $N(v, d)$ para cualquier grado $d$.  Sin embargo, no implementamos dicha funcionalidad de forma pública.}.  Conceptualmente provee todas las funciones requeridas para ser considerado un iterador bidireccional de C++.
+La clase \CPPCode{Vertex::deg_iterator}, o simplemente \CPPCode{deg_iterator}, define los iteradores que permiten recorrer $H(v)$ para un vértice $v$. Este iterador es el que se obtiene, por ejemplo, al aplicar las función \Code{H_neighbor_iterator}\footnote{La razón por la cual la clase se llama \CPPCode{deg_iterator} en lugar de \CPPCode{H_iterator} es que esta clase se puede usar para recorrer $N(v, d)$ para cualquier grado $d < d(v)$ (de hecho, esa es una funcionalidad descrita en~\cite{LinSoulignacSzwarcfiterTCS2012}).  Sin embargo, no implementamos dicha funcionalidad en esta versión de forma pública.} (Sección~\ref{sec:tad grafo:H-neighbors}).  Análogamente, la clase \CPPCode{Vertex::neighbor_iterator}, o simplemente \CPPCode{neighbor_iterator}, define los iteradores que permiten recorrer $N(v)$; se obtienen, por ejemplo, al aplicar la función \Code{neighbor_iterator} (Sección~\ref{sec:tad grafo:neighbor-iterator}).  Formalmente, ambas clases proveen todas las funciones requeridas para ser considerados iteradores bidireccionales constantes de \CPP.
 
-En principio, la única funcionalidad de este iterador es poder acceder a cada vértice de $H(v)$.  Sin embargo, para evitar múltiples indirecciones, cada iterador \Code{it} provee las siguientes métodos para acceder al vecindario del vértice $w \in H(v)$ apuntado por \Code{*it}\footnote{Si bien no es del todo cierto, consideramos acá que \Code{*it} es de tipo \Code{const_vertex_iterator}.}:
+En principio, la única funcionalidad de ambos iteradores es poder acceder al vértice $w$ de $N(v)$ (o $H(v)$) que está siendo apuntado.  Hay dos opciones para implementar esta solución.  La primera, implementar el \CPPCode{operator*} a fin de que retorne un \CPPCode{vertex_iterator} que apunte a $w$.  La segunda, permitir el casteo automático desde \CPPCode{deg_iterator} y \CPPCode{neighbor_iterator} hacia \CPPCode{vertex_iterator}.  Para evitar múltiples indirecciones, elegimos la segunda opción, dejando el \CPPCode{operator*} como forma de acceder a la información asociada a $w$.  Además, cada iterador provee métodos para acceder al vecindario de $w$.  En resumen, se proveen las siguientes operaciones:
 \begin{itemize}
-  \item \Code{neighbor_iterator begin() const} y \Code{neighbor_iterator end() const}: aplican \Code{it->begin()} e \Code{it->end()}.   Conceptualmente, implementan la función \Code{neighbor_iterator($w$)} de la Sección~\ref{sec:tad grafo}.
-  \item \Code{deg_iterator H_begin() const} y \Code{deg_iterator H_end() const}: aplican \Code{it->H_begin()} e \Code{it->H_end()}. Conceptualmente, implementan la función \Code{H_neighbor_iterator($w$)} de la Sección~\ref{sec:tad grafo}.  
+  \item \CPPCode{operator*() const}: retorna la información asociada a $w$.
+  \item \CPPCode{operator vertex_iterator() const}: casteo automático de un \CPPCode{deg_iterator} (o \CPPCode{neighbor_iterator}) a un \CPPCode{vertex_iterator} que apunta a $w$.
+  \item \CPPCode{vertex_iterator as_vertex_iterator() const:} casteo explícito.
+  \item \CPPCode{neighbor_iterator begin() const} y \CPPCode{neighbor_iterator end() const}: aplican \CPPCode{w->begin()} y \CPPCode{w->end()}, donde \CPPCode{w} es el \CPPCode{vertex_iterator} que apunta a $w$.   Conceptualmente, implementan la función \Code{neighbor_iterator} (Sección~\ref{sec:tad grafo:neighbor-iterator}) con parámetro $w$.
+  \item \CPPCode{deg_iterator H_begin() const} y \CPPCode{deg_iterator H_end() const}: aplican \CPPCode{w->H_begin()} e \CPPCode{w->H_end()} donde \CPPCode{w} es el \CPPCode{vertex_iterator} que apunta a $w$. Conceptualmente, implementan la función \Code{H_neighbor_iterator} (Sección~\ref{sec:tad grafo:H-neighbors}) con parámetro $w$.  
 \end{itemize}
 
-Hay dos formas de obtener un \textbf{deg\_iterator}: 1) invocando \Code{H_begin} sobre un iterador que apunta a un vértice (independientemente del tipo de iterador) y 2) invocando el método \Code{H_begin(v)} del tipo \textbf{Graph}, que toma un \textbf{const\_vertex\_iterator} $v$ como parámetro.  El Codigo~\ref{lst:c++:deg_iterator} muestra un ejemplo del uso.
+Hay dos formas de obtener una instancia de las clase \CPPCode{deg_iterator}: 
+\begin{enumerate}[1.]
+  \item invocando \CPPCode{H_begin()} o \CPPCode{H_end()} sobre cualquier tipo de iterador (todos los iteradores a vértices incluyen esta función para evitar indirecciones), y 
+  \item invocando \CPPCode{Graph::H_begin(v)} o \CPPCode{Graph::H_end(v)}, que toma un \CPPCode{vertex_iterator} \CPPCode{v} como parámetro.
+\end{enumerate}
+Análogamente, cambiando \CPPCode{H_begin} y \CPPCode{H_end} por \CPPCode{N_begin} y \CPPCode{N_end}, respectivamente, podemos obtener instancias de la clase \CPPCode{neighbor_iterator}.  El \lstlistingname~\ref{lst:c++:deg_iterator} muestra cómo usar estos iteradores.
 
 
-\begin{lstlisting}[caption={Ejemplo de uso de \Code{deg_iterator}.  En el ejemplo, se accede a $H(v)$ para un vértice $v$ invocando \Code{H_begin} usando el grafo, usando directamente un \textbf{const\_vertex\_iterator} y usando un \textbf{deg\_iterator}.},name=deg_iterator,gobble=2,float=ht,label={lst:c++:const_vertex_iterator},language=C++]
-  //Imprime H(v)
-  void print_H_vertice(const Graph<int>& G, const_vertex_iterator v) {
+\begin{lstlisting}[caption={Ejemplo de uso de \CPPCode{deg_iterator}.  En el ejemplo, se accede a $H(v)$ para un vértice $v$ invocando \Code{H_begin} usando el grafo, usando directamente un \Code{vertex_iterator} y usando un \Code{deg_iterator}.},name=deg_iterator,gobble=2,float=ht,label={lst:c++:deg_iterator},language=C++]
+  //Imprime N(v)
+  void print_high_neighborhood(const Graph<int>& G, vertex_iterator v) {
       for(auto it = G.H_begin(v); it != G.H_end(v); ++it) {
           //it es de tipo deg_iterator
           cout << *it << ',';
@@ -682,12 +790,12 @@ Hay dos formas de obtener un \textbf{deg\_iterator}: 1) invocando \Code{H_begin}
   }
   
   //Para todo v, imprime los vertices de H(w) para w en H(v)
-  void print_Hs_H(const Graph<int>& G) {
+  void print_Ns_of_H(const Graph<int>& G) {
       for(auto v = G.begin(); v != G.end(); ++v) {
-      //v es de tipo const_vertex_iterator
+          //v es de tipo const_vertex_iterator
           for(auto w = v.begin(); w != v.end(); ++v) {
-              //w es de tipo deg_iterator
-              for(auto z = w.begin(); z != w.end(); ++z) {
+              //w es de tipo neighbor_iterator
+              for(auto z = w.H_begin(); z != w.H_end(); ++z) {
                  //z pertenece a H(w) y w pertenece a H(v)
                  cout << *z << ',';
               }
@@ -696,153 +804,195 @@ Hay dos formas de obtener un \textbf{deg\_iterator}: 1) invocando \Code{H_begin}
   }
 \end{lstlisting}
 
-\subsubsection{neighbor\_iterator}
-\label{sec:neighbor iterator}
-\textbf{neighbor\_iterator}: es un iterador bidireccional que permite iterar todos los vecinos de un vértice. Es un iterador privado de la clase \textit{Vertex}. El usuario tiene acceso a él a través de la clase \textit{Graph} con los métodos \textit{N\_begin(const\_vertex\_iterator v))} y \textit{N\_end(const\_vertex\_iterator v))}
-
-                        Ejemplo de uso del \textbf{neighbor\_iterator}
-\textit{}
-            \begin{lstlisting}[frame=single]
-            tip::Graph<int> G;
-            const_vertex_iterator v1 = G.insertVertex(1);
-            const_vertex_iterator v2 = G.insertVertex(2);
-
-            for(auto it = G.N_begin(v1); it != G.N_end(v1); ++it) {
-                          cout << *it << ',';
-                      }
-            \end{lstlisting}
+% \subsection{\Code{Vertex::neighbor_iterator}}
+% \label{sec:neighbor iterator}
+% \textbf{neighbor\_iterator}: es un iterador bidireccional que permite iterar todos los vecinos de un vértice. Es un iterador privado de la clase \textit{Vertex}. El usuario tiene acceso a él a través de la clase \textit{Graph} con los métodos \textit{N\_begin(const\_vertex\_iterator v))} y \textit{N\_end(const\_vertex\_iterator v))}
+% 
+%                         Ejemplo de uso del \textbf{neighbor\_iterator}
+% \textit{}
+%             \begin{lstlisting}[frame=single]
+%             tip::Graph<int> G;
+%             const_vertex_iterator v1 = G.insertVertex(1);
+%             const_vertex_iterator v2 = G.insertVertex(2);
+% 
+%             for(auto it = G.N_begin(v1); it != G.N_end(v1); ++it) {
+%                           cout << *it << ',';
+%                       }
+%             \end{lstlisting}
 
 \subsection{Interfaz del tipo Graph}
 
-Habiendo explicado las interfaces de los iteradores, estamos en condiciones de explicar la interfaz pública de la clase \textbf{Graph} que implementa las operaciones vistas en la Sección~\ref{sec:tad grafo}.  Remarcamos nuevamente que aquellos métodos que en la Sección~\ref{sec:tad grafo} requerían punteros toman iteradores como parámetro.  El tipo \textbf{Graph} provee los siguientes métodos:
-%
-\begin{itemize}
-  \item \Code{template<class iter> const_vertex_iterator add_vertex(const Elem& elem, iter begin, iter end)}: implementa la función \Code{G.insertVertex(N, info)} (Sección~\ref{sec:tad grafo:add-vertex}).  En este caso, \Code{this} se corresponde con \Code{G}, \Code{elem} con \Code{info}, y el rango \Code{[begin, end)} con \Code{N}.  Por otra parte, el puntero al nuevo vértice insertado es un \textbf{const\_vertex\_iterator}.  Notar que se espera que el tipo \Code{iter} respete el protocolo de un iterador unidireccional de C++.
-\end{itemize}
+Recordemos que el TAD \Grafo es un tipo paramétrico, ya que debe almacenar información arbitraria en los vértices.  En consecuencia, la clase \Graph es un \emph{template} que depende de un parámetro \CPPCode{Elem}.  Hay que tener en cuenta que las funciones que agregan vértices copian la información y, por lo tanto, las instancias de \CPPCode{Elem} deben ser copiables.  El resto de la interfaz publica se obtiene de traducir las operaciones del TAD \Grafo a \CPP usando los iteradores definidos en las secciones anteriores.  El \lstlistingname~\ref{lst:c++:graph_public} incluye las funciones principales de la interfaz de \CPPCode{Graph}.
 
+\begin{lstlisting}[caption={Interfaz de la clase \CPPCode{Graph}.},gobble=2,name=graph_public,float=h,label={lst:c++:graph_public},language=C++,escapechar=\%,xleftmargin=1em,xrightmargin=1em]
+  //add_vertex(*this, e) %(Sección~\ref{sec:tad grafo:insert-vertex})%
+  vertex_iterator add_vertex(const Elem& e);
+  
+  //remove_vertex(*this, v) %(Sección~\ref{sec:tad grafo:remove-vertex})%
+  void remove_vertex(vertex_iterator v);
+  
+  //add_edge(*this, v, w) %(Sección~\ref{sec:tad grafo:add-edge})%
+  void add_edge(vertex_iterator v, vertex_iterator w);
 
-\subsubsection{insertVertex}
-\label{sec:insertVertex}
-\Code{insertVertex(const Elem\& elem)}: Su propósito es insertar un nuevo vértice al grafo.
-El tipo de retorno del método es un iterador \Code{const\_vertex\_iterator} (\ref{sec:vertex iterator}), recordemos que este iterador es el que va a permitir al usuario agregar y borrar aristas. El Codigo~\ref{lst:c++:insertVertex} muestra un ejemplo del uso.
+  //remove_edge(*this, v, w) %(Sección~\ref{sec:tad grafo:remove-edge})%
+  void remove_edge(vertex_iterator v, vertex_iterator w);
+  
+  //add_vertex(*this, e, N) y add_vertex(*this, e, N=[begin,end)) %(Sección~\ref{sec:tad grafo:add-vertex})%
+  vertex_iterator add_vertex(const Elem& e, initializer_list<vertex_iterator> N)
+  template<typename iter>
+  vertex_iterator add_vertex(const Elem& e, iter begin, iter end);
+  
+  //vertex_iterator(*this) %(Sección~\ref{sec:tad grafo:vertex-iterator})%
+  vertex_iterator begin() const;
+  vertex_iterator end() const;
 
-\begin{lstlisting}[caption={Ejemplo de uso de insertVertex.  Crea un grafo $G$ de tipo entero con dos vértices, uno con el entero 1 y el otro con el entero 2 como información.  Luego, el ciclo imprime ``1 2''. Ver Sección~\ref{sec:vertex iterator} para más información de \texttt{vertex\_iterator}.},gobble=2,float=ht,label={lst:c++:insertVertex},emph={insert_vertex}]
- 
-  int main() {
-        Graph<int> G;
-        const_vertex_iterator v := G.insertVertex(1);
-        const_vertex_iterator w := G.insertVertex(2);
-        for(auto it = G.begin(); it != G.end(); ++it) {
-        cout << *it << endl;
-    }
-  }
-\end{lstlisting}
+  //neighbor_iterator(*this, v) %(Sección~\ref{sec:tad grafo:neighbor-iterator})%
+  neighbor_iterator N_begin(vertex_iterator v) const;
+  neighbor_iterator N_end(vertex_iterator v) const;
 
-\subsubsection{remove\_vertex}
-\label{sec:remove-vertex}
-
-\Code{remove\_vertex(const\_vertex_iterator v)}: Su propósito es eliminar un vértice \Code{v} del grafo y dejar en forma consistente el vecindario de los demás vértices con los que el vértice \Code{v} tenía relación. Esto significa eliminar las aristas que involucraban a \Code{v}.
-El método no tiene ningún tipo de retorno. El Codigo~\ref{lst:remove_vertex} muestra un ejemplo del uso.
-
-\begin{lstlisting}[caption={Ejemplo de uso de remove\_vertex. Reescribimos el pseudocódigo ~\ref{lst:pseudo:remove_vertex} a c++. El código crea un grafo $G$ con dos vértices, el primero \texttt{v} representa al vértice $v$ con el número 1 y el segundo \texttt{w} representa al vértice $w$ con el número 2 como infomación. Luego, remueve \texttt{v} del grafo y el ciclo imprime ``2'' como resultado. Ver Sección~\ref{sec:vertex iterator} para más información de \texttt{vertex\_iterator}.},gobble=2,float=ht,label={lst:remove_vertex},emph={remove_vertex}]
-  int main() {
-        Graph<int> G;
-        const_vertex_iterator v := G.insertVertex(1);
-        const_vertex_iterator w := G.insertVertex(2);
-    remove_vertex(v);
-        for(auto it = G.begin(); it != G.end(); ++it) {
-        cout << *it << endl;
-    }
- }
-\end{lstlisting}
-
-
-
-\subsubsection{add\_edge}
-\label{sec:add-edge}
-\Code{add\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: Su propósito es crear la relación entre el vértice \Code{v} y el vértice \Code{w}. Deja en forma consistente el vecindario de \Code{v} y el vecindario de \Code{w}.
-
-\subsubsection{remove\_edge}
-\label{sec:remove-edge}
-\Code{remove\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: su propósito es eliminar la relación entre los vértices \Code{v} y el vértice \Code{w}. Deja en forma consistente los vecindarios de los dos vértices.
-
-Toma como parámetro un iterador que apunta a \Code(v) y otro que apunta a \Code{w}.
-
-El método no tiene ningún tipo de retorno. El Codigo~\ref{lst:remove_vertex} muestra un ejemplo del uso.
-
-\begin{lstlisting}[caption={Ejemplo de uso de \Code{remove_edge}.  Reescribimos el pseudocódigo ~\ref{lst:pseudo:remove_edge} a c++.  En el código se crea un grafo $G$ con vértices $v$, $w$ y $x$, siendo $v$ adyacente tanto a $w$ como a $x$.  Luego se utiliza \Code{remove_edge} para eliminar la arista $vw$, con lo cual $v$ queda adyacente únicamente a $x$.  El ciclo final, pues, imprime el valor $3$ asociado a $x$.  Ver Sección~\ref{sec:neighbor iterator} para más información de \Code{neighbor_iterator}.},gobble=2,float=ht,label={lst:remove_edge},emph={remove_edge}]
-  int main() {
-        Graph<int> G;
-        const_vertex_iterator v := G.insertVertex(1);
-        const_vertex_iterator w := G.insertVertex(2);
-    const_vertex_iterator x := G.insertVertex(3);
-    G.add_edge(v, w);
-    G.add_edge(v, x);
-    G.remove_edge(v, w);
-    for(auto it = G.N_begin(v); it != G.N_end(v); ++it) {
-        cout << *it << ',';
-    }
-  }
+  //H_neighbor_iterator(*this, v) %(Sección~\ref{sec:tad grafo:H-neighbors})%
+  deg_iterator H_begin(vertex_iterator v) const;
+  deg_iterator H_end(vertex_iterator v) const;
 \end{lstlisting}
 
 
 
 
+% Habiendo explicado las interfaces de los iteradores, estamos en condiciones de explicar la interfaz pública de la clase \textbf{Graph} que implementa las operaciones vistas en la Sección~\ref{sec:tad grafo}.  Remarcamos nuevamente que aquellos métodos que en la Sección~\ref{sec:tad grafo} requerían punteros toman iteradores como parámetro.  El tipo \textbf{Graph} provee los siguientes métodos:
+% %
+% \begin{itemize}
+%   \item \Code{template<class iter> const_vertex_iterator add_vertex(const Elem& elem, iter begin, iter end)}: implementa la función \Code{G.insertVertex(N, info)} (Sección~\ref{sec:tad grafo:add-vertex}).  En este caso, \Code{this} se corresponde con \Code{G}, \Code{elem} con \Code{info}, y el rango \Code{[begin, end)} con \Code{N}.  Por otra parte, el puntero al nuevo vértice insertado es un \Code{vertex_iterator}.  Notar que se espera que el tipo \Code{iter} respete el protocolo de un iterador unidireccional de \CPP.
+% \end{itemize}
+% 
+% 
+% \subsubsection{insertVertex}
+% \label{sec:insertVertex}
+% \Code{insertVertex(const Elem\& elem)}: Su propósito es insertar un nuevo vértice al grafo.
+% El tipo de retorno del método es un iterador \Code{const\_vertex\_iterator} (\ref{sec:vertex iterator}), recordemos que este iterador es el que va a permitir al usuario agregar y borrar aristas. El Codigo~\ref{lst:c++:insertVertex} muestra un ejemplo del uso.
+% 
+% \begin{lstlisting}[caption={Ejemplo de uso de insertVertex.  Crea un grafo $G$ de tipo entero con dos vértices, uno con el entero 1 y el otro con el entero 2 como información.  Luego, el ciclo imprime ``1 2''. Ver Sección~\ref{sec:vertex iterator} para más información de \texttt{vertex\_iterator}.},gobble=2,float=ht,label={lst:c++:insertVertex},emph={insert_vertex}]
+%  
+%   int main() {
+%         Graph<int> G;
+%         const_vertex_iterator v := G.insertVertex(1);
+%         const_vertex_iterator w := G.insertVertex(2);
+%         for(auto it = G.begin(); it != G.end(); ++it) {
+%         cout << *it << endl;
+%     }
+%   }
+% \end{lstlisting}
+% 
+% \subsubsection{remove\_vertex}
+% \label{sec:remove-vertex}
+% 
+% \Code{remove\_vertex(const\_vertex_iterator v)}: Su propósito es eliminar un vértice \Code{v} del grafo y dejar en forma consistente el vecindario de los demás vértices con los que el vértice \Code{v} tenía relación. Esto significa eliminar las aristas que involucraban a \Code{v}.
+% El método no tiene ningún tipo de retorno. El Codigo~\ref{lst:remove_vertex} muestra un ejemplo del uso.
+% 
+% \begin{lstlisting}[caption={Ejemplo de uso de remove\_vertex. Reescribimos el pseudocódigo ~\ref{lst:pseudo:remove_vertex} a c++. El código crea un grafo $G$ con dos vértices, el primero \texttt{v} representa al vértice $v$ con el número 1 y el segundo \texttt{w} representa al vértice $w$ con el número 2 como infomación. Luego, remueve \texttt{v} del grafo y el ciclo imprime ``2'' como resultado. Ver Sección~\ref{sec:vertex iterator} para más información de \texttt{vertex\_iterator}.},gobble=2,float=ht,label={lst:remove_vertex},emph={remove_vertex}]
+%   int main() {
+%         Graph<int> G;
+%         const_vertex_iterator v := G.insertVertex(1);
+%         const_vertex_iterator w := G.insertVertex(2);
+%     remove_vertex(v);
+%         for(auto it = G.begin(); it != G.end(); ++it) {
+%         cout << *it << endl;
+%     }
+%  }
+% \end{lstlisting}
+% 
+% 
+% 
+% \subsubsection{add\_edge}
+% \label{sec:add-edge}
+% \Code{add\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: Su propósito es crear la relación entre el vértice \Code{v} y el vértice \Code{w}. Deja en forma consistente el vecindario de \Code{v} y el vecindario de \Code{w}.
+% 
+% \subsubsection{remove\_edge}
+% \label{sec:remove-edge}
+% \Code{remove\_edge(const\_vertex\_iterator v, const\_vertex\_iterator w)}: su propósito es eliminar la relación entre los vértices \Code{v} y el vértice \Code{w}. Deja en forma consistente los vecindarios de los dos vértices.
+% 
+% Toma como parámetro un iterador que apunta a \Code(v) y otro que apunta a \Code{w}.
+% 
+% El método no tiene ningún tipo de retorno. El Codigo~\ref{lst:remove_vertex} muestra un ejemplo del uso.
+% 
+% \begin{lstlisting}[caption={Ejemplo de uso de \Code{remove_edge}.  Reescribimos el pseudocódigo ~\ref{lst:pseudo:remove_edge} a c++.  En el código se crea un grafo $G$ con vértices $v$, $w$ y $x$, siendo $v$ adyacente tanto a $w$ como a $x$.  Luego se utiliza \Code{remove_edge} para eliminar la arista $vw$, con lo cual $v$ queda adyacente únicamente a $x$.  El ciclo final, pues, imprime el valor $3$ asociado a $x$.  Ver Sección~\ref{sec:neighbor iterator} para más información de \Code{neighbor_iterator}.},gobble=2,float=ht,label={lst:remove_edge},emph={remove_edge}]
+%   int main() {
+%         Graph<int> G;
+%         const_vertex_iterator v := G.insertVertex(1);
+%         const_vertex_iterator w := G.insertVertex(2);
+%     const_vertex_iterator x := G.insertVertex(3);
+%     G.add_edge(v, w);
+%     G.add_edge(v, x);
+%     G.remove_edge(v, w);
+%     for(auto it = G.N_begin(v); it != G.N_end(v); ++it) {
+%         cout << *it << ',';
+%     }
+%   }
+% \end{lstlisting}
+% 
+% 
+% 
+% 
+% 
+% 
 
 
 
 
 
-
-
-\subsection{Estructura en C++}
+\section{Estructura de representación en \CPP}
 \label{sec:c++:estructura}
 
-En esta sección describiremos la estructura interna de la estructura $h$-grafo, tal cual está implementada en C++.  El código de la estructura se encuentra organizada en 3 archivos fuente:
-\begin{description}
-  \item[\Code{Graph.h}:] contiene la estructura general del $h$-grafo.
-  \item[\Code{Vertex.h}:] contiene la descripción de lo que es un vértice.
-  \item[\Code{Neighbor.h}] contiene la estructura de un vecino.
-\end{description}
-A continuación describimos las clases principales del $h$-grafo, indicando el archivo en el que esta definida.
+En esta sección describimos la estructura interna de la clase \Graph de \CPP que emula la estructura de un $h$-grafo vista en la Sección~\ref{sec:h-grafo}.  La implementación de estas estructuras se encuentra dividida en tres clases, cada una de las cuales se encuentra en su correspondiente archivo fuente:
+\begin{itemize}
+  \item \Code{Graph.h}: contiene la clase \CPPCode{Graph} que implementa la estructura principal del $h$-grafo.
+  \item \Code{Vertex.h}: contiene la clase \CPPCode{Vertex} que contiene la descripción de lo que es un vértice.
+  \item \Code{Neighbor.h}: contiene la clase \CPPCode{Neighbor} que representa lo que es un vecino de un vértice.
+\end{itemize}
+Las secciones siguientes describen las tres clases principales del $h$-grafo.
 
-\subsubsection{Graph (Graph.h)}
+\subsection{\CPPCode{Graph}}
 \label{sec:c++:estructura:Graph.h}
 
-Recordemos que el tipo Grafo que implementamos es un tipo paramétrico que permite asociar información de algún tipo a cada vértice.  La representación de un grafo, usando la clase \Code{Graph<Elem>} es sencilla en términos conceptuales, ya que simplemente es una lista de \Code{Vertex} (ver Seccion~\ref{sec:c++:estructura:Vertex.h}).  
+Recordemos que el clase \Graph de \CPP es un \emph{template} que permite asociar información de algún tipo a cada vértice.  Como vimos en la Sección~\ref{sec:h-grafo}, la representación de un $h$-grafo es sencilla en términos conceptuales, ya que simplemente es una lista de vértices.  Esta lista está implementada con el tipo \CPPCode{std::list} y, dado que los vértices se implementan usando la clase \CPPCode{Vertex} (ver Sección~\ref{sec:c++:estructura:Vertex.h}), el tipo completo del miembro \CPPCode{vertices} es \CPPCode{std::list<Vertex>}.  La clase \Graph define también lo que es un \CPPCode{Graph::vertex_iterator}, que es una clase interna de \Graph.  
 
-La clase \Code{Graph} también define las estructuras centrales de representación para los vecindarios
+A pesar de la aparente simpleza, los tipos auxiliares (i.e., \CPPCode{Vertex} y \CPPCode{Neighbor}) deben estar al tanto de la estructura en la que se almacenan los vértices.  En efecto, cada instancia de \CPPCode{Neighbor} mantiene un iterador (\Code{neighbor_pointer}) que apunta a una posición de \CPPCode{vertices}.  Análogamente, cada instancia de \CPPCode{Vertex} necesita acceso al tipo paramétrico \CPPCode{Elem} de \Graph para saber qué tiene que guardar como información.  Para comunicar a las otras clases que \CPPCode{vertices} es de tipo \CPPCode{std::list}, hay al menos tres opciones.  La primera es copiar en cada clase los tipos no parametricos (e.g., el tipo de \CPPCode{vertices}).  Esto no es muy flexible ya que, si la estructura cambiara\footnote{Por ejemplo para representar grafos estáticos conviene usar un \CPPCode{std::vector}.}, tendríamos que arreglar todos las clases auxiliares.  Una segunda opción es que las clases auxiliares sean \emph{templates} a fin de indicar los distintos parámetros que necesitan.  Una tercer opción más flexible es que las clases auxiliares sean \emph{templates} que dependan de la clase \CPPCode{Graph}.  De esta forma, podemos guardar todos los rasgos (\emph{traits}) en la clase \Graph.  Así, además de definir la estructura de \CPPCode{vertices}, la clase \CPPCode{Graph} contiene la definición de todos los renombres que son compartidos por las clases auxiliares (e.g., define el tipo donde se almacenan los vecindarios dentro de un vértice). En resumen, como veremos más adelante, las clases \CPPCode{Vertices} y \CPPCode{Neighbor} son \emph{templates} que se instancian como \CPPCode{Vertex<Graph>} y \CPPCode{Neighbor<Graph>}.  Más aún, la clase \Graph es \CPPCode{friend} de estas dos clases a fin de que puedan manipular la estructura interna. 
 
+Volviendo un poco para atrás, la estructura de representación de \Graph está dada por \CPPCode{vertices} cuyo tipo, habíamos dicho, es \CPPCode{std::list<Vertex>}.  El inconveniente es que, de acuerdo al párrafo anterior, el tipo \CPPCode{Vertex} está incompleto, ya que \CPPCode{Vertex} es un \emph{template}.  Estrictamente hablando:
+\begin{itemize}
+  \item \CPPCode{vertices} es de tipo \CPPCode{std::list<Vertex<Graph<Elem>>>}
+\end{itemize}
+Esto no es un inconveniente para \CPP, ya que el tipo está bien definido más allá de que estemos definiendo la clase \Graph.  Queremos remarcar que, más allá del patrón de implementación, la estructura no deja de ser una lista de vértices.
 
-Como veremos en la Sección~\ref{sec:c++:estructura:Vertex.h}, la clase \Code{Vertex} mantiene toda la información de los vecinos de un vértice.  En consecuencia, \Code{Vertex} es una componente central de la estructura.  Por este motivo, \Code{Vertex} necesita tener acceso a algunas partes privadas del grafo, razón por la cual, \Code{Graph<Elem>} es \Code{friend} de \Code{Vertex}.  En particular, \Code{Vertex} necesita saber de qué tipo es \Code{Elem} para saber cómo almacenar la información de un vértice.  Un inconveniente central a la hora de definir el tipo \Code{Graph<Elem>}, es que el mismo necesita conocer qué es un \Code{Vertex}, mientras que, por lo mencionado anteriormente, \Code{Vertex} necesita conocer el tipo \Code{Elem}.  Con lo cual, hay un inconveniente serio a la hora de decidir qué clase se crea primero.  Una solución simple a este problema es usar el \emph{Curiously recurring template pattern (CRTP)}~\cite{}, que consiste escribir el tipo interno \Code{Vertex} como un tipo paramétrico \Code{Vertex<Graph>} que depende \Code{Graph<Elem>} que lo utilice.  Luego, \Code{Graph<Elem>} puede utilizar una instancia de \Code{Vertex<Graph>}.  Más allá del patrón de implementación, la estructura no deja de ser una lista de vertices.
-
+El \lstlistingname~\ref{lst:c++:graph} muestra la estructura de la clase \Graph.
 
 \begin{lstlisting}[language={C++},caption={Estructura del tipo Grafo en C++.},gobble=2,float=ht,label={lst:c++:graph}]
     template<class Elem> class Graph
     {
         using elem_type = Elem;
-    private:
-        friend class impl::Vertex<Graph>;
-        friend class impl::Neighbor<Graph>;
-    
-        //CRTP: Curiously recurring template pattern
-        using Vertex = impl::Vertex<Graph>; 
-        using Neighbor = impl::Neighbor<Graph>;
+        //Vertex y Neighbor dependen de los rasgos de Graph<Elem>
+        friend class Vertex<Graph>;
+        friend class Neighbor<Graph>;
+        using Vertex = Vertex<Graph>; 
+        using Neighbor = Neighbor<Graph>;
         
+        //Rasgos de Graph<Elem> que define todas las estructuras
         using Vertices = std::list<Vertex>;
         using degNeighborhood = std::list<Neighbor>;
         using Neighborhood = std::list<degNeighborhood>;
         using neighbor_iterator = typename Vertex::neighbor_iterator;
         using deg_iterator = typename Vertex::deg_iterator;
-    };
+
+        //La estructura de representacion es una lista de vertices
+        Vertices vertices;
+     };
 \end{lstlisting}
 
-\subsubsection{Vertex (Vertex.h)}
+\subsection{Vertex (Vertex.h)}
 \label{sec:c++:estructura:Vertex.h}
 
 De acuerdo a lo visto en la Sección~\ref{sec:c++:estructura:Graph.h}, \Code{Vertex} es un tipo paramétrico que representa una instancia de un vértice $v$ del $h$-grafo.  El parámetro esperado para el template \Code{Vertex} es un clase de \Code{Graph}.  Vale remarcar que el tipo \Code{Vertex} se usa únicamente dentro de la clase \Code{Graph}, quien no exhibe su interfaz interna.  En otras palabras, \Code{Vertex} es invisible al usuario de \Code{Graph}, más allá de que todos sus miembros sean públicos.
 
-La clase \Code{Vertex} posee la información asociada con el vértice (\Code{elem}), el grado del vértice (\Code{degree}) y su vecindario (\Code{neighborhood}).  Como vimos en la Sección~\ref{sec:h-grafo}, el vecindario en el $h$-grafo se organiza como una lista de listas, cuyos elementos representan las listas no vacías de $N(v, 0), \ldots, N(v, d(v)-1)$ y $H(v)$.  Cada lista $N(v, i)$ guarda los vecinos de grado $i$ y $H(v)$ guarda los vecinos de grado al menos $d(v)$.  Para la representación en C++, por comodidad, almacenamos $H(v)$ como la última lista \Code{neighborhood}.
+La clase \Code{Vertex} posee la información asociada con el vértice (\Code{elem}), el grado del vértice (\Code{degree}) y su vecindario (\Code{neighborhood}).  Como vimos en la Sección~\ref{sec:h-grafo}, el vecindario en el $h$-grafo se organiza como una lista de listas, cuyos elementos representan las listas no vacías de $N(v, 0), \ldots, N(v, d(v)-1)$ y $H(v)$.  Cada lista $N(v, i)$ guarda los vecinos de grado $i$ y $H(v)$ guarda los vecinos de grado al menos $d(v)$.  Para la representación en \CPP, por comodidad, almacenamos $H(v)$ como la última lista \Code{neighborhood}.
 
 Recordemos que \Code{Graph} concentra las definiciones de qué significa cada tipo, incluyendo qué estructura se usa para representar un vecindario $N(v)$ (\Code{Neighborhood}), qué estructura se usa para representar cada lista $N(v, i)$ y $H(v)$ dentro del vecindario (\Code{degNeighborhood}), y qué estructura se usa para representar un vecino que contiene los self y list pointers (\Code{Neighbor}).  Por simplicidad, renombramos estos tipos dentro de la estructura de \Code{Vertex}.
 
