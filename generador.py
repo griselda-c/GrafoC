@@ -27,7 +27,7 @@ def generar_grafo(ngraphs,filename):
 	#real = real_world(nodos, 4, 0.3)
         #gnp = gnp_random_graph(nodos,0.10)
 	dense = dense_gnm_random_graph(10+5*i, (100+5*i)*2)
-        grabar_grafo(gnp, filename + '.' + str(i))
+        grabar_grafo(dense, filename + '.' + str(i))
 
 
 
