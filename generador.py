@@ -45,7 +45,7 @@ if __name__ == '__main__':
     
     print "cantidad de grafos a generar:", ngraphs
     
-    generar_grafo(ngraphs,filename,3)
+    generar_grafo(ngraphs,filename,0)
 
     
    

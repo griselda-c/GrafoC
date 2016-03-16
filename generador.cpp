@@ -48,7 +48,7 @@ Log::get_instance().set_level(Log::Level::NONE);
 
 
     ifstream ficheroEntrada(argv[1]);
-    ofstream file_time("gnp.ods"); // archivo que guarda registro de tiempo
+    ofstream file_time("newman.ods"); // archivo que guarda registro de tiempo
 
     if(not ficheroEntrada.is_open()) {
         cerr << "Fichero inexistente" << endl;
@@ -82,7 +82,7 @@ Log::get_instance().set_level(Log::Level::NONE);
 
     cout << "  [h-graph] searching for triangles" << endl;
 
-    ofstream ficheroSalida(argv[1] + string(".triangles"));
+    ofstream ficheroSalida(string(argv[1]) + string(".triangles"));
 
     auto T = triangles(G);
     for(auto t = T.begin(); t != T.end(); ++t) {
