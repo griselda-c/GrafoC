@@ -48,8 +48,7 @@ Log::get_instance().set_level(Log::Level::NONE);
 
 
     ifstream ficheroEntrada(argv[1]);
-    ofstream file_time("test.ods"); // archivo que guarda registro de tiempo
-
+    ofstream file_time("gnp.ods"); // archivo que guarda registro de tiempo
 
     if(not ficheroEntrada.is_open()) {
         cerr << "Fichero inexistente" << endl;
@@ -83,7 +82,7 @@ Log::get_instance().set_level(Log::Level::NONE);
 
     cout << "  [h-graph] searching for triangles" << endl;
 
-    ofstream ficheroSalida(string(argv[1]) + string(".triangles"));
+    ofstream ficheroSalida(argv[1] + string(".triangles"));
 
     auto T = triangles(G);
     for(auto t = T.begin(); t != T.end(); ++t) {
@@ -93,6 +92,7 @@ Log::get_instance().set_level(Log::Level::NONE);
     auto end = chrono::steady_clock::now();//fin del reloj
     auto diff = end - start;
     auto density = float(cant_aristas *2) / (G.vertexCount()*(G.vertexCount()-1));
+
     file_time << G.vertexCount()<<" ;" <<cant_aristas<<" ;" << (float)chrono::duration <double, milli> (diff).count()<<";" << "ms "<<"; "<<density<<";"<<"density"<<";"<<deg
     <<";"<<"degeneraty"<<";"<<sqrt<<";"<<"m*sqrt(m)"<<";"<<deg/2<<endl;
 
@@ -108,9 +108,13 @@ Log::get_instance().set_level(Log::Level::NONE);
      grafoSalida<<deg<<" "<<sqrt<<endl;
     }
 
-
-
     ficheroSalida.close();
+
+    file_time.close();
+
+
+
+
 
     return 0;
 
