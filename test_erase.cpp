@@ -63,7 +63,7 @@
 //
 //    //agregamos los vertices
 //    for(int v = 0; v < cant_vertices; v++) {
-//        V.push_back(G.insertVertex(v));
+//        V.push_back(G.insert_vertex(v));
 //    }
 //
 //    for(int i = 0; i < cant_aristas; ++i)

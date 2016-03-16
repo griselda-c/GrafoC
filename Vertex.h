@@ -89,9 +89,9 @@ namespace tip {
              *
              * Precondicion: list no es high_neighborhood
              */
-            typename Neighborhood::iterator toNextList(typename Neighborhood::iterator list, typename degNeighborhood::iterator who)
+            typename Neighborhood::iterator to_next_list(typename Neighborhood::iterator list, typename degNeighborhood::iterator who)
             {
-                //DEBUG(this->elem, "-> Graph::toNextList(", *who, ")");
+                //DEBUG(this->elem, "-> Graph::to_next_list(", *who, ")");
                 assert(list != highNeighborhood());
                 auto to_list = std::next(list);
 
@@ -109,7 +109,7 @@ namespace tip {
                 to_list->splice(to_list->begin(), *list, who);
                 if(list->empty()) neighborhood.erase(list);
 
-                DEBUG("END OF Graph::toNextList");
+                DEBUG("END OF Graph::to_next_list");
                 return to_list;
             }
 

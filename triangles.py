@@ -7,7 +7,7 @@ def read_data(string):
     return [line.split(' ') for line in lines]
 
 def as_graph(string):
-    as_list = [(int(v), int(w)) for v,w in read_data(string)]
+    as_list = [(int(v), int(w)) for v,w in read_data(string)[:-1]]
     G = nx.graph.Graph()
     G.add_nodes_from(xrange(0, as_list[0][0]))
     G.add_edges_from(as_list[1:])
@@ -29,9 +29,11 @@ def triangles(G):
             for w in xrange(v+1, G.order()):
                 if w in G[u] and w in G[v]:
                     res += [[u, v, w]]
+    
     return res
 
 if __name__ == "__main__":
+        
         
     if len(sys.argv) < 2:
         print "pasar el nombre del archivo con el grafo a probar"
@@ -47,7 +49,8 @@ if __name__ == "__main__":
             call(["./triangles", sys.argv[1] + '.' + str(n)])
             print "  testing the integrity of the h-graph",
             hgraph = as_graph(open(sys.argv[1] + '.' + str(n) + '.graph').read())
-            if sorted(hgraph.edges()) != sorted(graph.edges()):
+            # se agrego a hgraph.edges() el [:-1] porque imprime como edge al degeneracy y al m*sqrt(m)
+            if sorted(hgraph.edges()[:-1]) != sorted(graph.edges()):
                 print "FAILED"
             else:
                 print "OK"
@@ -56,6 +59,7 @@ if __name__ == "__main__":
             test = read_test_triangles(open(sys.argv[1] + '.' + str(n) + '.triangles').read())
             
             print "  brute force finding the triangles"
+            print graph.order()
             the_triangles = triangles(graph)
             if test != the_triangles:
                 print "  FAILED!!!!:",

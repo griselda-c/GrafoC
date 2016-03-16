@@ -16,31 +16,6 @@
 namespace tip
 {
 
-    // namespace impl {
-    //     /**
-    //      * En este namespace vamos a agregar las clases auxiliares que utilizamos en el grafo.
-    //      * La idea es poder tener ciertas funcionalidades sin afectar la lectura del grafo
-    //      */
-    //
-    //     struct Vertex;
-    //     struct Neighbor;
-    //     using degNeighborhood = std::list<Neighbor>;
-    //     using Neighborhood = std::list<degNeighborhood>;
-    //     using Vertices = std::list<Vertex>;
-    //
-    //
-    //     int degree(degNeighborhood::const_iterator neighbor);
-    //     int degree(const degNeighborhood& neighbors);
-    //     int degree(const Neighborhood::const_iterator neigbhors);
-    //     size_t elem(degNeighborhood::const_iterator neighbor);
-    //     degNeighborhood::iterator find_neighbor_in(Neighborhood::iterator neighborhood, int elem);
-    //
-    //
-    //
-    //
-    //
-    // }
-
     template<class Elem>
     class Graph
     {
@@ -186,7 +161,7 @@ namespace tip
          *
          * @return numero del vertice agregado
          */
-        const_vertex_iterator insertVertex(const Elem& elem) {
+        const_vertex_iterator insert_vertex(const Elem& elem) {
             vertices.push_front(Vertex(elem));
             return begin();
         }
@@ -199,7 +174,6 @@ namespace tip
          *
          * @param v vertice a eliminar
          */
-        //   vertex_iterator removeVertex(const_vertex_iterator v);
         void remove_vertex(const_vertex_iterator iter_v) {
             DEBUG(std::string("BEGIN Graph::REMOVE_VERTEX (") + std::to_string(*iter_v) + ")");
             auto v = to_iterator(iter_v);
@@ -222,7 +196,7 @@ namespace tip
          * @param v uno de los vertices de la arista
          * @param w el otro vertice de la arista
          */
-        //  edge_iterator addEdge(const_vertex_iterator v, const_vertex_iterator w);
+
         void add_edge(const_vertex_iterator iter_v, const_vertex_iterator iter_w) {
             auto v = to_iterator(iter_v);
             auto w = to_iterator(iter_w);
@@ -261,7 +235,6 @@ namespace tip
                 w_list_in_v = v->highNeighborhood();
             }
             else {
-                /** cuando se agrega el primer vertice,esto funciona **/
                 v_list_in_w = w->highNeighborhood();
                 w_list_in_v = v->highNeighborhood();
             }
@@ -330,7 +303,7 @@ namespace tip
          */
         template<class iter>
         const_vertex_iterator add_vertex(const Elem& elem, iter begin, iter end) {
-            auto v = insertVertex(elem);
+            auto v = insert_vertex(elem);
             while(begin != end) {
                 add_edge(v, *begin);
                 ++begin;
@@ -390,14 +363,6 @@ namespace tip
             return v.H_end();
         }
 
-//         //Recorre el H del apuntado por v
-//         deg_iterator H_begin(neighbor_iterator v) const{
-//             return v.H_begin();
-//         }
-//
-//         deg_iterator H_end(neighbor_iterator v)const{
-//             return v.H_end();
-//         }
 
         neighbor_iterator N_begin(const_vertex_iterator v)const{
             return v.begin();
@@ -444,9 +409,6 @@ namespace tip
 
         typename Neighborhood::iterator find_neighborhood_with_degree(typename Neighborhood::iterator first, typename Neighborhood::iterator last,  size_t degree)
         {
-            //        return find_if(first, last, [degree](auto& list_n)->bool{
-            //              return list_n.front().neighbor->degree == degree;
-            //          });
             auto it = first;
             while(it != last && it->front().neighbor->degree < degree) {
                 ++it;
@@ -493,14 +455,9 @@ namespace tip
                     auto neighobor_x = to_splice->self_pointer;// donde esta x en w
 
                     neighobor_x->list_pointer = to_list;
-                    //neighobor_x->self_pointer = to_list->begin(); no necesario por el splice
 
-                    //it = x->highNeighborhood()->erase(it);
-                    //x->highNeighborhood()->erase(it);
-                    //--it;
                 } else {
-                    it->list_pointer = it->neighbor->toNextList(it->list_pointer, it->self_pointer);
-                    //it->self_pointer = it->list_pointer->begin();
+                    it->list_pointer = it->neighbor->to_next_list(it->list_pointer, it->self_pointer);
                 }
                 DUMP(*this);
             }

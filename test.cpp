@@ -37,17 +37,17 @@
 //    vector<IntGraph::const_vertex_iterator> V;
 //
 //    for(int i = 0; i < 9; ++i) {
-//        V.push_back(G.insertVertex(i));
+//        V.push_back(G.insert_vertex(i));
 //    }
 ///*
-//    auto V[1] = G.insertVertex(1);
-//    auto V[2] = G.insertVertex(2);
-//    auto V[3] = G.insertVertex(3);
-//    auto V[4] = G.insertVertex(4);
-//    auto V[5] = G.insertVertex(5);
-//    auto V[6] = G.insertVertex(6);
-//    auto V[7] = G.insertVertex(7);
-//    auto V[8] = G.insertVertex(8);
+//    auto V[1] = G.insert_vertex(1);
+//    auto V[2] = G.insert_vertex(2);
+//    auto V[3] = G.insert_vertex(3);
+//    auto V[4] = G.insert_vertex(4);
+//    auto V[5] = G.insert_vertex(5);
+//    auto V[6] = G.insert_vertex(6);
+//    auto V[7] = G.insert_vertex(7);
+//    auto V[8] = G.insert_vertex(8);
 //*/
 ////    G.add_edge(V[1],V[2]);
 ////    G.add_edge(V[1],V[3]);
