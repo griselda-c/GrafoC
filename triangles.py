@@ -6,8 +6,11 @@ def read_data(string):
     lines = [line for line in string.split('\n') if line != '']
     return [line.split(' ') for line in lines]
 
-def as_graph(string):
-    as_list = [(int(v), int(w)) for v,w in read_data(string)[:-1]]
+def as_graph(string, discard_last):
+    if discard_last:
+	as_list = [(int(v), int(w)) for v,w in read_data(string)[:-1]]
+    else:
+	as_list = [(int(v), int(w)) for v,w in read_data(string)]
     G = nx.graph.Graph()
     G.add_nodes_from(xrange(0, as_list[0][0]))
     G.add_edges_from(as_list[1:])
@@ -44,13 +47,12 @@ if __name__ == "__main__":
         try:
             print "testing", n
             print "  opening graph file"
-            graph = as_graph(open(sys.argv[1] + '.' + str(n)).read())
+            graph = as_graph(open(sys.argv[1] + '.' + str(n)).read(), True)
             print "  calling h-graph program"
             call(["./triangles", sys.argv[1] + '.' + str(n)])
             print "  testing the integrity of the h-graph",
-            hgraph = as_graph(open(sys.argv[1] + '.' + str(n) + '.graph').read())
-            # se agrego a hgraph.edges() el [:-1] porque imprime como edge al degeneracy y al m*sqrt(m)
-            if sorted(hgraph.edges()[:-1]) != sorted(graph.edges()):
+            hgraph = as_graph(open(sys.argv[1] + '.' + str(n) + '.graph').read(), False)
+            if sorted(hgraph.edges()) != sorted(graph.edges()):
                 print "FAILED"
             else:
                 print "OK"
