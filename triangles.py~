@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import networkx as nx
 import sys
 from subprocess import call
@@ -47,7 +46,7 @@ if __name__ == "__main__":
             print "  opening graph file"
             graph = as_graph(open(sys.argv[1] + '.' + str(n)).read())
             print "  calling h-graph program"
-            call(["./triangles", sys.argv[1] + '.' + str(n)])
+            call(["./generador.cpp", sys.argv[1] + '.' + str(n)],shell=True)
             print "  testing the integrity of the h-graph",
             hgraph = as_graph(open(sys.argv[1] + '.' + str(n) + '.graph').read())
             # se agrego a hgraph.edges() el [:-1] porque imprime como edge al degeneracy y al m*sqrt(m)
