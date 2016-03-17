@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import networkx as nx
 import sys
 from subprocess import call
@@ -59,7 +60,6 @@ if __name__ == "__main__":
             test = read_test_triangles(open(sys.argv[1] + '.' + str(n) + '.triangles').read())
             
             print "  brute force finding the triangles"
-            print graph.order()
             the_triangles = triangles(graph)
             if test != the_triangles:
                 print "  FAILED!!!!:",

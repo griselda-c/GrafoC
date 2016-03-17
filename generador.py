@@ -29,8 +29,9 @@ def generar_grafo(ngraphs,filename,opcion):
 	real = real_world(nodos, 4, 0.3)
         gnp = gnp_random_graph(nodos,0.10)
 	dense = dense_gnm_random_graph(10+5*i, (100+5*i)*2)
+        completo = nx.complete_graph(nodos)
         
-        lista_grafos = [newman,erdos,real,gnp,dense]
+        lista_grafos = [newman,erdos,real,gnp,dense,completo]
         
         grabar_grafo(lista_grafos[opcion], filename + '.' + str(i))
 
@@ -45,7 +46,7 @@ if __name__ == '__main__':
     
     print "cantidad de grafos a generar:", ngraphs
     
-    generar_grafo(ngraphs,filename,0)
+    generar_grafo(ngraphs,filename,2)
 
     
    
