@@ -30,7 +30,8 @@ def generar_grafo(ngraphs,filename,opcion):
 	dense=dense_gnm_random_graph(10+5*i,(100+5*i)*2)
         completo=nx.complete_graph(nodos)
         
-        lista_grafos=[newman,erdos,real,gnp,dense,completo]
+        camino = nx.path_graph(i*200+100)
+        lista_grafos = [newman,erdos,real,gnp,dense,camino]
         
         grabar_grafo(lista_grafos[opcion], filename + '.' + str(i))
 

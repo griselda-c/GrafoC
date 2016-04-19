@@ -25,7 +25,7 @@ def generar_grafo(ngraphs,filename,opcion):
         nodos=10+5*i
         newman=nx.newman_watts_strogatz_graph(nodos,4,0.3)
         erdos=nx.erdos_renyi_graph(nodos,0.15)
-	real=real_world(nodos,4,0.3)
+	real=real_world(nodos,4, 0.3)
         gnp=gnp_random_graph(nodos,0.10)
 	dense=dense_gnm_random_graph(10+5*i,(100+5*i)*2)
         completo=nx.complete_graph(nodos)
