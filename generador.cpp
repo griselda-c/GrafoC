@@ -48,7 +48,7 @@ Log::get_instance().set_level(Log::Level::NONE);
 
 
     ifstream ficheroEntrada(argv[1]);
-    ofstream file_time("prueba.ods"); // archivo que guarda registro de tiempo
+    ofstream file_time("newman.ods"); // archivo que guarda registro de tiempo
 
     if(not ficheroEntrada.is_open()) {
         cerr << "Fichero inexistente" << endl;

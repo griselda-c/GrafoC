@@ -34,7 +34,12 @@
 \usepackage{booktabs}%tablas bonitas
 \usepackage{xspace}%espacios inteligentes
 \usepackage{relsize}%para poder formatear bien C++ incluso en headers
+\usepackage{tikz}%dibujos 
+\usepackage{todo}%cosas para hacer
 \usepackage[pdftitle={},pdfauthor={},pdfcreator={},pdfsubject={},pdfkeywords={},colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref} %hiperlinks
+
+\usetikzlibrary{external} 
+\tikzexternalize 
 
 %fuentes 
 % \usepackage{palatino,mathpazo,eulervm}    %texto y matematica
@@ -43,8 +48,8 @@
 \newtheorem{theorem}{Teorema}
 
 \newcommand{\Grafo}{\textsc{Grafo}\xspace}
-\newcommand{\Code}[1]{\lstinline[basicstyle={\ttfamily}]@#1@}
-\newcommand{\CPPCode}[1]{\lstinline[language=C++,basicstyle={\ttfamily}]@#1@}
+\newcommand{\Code}[2][]{\lstinline[basicstyle={\ttfamily},#1]@#2@}
+\newcommand{\CPPCode}[2][]{\lstinline[language=C++,basicstyle={\ttfamily},#1]@#2@}
 \newcommand{\N}{\mathcal{N}}
 \newcommand{\Graph}{\CPPCode{Graph}\xspace}
 
@@ -77,6 +82,9 @@
 \setkomafont{captionlabel}{\sffamily\bfseries}
 \setcapindent{1em}
 \setcapmargin{2em}
+
+\renewcommand{\todomark}{Falta hacer:}
+\renewcommand{\todoformat}{\color{red}\large\bfseries}
 
 \begin{document}
 
@@ -131,7 +139,11 @@ Bernal, \today
 
 \vspace*{\stretch{1}}
 
-Poner aca un resumen
+En el presente trabajo implementamos la estructura $h$-grafo en el lenguaje de programación \CPP.  El objetivo principal de este trabajo es demostrar la viabilidad de la implementación en un lenguaje de programación real, usando su biblioteca estándar. Esta estructura se puede utilizar para resolver distintos problemas de grafos en tiempo $O(\alpha(G)|E(G)|)$, donde $\alpha(G)$ es la arboricidad de $G$.  Para verificar la corrección de la implementación, implementamos uno de estos algoritmos y comprobamos su eficiencia.
+
+La estructura $h$-grafo representa a un grafo cualquier $G$ usando una lista de objetos, donde cada objeto \Code{v} representa a un vértice $v$ de $G$.  A su vez, cada objeto \Code{v} mantiene una lista \Code{L(k)}, que representa el $k$-vecindario de $v$ para $k \leq d(v)$, y una lista \Code{H}, que representa al vecindario alto de $v$.  En otras palabras, \Code{L(k)} mantiene un objeto \Code{w} por cada vecino $w$ de $v$ con grado $k < d(v)$, mientras que \Code{H} mantiene un objeto \Code{w} por cada vecino $w$ de grado $k \geq d(v)$.  A la vez, cada objeto \Code{w} de \Code{L(v)} y \Code{H} guarda distinos punteros que permiten ubicar rápidamente a \Code{v} y al objeto que representa a $v$ en las listas de vecinos de $w$.  Esto permite la eficiente inserción y la eliminación de vértices y aristas.
+
+Una de las particularidades de nuestra implementación es que utilizamos iteradores (provistos por la biblioteca estándar de \CPP) para representar a los punteros del $h$-grafo.  La ventaja de usar iteradores es que nos permiten insertar y borrar objetos de los contenedores sin la necesidad de conocer la estructura interna de los mismos.  De la misma forma, nuestra estructura provee iteradores al usuario para que el mismo pueda manipular el $h$-grafo; estos iteradores siguen los lineamientos y conceptos del estándar de \CPP y por lo tanto son compatibles con la biblioteca estándar.  Como resultado podemos ocultar la estructura del $h$-grafo al usuario sin sacrificar su eficiencia.
 
 \noindent \textbf{Palabras clave:} \textit{$h$-grafo, grafos ralos, arboricidad, implementación.}
 
@@ -145,21 +157,21 @@ Poner aca un resumen
 %%%%%%%%%%%%%%%%%%%%%%%%%% DEDICATORIA Y AGRADECIMIENTOS %%%%%%%%%%%%%%%%%%%%%%
 
 \vspace*{\stretch{1}}
-{\raggedleft\emph{Para quien sea.\\ Alguna frase si queres\\Griselda Cardozo.}\par
-            \emph{Para quien sea.\\ Alguna frase si queres\\Alejandro Merlo.}\par}
+{\raggedleft\emph{A mi familia y a todos aquellos me brindaron su ayuda en la tecnicatura.\\ Griselda Cardozo.}\par
+            \emph{A mi familia.\\ Alejandro Merlo.}\par}
 \vspace*{\stretch{1}}
 
 %Opcion para doble faz
 \cleardoublepage
 
-\chapter*{Agradecimientos}
-
-A quien corresponda, o se elimina
-
-\hspace*{\stretch{1}} Fecha del dia del agradecimiento.
-
-%Opcion para doble faz
-\cleardoublepage
+% \chapter*{Agradecimientos}
+% 
+% \Todo{Escribir los agradecimientos a  quien corresponda, o eliminar la sección}
+% 
+% \hspace*{\stretch{1}} Fecha del dia del agradecimiento.
+% 
+% %Opcion para doble faz
+% \cleardoublepage
 
 \tableofcontents
 
@@ -168,9 +180,9 @@ A quien corresponda, o se elimina
 \chapter{Introducción}
 \label{sec:introduccion}
 
-Los grafos son estructuras abstractas que sirven para modelar distintas tipos de relaciones matemáticas.  Formalmente, un \emph{grafo} es un par $G = (V, E)$ donde $V$ es un conjunto (finito) de \emph{vértices} y $E$ es un conjunto formado por pares de vértices.  En términos matemáticos, los vértices son objetos cuya única propiedad es la de ser distinguibles; en la práctica, los vértices representan objetos de algún dominio de aplicación.  Los pares $(v,w)$ que pertenecen a $E$ son llamados \emph{aristas}, y su propósito es reflejan alguna relación entre $v$ y $w$.  Los grafos se usan para modelar relaciones de problemas reales en forma abstracta.  Por ejemplo, una red social se modela con un grafo que tiene un vértice por cada persona y una arista entre dos vértices para indicar que las personas son amigas.  La ventaja de utilizar grafos en lugar de los objetos que ellos modelan, es que tenemos acceso a una terminología común, de manera tal que podemos traducir los avances de una aplicación a otra.  De esta forma, podemos aprovechar la teoría de grafos para resolver problemas de areas tan diversas como las matemáticas discretas, la infórmatica, las telecomunicaciones, la biología, la sociología, la filosofía, etc.~\cite{GrossYellen2006}.  La \emph{teoría de grafos} es la disciplina que se encarga del estudio de grafos, mientras que la teoría \emph{algorítmica} de grafos se encarga de los problemas computacionales asociados.
+Los grafos son estructuras abstractas que sirven para modelar distintos tipos de relaciones matemáticas.  Formalmente, un \emph{grafo} es un par $G = (V, E)$ donde $V$ es un conjunto (finito) de \emph{vértices} y $E$ es un conjunto formado por pares de vértices.  En términos matemáticos, los vértices son objetos cuya única propiedad es la de ser distinguibles; en la práctica, los vértices representan objetos de algún dominio de aplicación.  Los pares $(v,w)$ que pertenecen a $E$ son llamados \emph{aristas}, y su propósito es reflejar alguna relación entre $v$ y $w$.  Los grafos se usan para modelar relaciones de problemas reales en forma abstracta.  Por ejemplo, una red social se modela con un grafo que tiene un vértice por cada persona y una arista entre dos vértices para indicar que las personas son amigas.  La ventaja de utilizar grafos en lugar de los objetos que ellos modelan, es que tenemos acceso a una terminología común, de manera tal que podemos traducir los avances de una aplicación a otra.  De esta forma, podemos aprovechar la teoría de grafos para resolver problemas de áreas tan diversas como las matemáticas discretas, la infórmatica, las telecomunicaciones, la biología, la sociología, la filosofía, etc.~\cite{GrossYellen2006}.  La \emph{teoría de grafos} es la disciplina que se encarga del estudio de grafos, mientras que la teoría \emph{algorítmica} de grafos se encarga de los problemas computacionales asociados.
 
-El objetivo del presente trabajo es implementar la estructura de datos $h$-grafo descrita por Lin et al.~\cite{LinSoulignacSzwarcfiterTCS2012}.   Como objetivos particulares de nuestro desarrollo, esperamos:
+El objetivo del presente trabajo es implementar la estructura de datos $h$-grafo descripta por Lin et al.~\cite{LinSoulignacSzwarcfiterTCS2012}.   Como objetivos particulares de nuestro desarrollo, esperamos:
 \begin{itemize}
   \item Verificar la correctitud de la misma.  Si bien el artículo describe la estructura con suficiente detalle, la misma no está implementada en un lenguaje de programación real.  En consecuencia, podrían haber detalles de implementación no detectados a la hora de describir la estructura.
   \item Analizar la dificultad de implementar la estructura en un lenguaje eficiente de escala industrial.  Como es común en los artículos de investigación teóricos, los investigadores suponen la existencia de ciertas tipos de datos (como las listas) con una interfaz apropiada a sus objetivos.  Sin embargo, las implementaciones reales de las mismas muchas veces distan de dicha interfaz ideal, lo que obliga a re-implementar estructuras básicas (e.g., re-implementar listas para tener acceso a la representación interna) o a resolver las discrepancias usando las estructuras ya existentes (e.g., utilizar \emph{iteradores} como si fueran punteros a los nodos de la representación).  En este trabajo tomamos la segunda opción.
@@ -179,7 +191,7 @@ Como objetivo futuro, que excede el alcance del trabajo realizado, sería deseab
 
 La estructura $h$-grafo se usa para implementar el \emph{tipo abstracto de datos} (TAD) \Grafo, que es una representación computacional del correspondiente objeto matemático.  De acuerdo a la interfaz que uno elija para operar con un grafo, es posible definir distintos tipos de TADs, con distintas características, que sean más o menos útiles para las distintas aplicaciones.  En particular, la estructura $h$-grafo fue concebida para aplicaciones que requieren grafos dinámicos.  Por \emph{dinámico} nos referimos a que la interfaz debe proveer operaciones eficientes para insertar y borrar vértices y aristas, a la vez que provee operaciones eficientes de consulta.  Es por este motivo que el TAD \Grafo que nosotros presentamos es consistente con el dinamismo requerido por las aplicaciones.  
 
-La estructura $h$-grafo es una estructura general que se puede usar para representar a cualquier grafo.  Sin embargo, la estructura es particularmente eficiente en grafos \emph{ralos}, i.e., grafos con pocas aristas.  Existen distintas definiciones de dan cuenta de qué es un grafo ralo.  La definición más básica (y general) establece que un grafo es ralo cuando tiene $O(n)$ aristas, siendo $n$ la cantidad de vértices del grafo.  Si bien esta noción es útil, el resultado es que cualquier grafo no-ralo se puede convertir en un grafo ralo agregando suficiente vértices de grado bajo.  En muchas aplicaciones, estos vértices se pueden preprocesar eficientemente, lo que nos deja con un grafo no-ralo.  En particular, la estructura $h$-grafo requiere, para ser eficiente, que cualquier parte del grafo sea rala.  En otras palabras, la estructura es eficiente cuando todo subgrafo con $k$ vértices tiene $O(k)$ aristas.  Esta es la noción que nosotros vamos a considerar cuando decimos que un grafo es ralo.  En particular, Nash-Williams~\cite{Nash-WilliamsJLMS1964} observo que un grafo es ralo bajo esta noción precisamente cuando su arboricidad es baja.
+La estructura $h$-grafo es una estructura general que se puede usar para representar a cualquier grafo.  Sin embargo, la estructura es particularmente eficiente en grafos \emph{ralos}, i.e., grafos con pocas aristas.  Existen distintas definiciones que dan cuenta de qué es un grafo ralo.  La definición más básica (y general) establece que un grafo es ralo cuando tiene $O(n)$ aristas, siendo $n$ la cantidad de vértices del grafo.  Si bien esta noción es útil, el resultado es que cualquier grafo no-ralo se puede convertir en un grafo ralo agregando suficiente vértices de grado bajo.  En muchas aplicaciones, estos vértices se pueden preprocesar eficientemente, lo que nos deja con un grafo no-ralo.  En particular, la estructura $h$-grafo requiere, para ser eficiente, que cualquier parte del grafo sea rala.  En otras palabras, la estructura es eficiente cuando todo subgrafo con $k$ vértices tiene $O(k)$ aristas.  Esta es la noción que nosotros vamos a considerar cuando decimos que un grafo es ralo.  En particular, Nash-Williams~\cite{Nash-WilliamsJLMS1964} observo que un grafo es ralo bajo esta noción precisamente cuando su arboricidad es baja.
 
 Los objetivos específicos de este este trabajo son:
 \begin{enumerate}
@@ -197,6 +209,34 @@ El presente documento esta organizado de la siguiente forma.  En el Capítulo~\r
 
 Como mencionamos en la sección anterior, el objetivo central de este trabajo es implementar un TAD \Grafo que explote la estructura de datos $h$-grafo.  El TAD \Grafo es una representación computacional del objeto abstracto \emph{grafo}, que es el que se estudia en teoría de grafos.  En esta sección incluimos definiciones de la teoría de grafos que son necesarias para comprender nuestro trabajo (ver Figura~\ref{fig:definiciones} en donde se ejemplifican muchas de las definiciones de esta sección).
 
+\begin{figure}[t]
+\parindent=0pt\small
+  \centering
+  \tikzsetnextfilename{grafo}
+  \begin{tikzpicture}%
+    [vertex/.style={circle, draw=black, fill=black, minimum size=3mm, inner sep=0mm},
+    edge/.style={thick}]
+
+    \node [vertex,label=above:$v_3$] (top) at (0, 1.6) {};
+    \node [vertex,label=below:$v_4$] (bottom) at (0, -1.6) {};
+    
+    \node [vertex,label=left:$v_1$]        (1) at (-3, 0) {};
+    \node [vertex,label=above left:$v_2$]  (2) at (-1, 0) {};
+    \node [vertex,label=above right:$v_5$] (3) at ( 1, 0) {};
+    \node [vertex,label=right:$v_6$]       (4) at ( 3, 0) {};
+
+    \draw [edge] (top) to (2);
+    \draw [edge] (top) to (3);
+    \draw [edge] (bottom) to (2);
+    \draw [edge] (bottom) to (3);
+    \draw [edge] (1) to (2);
+    \draw [edge] (2) to (3);
+    \draw [edge] (3) to (4);
+  \end{tikzpicture}%
+
+  \caption{Grafo $G$ con $V(G) = \{v_1,v_2,v_3,v_4,v_5,v_6\}$ y $E(G) =\{v_2v_1,\penalty0 v_2v_3,\penalty0 v_2v_4,\penalty0 v_2v_5,\penalty0 v_5v_3, \penalty0 v_5v_4, \penalty0 v_5v_6\}$.  El vértice $v_3$ tiene grado $2$ y su vecindario es $\{v_2,v_5\}$. La secuencia $v_1, v_2, v_3$ es un camino, mientras que $v_2,v_3,v_5,v_2$ es un ciclo.  El grafo $H$ con $V(H) = V(G)$ y $E(H) = \{v_2v_1, v_2v_3, v_2v_4, v_5v_6\}$ es un bosque que es subgrafo generador de $G$, i.e., $H$ es un bosque generador de $G$.  Como \{$H$, $J$\} es una partición en bosques de $G$, con $V(J) = V(G)$ y $E(J) = E(G) \setminus E(H)$, entonces $\alpha(G) \leq 2$.  Más aún, $\alpha(G) = 2$ porque $G$ no se puede particionar en un único bosque (ya que no es un bosque).}\label{fig:definiciones}
+\end{figure}
+
 %Definiciones matematicas
 Un \emph{grafo} es un par $G = (V, E)$ donde $V$ es un conjunto finito de \emph{vértices} y $E$ es un conjunto de pares no ordenados, llamados \emph{aristas}.  Vamos a escribir $V(G)$ y $E(G)$ para denotar a $V$ y $E$, mientras que al par no ordenado formado por $v$ y $w$ lo vamos a escribir como $vw$.  Para cada $vw \in E$, decimos que $vw$ \emph{incide} tanto en $v$ como en $w$ y que, por lo tanto, $v$ y $w$ son \emph{vecinos} o \emph{adyacentes}.  El grado $d(v)$ de un vértice $v$ es la cantidad de vecinos que tiene $v$.  El $k$-vecindario de $v$ es el conjunto $N(v, k)$ de todos los vecinos de $v$ que tienen grado $k$, para algun $k \in \mathbb{N}$.  Obviamente, $N(v,k) = \emptyset$ para todo $k \geq n$.  Al conjunto $N(v)$ de todos los vecinos de $v$ lo llamamos, simplemente, su \emph{vecindario}; notar que $d(v) = |N(v)|$.
 
@@ -211,7 +251,7 @@ Un grafo $G'$ es un \emph{subgrafo} de $G$ cuando $V(G') \subseteq V(G)$ y $E(G'
 \end{itemize}
 En otras palabras, $G \setminus E$ (resp.\ $G - \{vw\}$) se obtiene eliminando las aristas de $E$ (resp.\ la arista $vw$), mientras que $G \setminus V$ (resp.\ $G - v$) se obtiene eliminando los vértices de $V$ (resp.\ el vértice $v$) y las aristas que inciden en algún vértice de $V$ (resp.\ en $v$). Análogamente, escribimos $H + vw$ para indicar que $G = H - vw$ y, únicamente en caso en que $N(v) = \emptyset$, $H = G + v$ para indicar que $G = H - v$.  
 
-Decimos que un grafo $G$ es \emph{$k$-degenerado} cuando todo subgrafo de $G$ tiene al menos un vértice de grado menor o igual a $k$.  La \emph{degeneración} de $G$ es el mínimo valor $d(G)$ tal que $G$ es $d(G)$-degenerado.  Para un vértice $v$, el \emph{vecindario alto} de $v$ es el conjunto $H(v)$ que contiene a todos los vecinos de grado al menos $d(v)$ lo llamamos el \emph{vecindario alto}.  Al valor $h(v) = |H(v)|$ lo llamamos el \emph{$h$-index} de $v$.  El \emph{$h$-index} de $G$ es el máximo $h(G)$ tal que hay al menos $h(G)$ vertices con $h(G)$-index mayor o igual a $h(G)$.
+Decimos que un grafo $G$ es \emph{$k$-degenerado} cuando todo subgrafo de $G$ tiene al menos un vértice de grado menor o igual a $k$.  La \emph{degeneración} de $G$ es el mínimo valor $d(G)$ tal que $G$ es $d(G)$-degenerado.  Para un vértice $v$, el \emph{vecindario alto} de $v$ es el conjunto $H(v)$ que contiene a todos los vecinos de grado al menos $d(v)$ lo llamamos el \emph{vecindario alto}.  Al valor $h(v) = |H(v)|$ lo llamamos el \emph{$h$-index} de $v$.  El \emph{$h$-index} de $G$ es el máximo $h(G)$ tal que hay al menos $h(G)$ vértices con $h(G)$-index mayor o igual a $h(G)$.
 
 Un \emph{camino} de $G$ es una secuencia de vértices distintos $v_1, \ldots, v_k$ tal que $v_iv_{i+1} \in E(G)$ para todo $1 \leq i < k$.  Un ciclo es una secuencia $v_1, \ldots, v_k, v_1$ tal que $v_1, \ldots, v_k$ es un camino.  Los \emph{bosques} son aquellos grafos que no tienen ciclos.  La \emph{arboricidad} $\alpha(G)$ de un grafo $G$ es la mínima cantidad de bosques generadores en las que se puede particionar $E(G)$.  
 
@@ -224,7 +264,7 @@ El siguiente resultado relaciona los parámetros de cantidad de aristas, grado, 
  \end{displaymath}
 \end{theorem}
 
-Recordemos que consideramos que grafo es ralo cuando lo densidad $|E(H)|/|V(H)|$ es pequeña para todo subgrafo $H$ de $G$.  Como mencionamos en la sección anterior, $G$ es ralo cuando su arboricidad es baja.  La veracidad de este hecho surge del siguiente teorema de Nash-Williams.
+Recordemos que consideramos que grafo es ralo cuando la densidad $|E(H)|/|V(H)|$ es pequeña para todo subgrafo $H$ de $G$.  Como mencionamos en la sección anterior, $G$ es ralo cuando su arboricidad es baja.  La veracidad de este hecho surge del siguiente teorema de Nash-Williams.
 
 \begin{theorem}[\cite{Nash-WilliamsJLMS1964}]
   Si $G$ es un grafo con al menos dos vértices, entonces
@@ -255,15 +295,6 @@ Estos dos resultados aplican, de manera análoga, cuando uno considera vértices
   Si $G$ es un grafo, entonces, $\displaystyle \sum_{v \in V(G)}\sum_{w \in N(v)}h(w) \leq 4\alpha(G)m.$
 \end{theorem}
 
-{\huge Reemplazar la figura por una pagina encuadrada en la que se muestre un ejemplo completo, incluyendo los resultados de los teoremas.  Ademas, reemplazar el grafo por el que se usa en la Figura~\ref{fig:h-grafo} (es mas facil reemplazar este grafo que esa figura)}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{./grafo.jpeg}
-%   \fbox{Figura de un grafo en el que mostramos las definiciones}
-
-  \caption{Grafo $G$ con $V(G) = \{v_0,v_1,v_2,v_3,v_4\}$ y $E(G) =\{v_0v_4,\penalty0 v_1v_2,\penalty0 v_1v_3,\penalty0 v_1v_4,\penalty0 v_3v_4\}$.  El vértice $v_1$ tiene grado $3$ y su vecindario es $\{v_2,v_3,v_4\}$. La secuencia $v_0, v_4, v_1, v_2$ es un camino, mientras que $v_4,v_1,v_3,v_4$ es un ciclo.  El grafo $H$ con $V(H) = V(G)$ y $E(H) = \{v_0v_4, v_1v_3, v_1v_2\}\}$ es un bosque que es subgrafo generador de $G$, i.e., $H$ es un bosque generador de $G$.  Como \{$H$, $J$\} es una partición en bosques de $G$, con $V(J) = V(G)$ y $E(J) = E(G) \setminus E(H)$, entonces $\alpha(G) \leq 2$.  Más aún, $\alpha(G) = 2$ porque $G$ no se puede particionar en un único bosque (ya que no es un bosque).}\label{fig:definiciones}
-\end{figure}
 
 
 \chapter{El tipo abstracto Grafo}
@@ -439,7 +470,7 @@ El \lstlistingname~\ref{lst:pseudo:vertex_iterator} muestra cómo usar \Code{ver
 
 \begin{description}
   \item [Parámetros:] \Code{G} representa un grafo $G$.
-  \item [Propósito:] proveer al usuario de un mecanismo para iterar los vertices de $G$.
+  \item [Propósito:] proveer al usuario de un mecanismo para iterar los vértices de $G$.
   \item [Retorna:] un \Code{vertex_iterador} \Code{i} que apunta al ``primer'' vértice de $G$.
   \item [Complejidad temporal:] $O(1)$; el recorrido de cada vértice cuesta $O(1)$ también.
 \end{description}
@@ -530,7 +561,7 @@ Dado un \Code{vertex_iterator} \Code{v} que representa un vértice $v$ de un gra
 \chapter{La estructura \texorpdfstring{$h$}{h}-grafo}
 \label{sec:h-grafo}
 
-En esta sección describimos la estructura $h$-grafo que usamos para implementar el TAD \Grafo descripto en la Seccion~\ref{sec:tad grafo}.  Esta estructura está diseñada para grafos ralos, i.e., grafos cuya arboricidad o $h$-index es baja.  Esto se ve reflejado en  las complejidades temporales esperadas, dado que las mismas dependen de la cantidad de aristas, el $h$-index y la arboricidad del grafo.  La descripción la hacemos a alto nivel tal como en el artículo que introduce la estructura~\cite{LinSoulignacSzwarcfiterTCS2012}.  La idea es explicar, a continuación, cómo está compuesta la estructura interna del $h$-grafo y luego detallar cada uno de sus operaciones.
+En esta sección describimos la estructura $h$-grafo que usamos para implementar el TAD \Grafo descripto en la Sección~\ref{sec:tad grafo}.  Esta estructura está diseñada para grafos ralos, i.e., grafos cuya arboricidad o $h$-index es baja.  Esto se ve reflejado en  las complejidades temporales esperadas, dado que las mismas dependen de la cantidad de aristas, el $h$-index y la arboricidad del grafo.  La descripción la hacemos a alto nivel tal como en el artículo que introduce la estructura~\cite{LinSoulignacSzwarcfiterTCS2012}.  La idea es explicar, a continuación, cómo está compuesta la estructura interna del $h$-grafo y luego detallar cada uno de sus operaciones.
 
 
 La estructura $h$-grafo \Code{G} que representa a un grafo $G$ es simplemente un lista \Code{G.vertices} que tiene un objeto \Code{v} para cada vértice $v$ del grafo $G$.  Este objeto \emph{representa} a $v$ y mantiene la tripla $(d(v), \N(v), H(v))$, donde $\N(v)$ es la secuencia que se obtiene de eliminar los conjuntos vacíos de $N(v,1), \ldots, N(v, d(v)-1)$.  Recordemos que:   
@@ -556,11 +587,10 @@ La Figura~\ref{fig:h-grafo} muestra cómo se representa el $h$-grafo \Code{G} de
 \newcommand{\NN}[3]{\mathtt{N}(#1)\caja{#2}=[#3]}
 \newcommand{\NH}[2]{\mathtt{H}\caja{#1}=[#2]}
 
+
 \begin{figure}[ht]
 \parindent=0pt\small
 % \begin{center}
-
-
 
 $\VV{1}{1}{\mathtt{d}=1\\
            \NNNEmpty\\
@@ -596,7 +626,7 @@ Bajo la misma filosofía de ocultamiento de la información, la estructura del t
   \item \Code{v.H_neighbors()} que retorna un iterador a los vértices de \Code{G.vertices} que pertenecen a \Code{v.high}.
 \end{itemize}
 
-En el resto de esta sección describimos cómo implementar las operaciones principales del TAD \Grafo (ver Seccion~\ref{sec:tad grafo}) usando la estructura $h$-grafo.  Para que quede claro que estamos usando la estructura $h$-grafo, vamos a escribir la signatura de cada operación \Code{oper(G, ...)} usando la notación punto, i.e., \Code{G.oper(...)} a fin de remarcar que tenemos acceso a la estructura interna de \Code{G}.  Asimismo, vamos a suponer la existencia de las siguientes funciones básicas sobre listas.  Vale remarcar que estas funciones existen en la biblioteca estándar de nuestro lenguaje de implementación.
+En el resto de esta sección describimos cómo implementar las operaciones principales del TAD \Grafo (ver Sección~\ref{sec:tad grafo}) usando la estructura $h$-grafo.  Para que quede claro que estamos usando la estructura $h$-grafo, vamos a escribir la signatura de cada operación \Code{oper(G, ...)} usando la notación punto, i.e., \Code{G.oper(...)} a fin de remarcar que tenemos acceso a la estructura interna de \Code{G}.  Asimismo, vamos a suponer la existencia de las siguientes funciones básicas sobre listas.  Vale remarcar que estas funciones existen en la biblioteca estándar de nuestro lenguaje de implementación.
 \begin{itemize}
   \item \Code{L.append(what, pos = None)}: agrega \Code{what} inmediatamente atrás de la posición de \Code{L} apuntada por el iterador \Code{pos}.  Si \Code{pos = None}, entonces lo agrega al final.
   \item \Code{L.prepend(what, pos = None)}: agrega \Code{what} inmediatamente antes de la posición de \Code{L} apuntada por el iterador \Code{pos}.  Si \Code{pos = None}, entonces lo agrega al inicio.
@@ -647,7 +677,7 @@ El algoritmo para insertar una nueva arista $vw$ al grafo $G$ (para $v, w \in V(
 %
 \item [Tercer fase.] Por último, tenemos que agregar físicamente a $vw$ en $G$.  Supongamos que $d(v) \leq d(w)$.  Primero creamos un objeto \Code{w'} en \Code{v->high} que represente a $w$.  Luego, buscamos la lista \Code{N} que representa a $N(w, d(v))$, recorriendo \Code{w->low} (si $d(v) < d(w)$) o tomando \Code{N = w->high} (si $d(v) = d(w)$).  Finalmente, insertamos un objeto \Code{v'} que represente a $v$ en $N(w)$ e  incrementamos \Code{v->deg} y \Code{w->deg} en $1$.  
 \end{description}
-El \lstlistingname~\ref{lst:pseudo:G.insert_edge} resume la implementación del algoritmo.
+El \lstlistingname~\ref{lst:pseudo:G.insert_edge} resume la implementación del algoritmo, mientras que la Figura~\ref{fig:insert_edge_después} muestra cómo queda la estructura de la Figura~\ref{fig:h-grafo} luego de insertar la arista $v_1v_6$. 
 
 \begin{lstlisting}[caption={Implementación de \Code{insert_edge}.},float=ht,label={lst:pseudo:G.insert_edge}]
 G.insert_edge(v,w):
@@ -692,7 +722,35 @@ G.update_neighbors(v):
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\huge Incluir ejemplo de una ejecución empezando con la estructura de la Figura~\ref{fig:h-grafo})}.
+
+
+\begin{figure}[ht]
+\parindent=0pt\small
+% \begin{center}
+$\VV{1}{1}{\mathtt{d}=2\\
+           \NNNEmpty\\
+           \NH{7}{\neigh{v_2}{8}{10}{11}{2}, \neigh{v_6}{31}{32}{29}{6}}}$\\[2mm]
+$\VV{2}{2}{\mathtt{d}=4\\
+           \NNN{\NN{2}{11}{\neigh{v_3}{12}{17}{16}{3}, \neigh{v_4}{13}{20}{19}{4}, \neigh{v_1}{10}{8}{7}{1}}}\\
+           \NH{14}{\neigh{v_5}{15}{28}{27}{5}}}$\\[2mm]
+$\VV{3}{3}{\mathtt{d}=2\\
+           \NNNEmpty \\
+           \NH{16}{\neigh{v_2}{17}{12}{11}{2}, \neigh{v_5}{18}{25}{24}{5}}}$\\[2mm]
+$\VV{4}{4}{\mathtt{d}=2\\
+           \NNNEmpty \\
+           \NH{19}{\neigh{v_2}{20}{13}{11}{2}, \neigh{v_5}{21}{26}{24}{5}}}$\\[2mm]
+$\VV{5}{5}{\mathtt{d}=4\\
+           \NNN{\NN{2}{24}{\neigh{v_3}{25}{18}{16}{3}, \neigh{v_4}{26}{21}{19}{4}, \neigh{v_6}{23}{30}{29}{6}}}\\
+                \NH{27}{\neigh{v_2}{28}{15}{14}{2}}}$\\[2mm]
+$\VV{6}{6}{\mathtt{d}=2\\
+           \NNNEmpty \\
+           \NH{29}{\neigh{v_5}{30}{23}{24}{5}, \neigh{v_1}{32}{31}{7}{1}}}$%
+%
+% \end{center}%
+
+\caption{Resultado de la inserción de la arista $v_1v_6$ al grafo de la Figura~\ref{fig:definiciones}, cuya estructura se muestra en la Figura~\ref{fig:h-grafo}.  Notar como el objeto $v_1\caja{10}$ se mueve de $N(1)\caja{9}$ hacia $N(2)\caja{11}$.  Como resultado de dicho movimiento, $N(1)\caja{9}$ es eliminado por quedar vacío. Además, tenemos que actualizar el puntero \Code{list_pointer} de $v_2\caja{8}$ para que apunte a $N(2)\caja{11}$.
+} \label{fig:insert_edge_después}
+\end{figure}
 
 \section{\texorpdfstring{\Code{G.remove_edge(v, w)}}{G.remove\_edge(v, w)}}
 \label{sec:hgraph:remove_edge}
@@ -746,13 +804,13 @@ El \lstlistingname~\ref{lst:pseudo:G.remove_edge} resume la implementación del 
 \chapter{Implementación en \CPP}
 \label{sec:c++}
 
-En esta sección vamos a describir todos los detalles de la implementación de la estructura $h$-grafo en el lenguaje \CPP.  Este capítulo imita la estructura de los Capítulos~\ref{sec:tad grafo}~y~\ref{sec:h-grafo}, salvo que se omite la implementación de los algoritmos.\footnote{Los mismos pueden encontrarse en el código \CPP que se adjunta a este documento.}  Primero describimos la interfaz publica (Sección~\ref{sec:c++:interfaz}) y luego la la estructura interna (Sección~\ref{sec:c++:estructura}).  
+En esta sección vamos a describir todos los detalles de la implementación de la estructura $h$-grafo en el lenguaje \CPP.  Este capítulo imita la estructura de los Capítulos~\ref{sec:tad grafo}~y~\ref{sec:h-grafo}, salvo que se omite la implementación de los algoritmos.\footnote{Los mismos pueden encontrarse en el código \CPP que se adjunta a este documento.}  Primero describimos la interfaz pública (Sección~\ref{sec:c++:interfaz}) y luego la la estructura interna (Sección~\ref{sec:c++:estructura}).  
 
 
 \section{Interfaz de \CPP}
 \label{sec:c++:interfaz}
 
-En esta sección describiremos la interfaz pública de la clase \Graph que implementa al TAD \Grafo usando la estructura $h$-grafo.  La interfaz publica de \Graph contiene, en lenguaje \CPP, las funciones que fueron descriptas en alto nivel en la Sección~\ref{sec:tad grafo}.
+En esta sección describiremos la interfaz pública de la clase \Graph que implementa al TAD \Grafo usando la estructura $h$-grafo.  La interfaz pública de \Graph contiene, en lenguaje \CPP, las funciones que fueron descriptas en alto nivel en la Sección~\ref{sec:tad grafo}.
 Tal cual se observa y explicita en las Secciónes~\ref{sec:tad grafo}~y~\ref{sec:h-grafo}, el usuario no tiene acceso directo a los objetos que representan a los vértices del grafo en la estructura interna, sino que accede a los mismos a través de \emph{punteros restringidos}.  Siguiendo la política de la biblioteca estándar de \CPP, estos punteros se representan usando iteradores.  Es deseable que estos iteradores se encuadren en la jerarquía estándar de iteradores de \CPP.
 
 Debido a la importancia de los iteradores en la definición de la interfaz pública, en esta sección empezamos describiendo los tres tipos de iteradores que se proveen en este trabajo.  (Si bien no forma parte de este trabajo, es posible implementar otros iteradores, e.g. iteradores para recorrer y borrar aristas.)
@@ -772,8 +830,8 @@ Además de las funciones típicas de un iterador, la clase \CPPCode{vertex_itera
 
 Hay dos formas para obtener una instancia de la clase \CPPCode{vertex_iterator}:
 \begin{enumerate}[1.]
-  \item Invocando el método \CPPCode{Graph::add_vertex}, que implementa la función \Code{add_vertex} (Seccion~\ref{sec:tad grafo:add-vertex}) para agregar un nuevo vértice, y
-  \item Invocando alguno de los métodos \CPPCode{Graph::begin} o \CPPCode{Graph::end} que juntos implementan \Code{vertex_iterator} (Sección~\ref{sec:vertex iterator}).
+  \item Invocando el método \CPPCode{Graph::add_vertex}, que implementa la función \Code{add_vertex} (Sección~\ref{sec:tad grafo:add-vertex}) para agregar un nuevo vértice, e
+  \item invocando alguno de los métodos \CPPCode{Graph::begin} o \CPPCode{Graph::end} que juntos implementan \Code{vertex_iterator} (Sección~\ref{sec:vertex iterator}).
 \end{enumerate}
 El \lstlistingname~\ref{lst:c++:const_vertex_iterator} muestra cómo usar un \CPPCode{vertex_iterator}.
 
@@ -781,8 +839,8 @@ El \lstlistingname~\ref{lst:c++:const_vertex_iterator} muestra cómo usar un \CP
 \begin{lstlisting}[caption={Ejemplo de uso de \CPPCode{vertex_iterator} para manipular el grafo.  En el ejemplo, se crean dos vértices unidos por una arista y se imprimen los dos vértices.},name=const_vertex_iterator,gobble=2,float=ht,label={lst:c++:const_vertex_iterator},language=C++]
   void ejemplo_const_vertex_iterator() {
       Graph<int> G;
-      Graph<int>::vertex_iterator v = G.insertVertex(1);
-      Graph<int>::vertex_iterator w = G.insertVertex(2);
+      Graph<int>::vertex_iterator v = G.insert_vertex(1);
+      Graph<int>::vertex_iterator w = G.insert_vertex(2);
       //notar el uso de iteradores para agregar arista
       G.add_edge(v,w);
 
@@ -808,7 +866,7 @@ En principio, la única funcionalidad de ambos iteradores es poder acceder al v�
 
 Hay dos formas de obtener una instancia de las clase \CPPCode{deg_iterator}: 
 \begin{enumerate}[1.]
-  \item invocando \CPPCode{H_begin()} o \CPPCode{H_end()} sobre cualquier tipo de iterador (todos los iteradores a vértices incluyen esta función para evitar indirecciones), y 
+  \item invocando \CPPCode{H_begin()} o \CPPCode{H_end()} sobre cualquier tipo de iterador (todos los iteradores a vértices incluyen esta función para evitar indirecciones), e 
   \item invocando \CPPCode{Graph::H_begin(v)} o \CPPCode{Graph::H_end(v)}, que toma un \CPPCode{vertex_iterator} \CPPCode{v} como parámetro.
 \end{enumerate}
 Análogamente, cambiando \CPPCode{H_begin} y \CPPCode{H_end} por \CPPCode{N_begin} y \CPPCode{N_end}, respectivamente, podemos obtener instancias de la clase \CPPCode{neighbor_iterator}.  El \lstlistingname~\ref{lst:c++:deg_iterator} muestra cómo usar estos iteradores.
@@ -856,7 +914,7 @@ Análogamente, cambiando \CPPCode{H_begin} y \CPPCode{H_end} por \CPPCode{N_begi
 
 \subsection{Interfaz de la clase \texorpdfstring{\protect\CPPCode{Graph}}{Graph}}
 
-Recordemos que el TAD \Grafo es un tipo paramétrico, ya que debe almacenar información arbitraria en los vértices.  En consecuencia, la clase \Graph es un \emph{template} que depende de un parámetro \CPPCode{Elem}.  Hay que tener en cuenta que las funciones que agregan vértices copian la información y, por lo tanto, las instancias de \CPPCode{Elem} deben ser copiables.  El resto de la interfaz publica se obtiene de traducir las operaciones del TAD \Grafo a \CPP usando los iteradores definidos en las secciones anteriores.  El \lstlistingname~\ref{lst:c++:graph_public} incluye las funciones principales de la interfaz de \CPPCode{Graph}.
+Recordemos que el TAD \Grafo es un tipo paramétrico, ya que debe almacenar información arbitraria en los vértices.  En consecuencia, la clase \Graph es un \emph{template} que depende de un parámetro \CPPCode{Elem}.  Hay que tener en cuenta que las funciones que agregan vértices copian la información y, por lo tanto, las instancias de \CPPCode{Elem} deben ser copiables.  El resto de la interfaz pública se obtiene de traducir las operaciones del TAD \Grafo a \CPP usando los iteradores definidos en las secciones anteriores.  El \lstlistingname~\ref{lst:c++:graph_public} incluye las funciones principales de la interfaz de \CPPCode{Graph}.
 
 \begin{lstlisting}[caption={Interfaz de la clase \CPPCode{Graph}.},gobble=2,name=graph_public,float=h,label={lst:c++:graph_public},language=C++,xleftmargin=1em,xrightmargin=1em]
   //add_vertex(*this, e) %(Sección~\ref{sec:tad grafo:insert-vertex})%
@@ -989,7 +1047,7 @@ Las secciones siguientes describen las tres clases principales del $h$-grafo.
 
 Recordemos que el clase \Graph de \CPP es un \emph{template} que permite asociar información de algún tipo a cada vértice.  Como vimos en la Sección~\ref{sec:h-grafo}, la representación de un $h$-grafo es sencilla en términos conceptuales, ya que simplemente es una lista de vértices.  Esta lista está implementada con el tipo \CPPCode{std::list} y, dado que los vértices se implementan usando la clase \CPPCode{Vertex} (ver Sección~\ref{sec:c++:estructura:Vertex.h}), el tipo completo del miembro \CPPCode{vertices} es \CPPCode{std::list<Vertex>}.  La clase \Graph define también lo que es un \CPPCode{Graph::vertex_iterator}, que es una clase interna de \Graph.  
 
-A pesar de la aparente simpleza, los tipos auxiliares (i.e., \CPPCode{Vertex} y \CPPCode{Neighbor}) deben estar al tanto de la estructura en la que se almacenan los vértices.  En efecto, cada instancia de \CPPCode{Neighbor} mantiene un iterador (\Code{neighbor_pointer}) que apunta a una posición de \CPPCode{vertices}.  Análogamente, cada instancia de \CPPCode{Vertex} necesita acceso al tipo paramétrico \CPPCode{Elem} de \Graph para saber qué tiene que guardar como información.  Para comunicar a las otras clases que \CPPCode{vertices} es de tipo \CPPCode{std::list}, hay al menos tres opciones.  La primera es copiar en cada clase los tipos no parametricos (e.g., el tipo de \CPPCode{vertices}).  Esto no es muy flexible ya que, si la estructura cambiara\footnote{Por ejemplo para representar grafos estáticos conviene usar un \CPPCode{std::vector}.}, tendríamos que arreglar todos las clases auxiliares.  Una segunda opción es que las clases auxiliares sean \emph{templates} a fin de indicar los distintos parámetros que necesitan.  Una tercer opción más flexible es que las clases auxiliares sean \emph{templates} que dependan de la clase \CPPCode{Graph}.  De esta forma, podemos guardar todos los rasgos (\emph{traits}) en la clase \Graph.  Así, además de definir la estructura de \CPPCode{vertices}, la clase \CPPCode{Graph} contiene la definición de todos los renombres que son compartidos por las clases auxiliares (e.g., define el tipo donde se almacenan los vecindarios dentro de un vértice). En resumen, como veremos más adelante, las clases \CPPCode{Vertices} y \CPPCode{Neighbor} son \emph{templates} que se instancian como \CPPCode{Vertex<Graph>} y \CPPCode{Neighbor<Graph>}.  Más aún, la clase \Graph es \CPPCode{friend} de estas dos clases a fin de que puedan manipular la estructura interna. 
+A pesar de la aparente simpleza, los tipos auxiliares (i.e., \CPPCode{Vertex} y \CPPCode{Neighbor}) deben estar al tanto de la estructura en la que se almacenan los vértices.  En efecto, cada instancia de \CPPCode{Neighbor} mantiene un iterador (\Code{neighbor_pointer}) que apunta a una posición de \CPPCode{vertices}.  Análogamente, cada instancia de \CPPCode{Vertex} necesita acceso al tipo paramétrico \CPPCode{Elem} de \Graph para saber qué tiene que guardar como información.  Para comunicar a las otras clases que \CPPCode{vertices} es de tipo \CPPCode{std::list}, hay al menos tres opciones.  La primera es copiar en cada clase los tipos no paramétricos (e.g., el tipo de \CPPCode{vertices}).  Esto no es muy flexible ya que, si la estructura cambiara\footnote{Por ejemplo para representar grafos estáticos conviene usar un \CPPCode{std::vector}.}, tendríamos que arreglar todos las clases auxiliares.  Una segunda opción es que las clases auxiliares sean \emph{templates} a fin de indicar los distintos parámetros que necesitan.  Una tercer opción más flexible es que las clases auxiliares sean \emph{templates} que dependan de la clase \CPPCode{Graph}.  De esta forma, podemos guardar todos los rasgos (\emph{traits}) en la clase \Graph.  Así, además de definir la estructura de \CPPCode{vertices}, la clase \CPPCode{Graph} contiene la definición de todos los renombres que son compartidos por las clases auxiliares (e.g., define el tipo donde se almacenan los vecindarios dentro de un vértice). En resumen, como veremos más adelante, las clases \CPPCode{Vertices} y \CPPCode{Neighbor} son \emph{templates} que se instancian como \CPPCode{Vertex<Graph>} y \CPPCode{Neighbor<Graph>}.  Más aún, la clase \Graph es \CPPCode{friend} de estas dos clases a fin de que puedan manipular la estructura interna. 
 
 Volviendo un poco para atrás, la estructura de representación de \Graph está dada por \CPPCode{vertices} cuyo tipo, habíamos dicho, es \CPPCode{std::list<Vertex>}.  El inconveniente es que, de acuerdo al párrafo anterior, el tipo \CPPCode{Vertex} está incompleto, ya que \CPPCode{Vertex} es un \emph{template}.  Estrictamente hablando:
 \begin{itemize}
@@ -1092,7 +1150,7 @@ El presente capítulo tiene dos propósitos prácticos que están relacionados. 
 
 \section{El problema de la búsqueda de triángulos}
 
-Un \emph{triángulo} de un grafo $G$ es una tripla de vértices $\{v, w, z\}$ que son todos adyacentes entre sí.  El problema de \emph{listar los triángulos} consiste en enumerar todos los triángulos de un grafo de entrada $G$.  Este es un problema clásico de la teoría algorítmica de grafos que se resuelve usando distintos métodos.  Por ello, no podemos esperar que el grafo de entrada esté codificado usando un $h$-grafo, sino que viene descrito como el par $(V(G), E(G))$ donde $V(G)$ y $E(G)$ están implementados como listas o conjuntos.
+Un \emph{triángulo} de un grafo $G$ es una tripla de vértices $\{v, w, z\}$ que son todos adyacentes entre sí.  El problema de \emph{listar los triángulos} consiste en enumerar todos los triángulos de un grafo de entrada $G$.  Este es un problema clásico de la teoría algorítmica de grafos que se resuelve usando distintos métodos.  Por ello, no podemos esperar que el grafo de entrada esté codificado usando un $h$-grafo, sino que viene descripto como el par $(V(G), E(G))$ donde $V(G)$ y $E(G)$ están implementados como listas o conjuntos.
 
 En~\cite{LinSoulignacSzwarcfiterTCS2012} se propone un algoritmo para resolver el problema de listar los triángulos usando la estructura $h$-grafo.  Elegimos este algoritmo por dos razones principales.  Primero, porque es el más simple de implementar y, aún así, permite probar las características dinámicas de la implementación.  Segundo, porque este algoritmo coincide con una de las operaciones que en~\cite{LinSoulignacSzwarcfiterTCS2012} se incluyen como básicas para el resto de los algoritmos: la búsqueda de el conjunto $N'(v)$ de todas los aristas que junto a $v$ forman un triángulo.  Queda como trabajo a futuro la inclusión de esta operación dentro de la clase \CPPCode{Graph}.
 
@@ -1167,63 +1225,67 @@ Si bien la construcción del objeto \CPPCode{Graph<Marcable>} \CPPCode{G} a part
   }
 \end{lstlisting}
 
-\section{Experimentación}
+\section{Experimento}
 
-Para crear los $h$-graph se generaron grafos aleatorios utilizando la librería Networkx de Python. En un archivo plano se guardaron los datos de los grafos generados (cantidad de aristas, aristas y nodos). Esos datos son consumidos por nuestra implementación para generar el $h$-graph.
+El artículo~\cite{LinSoulignacSzwarcfiterTCS2012} contiene un análisis de la complejidad temporal del algoritmo de búsqueda de triángulos descrito en la sección anterior.  De acuerdo a este análisis, el algoritmo requiere tiempo $\Theta(|E(G)|\alpha(G))$, en peor caso, para encontrar los triángulos del grafo $G$ .\footnote{En rigor, el artículo~\cite{LinSoulignacSzwarcfiterTCS2012} indica que el costo es $O(|E(G)\alpha(G))$ para cualquier grafo.  Teniendo en cuenta que para algunas clases de grafos ---e.g., completos, árboles--- el costo es exactamente $O(|E(G)|\alpha(G))$, concluimos que en peor caso el costo es $\Theta(|E(G)|\alpha(G))$}  Recordemos que la arboricidad $\alpha(G)$ de $G$ coincide, en términos asintóticos, con la degeneración $d(G)$ de $G$.  Es decir, $\alpha(G) = \Theta(d(G))$, con lo cual podemos afirmar que el algoritmo cuesta $\Theta(|E(G)|d(G))$.  
 
-A continuación mostraremos los gráficas del tiempo de ejecución en crear el grafo y
-encontrar los triángulos en función a la cantidad de aristas. El eje $y$ refleja el
-tiempo en milisegundos, el eje $x$ representa la cantidad de aristas.
-La experimentación fue realizada con diferentes tipos de grafos que tienen desde 10 a 505 nodos.
+El propósito de esta sección es comparar el tiempo de ejecución de nuestra implementación con el costo teórico esperado.  Nuestra expectativa es que, efectivamente, ambos tiempos coincidan, a fin de poder dilucidar (en forma experimental) dos preguntas complementarias.  Por un lado, ¿es cierto que el algoritmo propuesto en~\cite{LinSoulignacSzwarcfiterTCS2012}, que usa la estructura $h$-grafo, consume tiempo $O(|E(G)|\alpha(G))$?  Por otro lado, ¿es cierto que nuestra implementación cuesta $O(|E(G)|\alpha(G))$ tiempo?  Asimismo, aprovechamos la ejecución del algoritmo para testear que la implementación sea correcta.
+
+Para la experimentación, generamos una serie de grafos usando el lenguaje de programación \Code{Python}.  Para cada grafo $G$ generado, realizamos las siguientes operaciones.
+\begin{enumerate}
+  \item En \Code{Python}, calculamos la degeneración $d(G)$ y el conjunto $T(G)$ de triángulos usando un algoritmo de fuerza bruta, que consiste en recorrer cada tripla $v,w,z$ de vértices, observando si son o no mutuamente adyacentes.  Codificamos el grafo en un archivo de texto plano, y guardamos $d(G)$ y $T(G)$ para el análisis futuro.
+  \item Ejecutamos nuestro programa \CPP de calculo de triángulos usando el archivo generado, a la vez que medimos el tiempo $t(G)$ que consume el programa (medido en $\mu s$).  Como resultado obtenemos un conjunto de triplas $T'(G)$ que guardamos para el análisis futuro. 
+  \item Nuevamente en \Code{Python}, comparamos $T(G)$ con $T'(G)$.  Si son iguales, concluimos que el algoritmo de \CPP es correcto para $G$; caso contrario, generamos un mensaje de error.
+\end{enumerate}
+Para crear los grafos de prueba, usamos distintos generadores provistos por la biblioteca \Code{networkx}~\cite{HagbergSchultSwart2008} de \Code{Python}.  Específicamente, generamos grafos completos (de hasta $60$ vértices), caminos (de hasta $19000$ aristas) y grafos aleatorios (mayormente ralos) usando las funciones: \Code{connected_watts_strogatz_graph}, \Code[mathescape]{erdos_$ $renyi_$ $graph}, \Code{gnp_random_graph}, \Code{newman_watts_strogatz_graph} y \Code[mathescape]{dense_$ $gnm_$ $random_$ $graph}.  Los grafos tienen entre $100$ y $20000$ aristas, y la degeneración de los mismos varía entre $1$ y $71$.
+
+\section{Resultados del experimento}
+
+Como resultado de nuestra experimentación, lo primero que observamos es que $T(G) = T'(G)$ para todos los grafos considerados.  Esto nos permite concluir, empíricamente, que el algoritmo es correcto para la gran cantidad de grafos analizados.  En consecuencia, es esperable que el algoritmo se comporte correctamente, aunque no hayamos descartado la presencia de \emph{bugs}.    
+
+Teniendo resuelto el tema de la corrección, pasamos a realizar la comparación de los tiempos.  Para ello, generamos dos gráficos que exhiben la relación entre $t(G)$ y $|E(G)|d(G)$.  La Figura~\ref{fig:t/d-en-funcion-m} muestra a la izquierda el gráfico de $t(G)/(|E(G)|d(G))$  en función de $|E(G)|$, mientras que a la derecha muestra el gráfico de $t(G)$ (escalado a ms) en función de $|E(G)|d(G)$ (escalado por miles).  De los gráficos podemos sacar las siguientes conclusiones.
+\begin{itemize}
+  \item La relación $t(G)/(|E(G)|d(G))$ tiende a ser una función constante acotada por $7$ cuando $|E(G)|$ crece.  La razón por la cual está constante toma valores más altos cuando $|E(G)|$ es chico puede deberse al diseño del experimento.  Vale remarcar que el algoritmo realiza una cantidad de operaciones extra que dependen únicamente de $|E(G)|$ (e.g., lectura del input y escritura del output).  Estas operaciones tienen un gran peso cuando $d(G)$ es chico, pero tienden a tener un peso marginal cuando $d(G)$ crece.  Es por eso que vemos que la para valores grandes de $|E(G)|$, el gráfico de la izquierda se parece a dos funciones.  La línea superior se corresponde a los grafos que son caminos (y por ende $d(G) = 2$), mientras que la línea inferior se corresponde a grafos más bien densos.  Los grafos de la izquierda del gráfico podrían incluso tener menos aristas que vértices, lo que explicaría la constante alta.
+  \item Visto de otra forma, también observamos que $t(G)$ tiende a ser lineal en función a $|E(G)|d(G)$.  En el gráfico de la derecha, las líneas que se generan tienen una pendiente baja porque se corresponden con grafos de mayor degeneración.  En efecto, el valor de $|E(G)|d(G)$ para el camino $G$ con 19000 vrtices es sólo 19000, con lo cual los caminos no tienen una mayor incidencia en el gráfico.   
+\end{itemize}
+Más allá de las observaciones anteriores, podemos concluir de nuestro análisis que $t(G) = O(|E(G)|\alpha(G))$.  También podemos observar que $t(G) = \Omega(|E(G)|\alpha(G))$ para todos los casos considerados.  Esto nos permite conjeturar que el algoritmo demora tiempo $\Omega(|E(G)|\alpha(G))$ en mejor caso o, al menos, en caso promedio.
+
+
+
+
+
 
 \begin{figure}
-  \centering
-   \includegraphics[width=0.8\textwidth]{./real.jpg}
-  \fbox{Gráfico del tiempo de ejecución de $100$ grafos connected\_watts\_strogatz\_graph}
-
-  \caption{}\label{fig:realWorld}
+  \begin{minipage}{.5\linewidth}
+    \centering
+    \includegraphics{td-en-funcion-m}
+  \end{minipage}%
+  \begin{minipage}{.5\linewidth}
+    \centering
+    \includegraphics{t-en-funcion-d}
+  \end{minipage}
+  \caption{A la izquierda se muestra el gráfico de $t(G)/d(G)$ en función de $|E(G)|$, mientras que la derecha se muestra el gráfico de $t(G)/1000$ en función de $d(G)/1000$.}\label{fig:t/d-en-funcion-m}
 \end{figure}
 
-\begin{figure}
-  \centering
-   \includegraphics[width=0.8\textwidth]{./erdos.jpg}
-  \fbox{Gráfico del tiempo de ejecución de $100$ grafos erdos\_renyi\_graph}
-
-  \caption{ }\label{fig:erdos}
-\end{figure}
-
-
-\begin{figure}
-  \centering
-   \includegraphics[width=0.8\textwidth]{./gnp.jpg}
-  \fbox{Gráfico del tiempo de ejecución de $100$ grafos gnp\_random\_graph}
-
-  \caption{}\label{fig:gnp}
-\end{figure}
-
-\begin{figure}
-  \centering
-   \includegraphics[width=0.8\textwidth]{./newman.jpg}
-  \fbox{Gráfico del tiempo de ejecución de $100$ newman\_watts\_strogatz\_graph}
-
-  \caption{}\label{fig:newman}
-\end{figure} 
-
-\begin{figure}
-  \centering
-   \includegraphics[width=0.8\textwidth]{./dense.jpg}
-  \fbox{Gráfico del tiempo de ejecución de $100$ dense\_gnm\_random\_graph}
-
-  \caption{ }\label{fig:dense}
-\end{figure}
 
 
 \chapter{Conclusiones y posibilidades de mejora}
 \label{sec:final}
 
+En este trabajo implementamos la estructura $h$-grafo en el lenguaje de programación \CPP.  Para esta implementación, utilizamos las estructuras estándar del lenguaje, mostrando la factibilidad del diseño de estructuras complejas y modulares.  Para lograr esta modularidad, tuvimos que hacer un uso extensivo de los iteradores, lo que nos permitió representar los punteros restringidos requeridos por la estructura $h$-grafo. Además, diseñamos nuestros propios iteradores, que nos posibilitaron brindar una interfaz eficiente con acceso en $O(1)$ a los distintos elementos del grafo, sin mostrar la estructura interna al usuario.  Más aún, mostramos que dichos iteradores cumplen con las especificaciones requeridas por el lenguaje.
+
+Como ejemplo de uso de la nuestra implementación, escribimos un programa para encontrar los triángulos en un grafo.  De esta forma, pudimos verificar la corrección y eficiencia de la implementación.  La experimentación nos permitió concluir que la estructura es eficiente para grafos ralos, verificando empíricamente los resultados teóricos de \cite{LinSoulignacSzwarcfiterTCS2012}.
+
+Más allá de nuestros avances, quedan algunas posibilidades de mejora que fueron excluidos del alcance de nuestro trabajo.  Podemos mencionar dos de las características más importantes que son requeridas por algunos algoritmos de~\cite{LinSoulignacSzwarcfiterTCS2012}.  Primero, sería deseable disponer de funcionalidad que permita modificar la información asociada a un vértice, sin recurrir a variables mutables.  Segundo, conviene tener una extensión que permita almacenar información en las aristas.  De esta forma, se podría almacenar el conjunto $N(vw) = N(v) \cap N(w)$ a fin de poder pos-procesarlo de forma conveniente.  Finalmente, también sería deseable implementar la variante dirigida del $h$-grafo.
+
+En cuanto a los resultados experimentales, queda como trabajo futuro el análisis del $h$-grafo para representar grafos de gran escala.  En particular, sería deseable analizar la eficiencia empírica en comparación con otros algoritmos existentes.
+
 \backmatter
 
 \bibliographystyle{plain}
 \bibliography{biblio}
+
+\todos
+
 
 \end{document}

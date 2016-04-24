@@ -1085,19 +1085,89 @@ Al igual que discutimos para la clase \CPPCode{Vertex}, la clase \CPPCode{Neighb
   };
 \end{lstlisting}
 
-\chapter{Resultados de la experimentación}
+\chapter{Aplicaciones y experimentación}
 \label{sec:experimentación}
-"tiempo vs complejidad"
 
-En está sección describiremos la experimentación realizada a fin de demostrar la eficiencia del h-graph. La experimentación consiste en el tiempo que lleva a la implementación crear un grafo y encontrar los triángulos en él.
+El presente capítulo tiene dos propósitos prácticos que están relacionados.  Por un lado, queremos mostrar cómo se puede usar nuestra clase \CPPCode{Graph} para resolver un problema algorítmico de grafos que utiliza la estructura $h$-grafo.  El problema elegido en este caso es el computo de los triángulos del grafo.  Por el otro lado, queremos evaluar la eficiencia práctica de nuestra implementación para el problema propuesto.  El objetivo final de esta segunda parte es estudiar si el tiempo requerido por el algoritmo está en coincidencia con la cota teórica, a la vez que buscamos si el tiempo real de computo se asemeja más a la cota superior ($O(|E(G)|\alpha(G)$) o a la cota inferior ($\Omega(m)$).
+
+\section{El problema de la búsqueda de triángulos}
+
+Un \emph{triángulo} de un grafo $G$ es una tripla de vértices $\{v, w, z\}$ que son todos adyacentes entre sí.  El problema de \emph{listar los triángulos} consiste en enumerar todos los triángulos de un grafo de entrada $G$.  Este es un problema clásico de la teoría algorítmica de grafos que se resuelve usando distintos métodos.  Por ello, no podemos esperar que el grafo de entrada esté codificado usando un $h$-grafo, sino que viene descrito como el par $(V(G), E(G))$ donde $V(G)$ y $E(G)$ están implementados como listas o conjuntos.
+
+En~\cite{LinSoulignacSzwarcfiterTCS2012} se propone un algoritmo para resolver el problema de listar los triángulos usando la estructura $h$-grafo.  Elegimos este algoritmo por dos razones principales.  Primero, porque es el más simple de implementar y, aún así, permite probar las características dinámicas de la implementación.  Segundo, porque este algoritmo coincide con una de las operaciones que en~\cite{LinSoulignacSzwarcfiterTCS2012} se incluyen como básicas para el resto de los algoritmos: la búsqueda de el conjunto $N'(v)$ de todas los aristas que junto a $v$ forman un triángulo.  Queda como trabajo a futuro la inclusión de esta operación dentro de la clase \CPPCode{Graph}.
+
+Una vez construido el $h$-grafo de $G$, el algoritmo para listar los triángulos funciona considerando un vértice $v \in V(G)$ a la vez.  El primer paso es marcar cada vértice $z \in N(v)$.  Luego, se recorre cada $z \in H(w)$ para $w \in N(v)$: si $z$ está marcado, esto significa que $\{v,w,z\}$ es un triángulo; caso contrario, $\{v,w,z\}$ no es un triángulo porque falta la arista $vz$.  Para evitar duplicados, agregamos $\{v,w,z\}$ al resultado únicamente cuando $v$ es ``mayor'' a $w$ y $w$ es ``mayor'' a $z$ en algún sentido.  Una vez listados todos los triángulos correspondientes a $v$, borramos las marcas de los vértices en $N(v)$.  Este algoritmo cuesta $O(|E(G)|\alpha(G))$ tiempo~\cite{LinSoulignacSzwarcfiterTCS2012}.  El Pseudocódigo~\ref{lst:apps:triangulos-pseudo} muestra cómo implementar este algoritmo usando la interfaz descrita en el Capítulo~\ref{sec:tad grafo}, donde suponemos que existen las funciones \Code{marcar(z)}, \Code{marcado(z)} y \Code{desmarcar(z)} que, dado un \Code{vertex_iterator} \Code{z}, marca, verifica si está marcado, y desmarca a \Code{z}, respectivamente.
+
+\def\lstlistingname{Pseudocódigo}
+\begin{lstlisting}[caption={Algoritmo de búsqueda de triángulos, incluyendo la construcción del $h$-grafo.},gobble=2,float=ht,label={lst:apps:triangulos-pseudo}]
+  listar_triangulos(V, E):
+    listar_triangulos(construir_grafo(V, E))
+    
+  construir_grafo(V, E):
+    G := create_graph()
+    for v in V: it[v] := add_vertex(G, v)
+    for (v,w) in E: add_edge(G, it[v], it[w])
+  
+  listar_triangulos(G):
+    for v in vertex_iterator(G):
+      for z in neighbor_iterator(G, v): marcar(z) 
+      for w in neighbor_iterator(G, v):
+        for z in H_neighbor_iterator(G, w):
+          if marcado(z) and v > w > z: print {v, w, z}
+      for z in neighbor_iterator(G, v): desmarcar(z)
+\end{lstlisting}
+
+\subsection{Implementación en \CPP}
+
+Nuestra implementación en \CPP está igualmente dividida las dos fases principales: construir el $h$-grafo y listar los triángulos.  El algoritmo para listar los triángulos se incluye en el archivo \Code{triangles.h}.  La función principal llamada \CPPCode{triangles}, tiene un único parámetro de tipo \CPPCode{Graph<Marcable>}, donde \CPPCode{Marcable} es un tipo paramétrico.  La idea es que el objeto \Code{v} asociados al vértice $v$ del grafo pueda ser de cualquier tipo, siempre y cuando \Code{v} incluya dos funciones: \CPPCode{v.marcar(bool)} que se usa para marcar (cuando \CPPCode{bool} es verdadero) o desmarcar $v$ (cuando \CPPCode{bool} es falso).  Por otra parte, la función \CPPCode{triangles} retorna una lista de \CPPCode{Triangle<Marcable>}.  Cada instancia de \CPPCode{Triangle<Marcable>} mantiene tres \CPPCode{vertex_iterator}, uno por cada elemento del triángulo.  Asimismo, se incluye una función para determinar si un vértice es ``mayor'' a otro, a fin de evitar resultados duplicados.  (Para esta implementación, se requiere que los objetos que representan a los vértices, de tipo \CPPCode{Marcable}, sean también comparables.)  El Código~\ref{lst:apps:triangulos} muestra la implementación completa, excluyendo las funciones para determinar si un vértice es mayor a otro.  Podemos observar que, más allá de las características de los lenguajes, el Código~\ref{lst:apps:triangulos} es idéntico al presentado en el Pseudocódigo~\ref{lst:apps:triangulos-pseudo}.
+
+\def\lstlistingname{Código}
+\begin{lstlisting}[caption={Algoritmo de búsqueda de triángulos usando la clase \CPPCode{Graph}.},gobble=2,float=ht,label={lst:apps:triangulos}]
+  template<class T>
+  struct Triangle {
+    typename Graph<T>::vertex_iterator v, w, z;
+  };
+
+  template<class Marcable>
+  std::list<Triangle<Marcable>> triangles(const Graph<Marcable>& G) {
+    std::list<Triangle<Marcable>> res;
+
+    for(auto v = G.begin(); v != G.end(); ++v) {
+      for(auto w = G.N_begin(v); w != G.N_end(v); ++w) w->marcar(true);
+
+      for(auto w = G.N_begin(v); w != G.N_end(v); ++w)
+        for(auto z = G.H_begin(w); z != G.H_end(w); ++z)
+          if(z->marcado() && well_sorted(G, Triangle<Marcable>{v,w,z}))
+              res.push_back(Triangle<Marcable>{v, w, z});
+      
+      for(auto w = G.N_begin(v); w != G.N_end(v); ++w) w->marcar(false);
+    }
+    return res;
+  }
+\end{lstlisting}
+
+Si bien la construcción del objeto \CPPCode{Graph<Marcable>} \CPPCode{G} a partir de los conjuntos \CPPCode{V} y \CPPCode{E} no es compleja, hay dos detalles que conviene remarcar.  Primero, observemos que el parámetro de la función \CPPCode{triangles} es de tipo \CPPCode{const Graph<Marcable>&}, lo que significa que sus vértices no son modificables.  (En rigor, no incluimos ninguna función que permita cambiar la información de un vértice del grafo, que queda como trabajo futuro.)  En consecuencia, el mecanismo de la marcas se resuelve usando miembros mutables de \CPP.  El segundo detalle es cómo mantener la asociación entre los vértices de \CPPCode{V} y los iteradores que retorna el \CPPCode{G.add_vertex}.  La solución depende del uso que uno quiera darle a la clase \CPPCode{Graph}.  Una opción es guardar un diccionario que, dada una clave \CPPCode{v} de \CPPCode{V}, indique cuál es el iterador asociado.  Otra opción es usar números consecutivos entre $0$ y $|V|-1$ para representar a $V$, en cuyo caso se puede guardar un vector que asocie cada vértice con su iterador.  Nosotros tomamos esta segunda opción.  El Código~\ref{lst:apps:create_graph} muestra una posible implementación.
 
 
-Para realizar la prueba implementamos un algoritmo sencillo que busca y arma una lista
-con todos los triángulos en un grafo dado. Por un lado tenemos una clase ejemplo Triangle
-que es la representación de como es un triángulo, esto lo usamos para que más adelante
-podamos distinguir un triángulo que ya fue encontrado. El método principal recibe un
-grafo de vértices del tipo marcables. Estos objetos que representan vértices entienden los métodos marcar(bool) que indica si el objeto está marcado o no y marcado() que retorna el valor de la marca. Se empieza recorriendo uno a uno los vértices $v$ del grafo y por cada uno marca a sus vecinos $w$, una vez todos ellos están marcados se los vuelve a recorrer para ir procesando a su vez cada uno de sus vecinos $z$ de grado mayor o igual con el fin de saber si $z$ está marcado o no. Si está marcado significa que ese vértice es vecino tanto de $v$ como de $w$ por lo tanto (y si no es un triángulo que ya se encontró) se crea un Triangle con estos tres vértices y se lo agrega a la lista de resultado. Finalmente se desmarcan todos los vértices para poder iniciar el ciclo con el siguiente vértice del grafo.
-Una vez se procesan todos los vértices se obtiene la lista de triángulos.
+\begin{lstlisting}[caption={Una posible implementación de \CPPCode{construir_grafo}.},gobble=2,float=ht,label={lst:apps:create_graph}]
+  struct Vertex {
+    Vertex(int elem) : elem(elem), marked(false) {}
+    ...
+    int elem; mutable bool marked;
+  };
+
+  Graph<Vertex> construir_grafo(int n, std::list<std::pair<int,int>> E) {
+    Graph<Vertex> G;
+    vector<Graph<Vertex>::vertex_iterator> V;
+    for(int v = 0; v < n; v++) V.push_back(G.add_vertex(v));
+
+    for(auto e = E.begin(); e != E.end(); ++e)
+       G.add_edge(V[e->first], V[e->second]);
+    return G;  //se puede retonar V tambien.
+  }
+\end{lstlisting}
+
+\section{Experimentación}
 
 Para crear los $h$-graph se generaron grafos aleatorios utilizando la librería Networkx de Python. En un archivo plano se guardaron los datos de los grafos generados (cantidad de aristas, aristas y nodos). Esos datos son consumidos por nuestra implementación para generar el $h$-graph.
 
@@ -1108,46 +1178,45 @@ La experimentación fue realizada con diferentes tipos de grafos que tienen desd
 
 \begin{figure}
   \centering
-   \includegraphics[width=0.8\textwidth]{./real_arista.jpeg}
+   \includegraphics[width=0.8\textwidth]{./real.jpg}
   \fbox{Gráfico del tiempo de ejecución de $100$ grafos connected\_watts\_strogatz\_graph}
 
-  \caption{El tiempo máximo de 9.25799 ms se da en grafo con 505 nodos y 1010 aristas. El degeneracy * E de 3030 y el $E/\sqrt{E}$ de 31. El tiempo mínimo de 0.319994 ms se da en el grafo de 10 nodos y 20 aristas. El degeneracy * E es de 60 y el $E/\sqrt{E}$ de 4 }\label{fig:realWorld}
+  \caption{}\label{fig:realWorld}
 \end{figure}
 
 \begin{figure}
   \centering
-   \includegraphics[width=0.8\textwidth]{./erdos_aristas.jpeg}
+   \includegraphics[width=0.8\textwidth]{./erdos.jpg}
   \fbox{Gráfico del tiempo de ejecución de $100$ grafos erdos\_renyi\_graph}
 
-  \caption{El tiempo máximo de 1781.94 ms se da en grafo con 505 nodos y 19104 aristas. El degeneracy * E de 1146240 y el $E/\sqrt{E}$ de 138. El tiempo mínimo de 0.133815 ms se da en grafo de 10 nodos y 7 aristas. El degeneracy * E es de 7 y el $E/\sqrt{E}$ de 2 }\label{fig:erdos}
+  \caption{ }\label{fig:erdos}
 \end{figure}
 
 
 \begin{figure}
   \centering
-   \includegraphics[width=0.8\textwidth]{./gnp_aristas.jpeg}
+   \includegraphics[width=0.8\textwidth]{./gnp.jpg}
   \fbox{Gráfico del tiempo de ejecución de $100$ grafos gnp\_random\_graph}
 
-  \caption{El tiempo máximo de 642.788 ms se da en grafo con 505 nodos y 12518 aristas. El degeneracy * E de 475684 y el $E/\sqrt{E}$  de 111. El tiempo mínimo de 0.082068 ms se da en grafo de 10 nodos y 2 aristas. El degeneracy * E es de 2 y el $E/\sqrt{E}$ de 1 }\label{fig:gnp}
+  \caption{}\label{fig:gnp}
 \end{figure}
 
 \begin{figure}
   \centering
-   \includegraphics[width=0.8\textwidth]{./newman_arista.jpeg}
+   \includegraphics[width=0.8\textwidth]{./newman.jpg}
   \fbox{Gráfico del tiempo de ejecución de $100$ newman\_watts\_strogatz\_graph}
 
-  \caption{El tiempo máximo de 18.3681 ms se da en el grafo con 455
-nodos y 1182 aristas. El degeneracy*E de 4728 y el $E/\sqrt{E}$ de 34. El tiempo mínimo de 0.769438 ms se da en el grafo de 15 nodos y 39 aristas. El degeneracy*E de 156 y el $E/\sqrt{E} de 6$
- }\label{fig:newman}
+  \caption{}\label{fig:newman}
 \end{figure} 
 
 \begin{figure}
   \centering
-   \includegraphics[width=0.8\textwidth]{./dense.jpeg}
+   \includegraphics[width=0.8\textwidth]{./dense.jpg}
   \fbox{Gráfico del tiempo de ejecución de $100$ dense\_gnm\_random\_graph}
 
-  \caption{El tiempo máximo de 15.2598 ms se da en el grafo con 20 nodos y 190 aristas. El degeneracy * E de 3610 y el $E/\sqrt{E}$  de 13. El tiempo mínimo de 1.78106 ms se da en grafo de 10 nodos y 45 aristas. El degeneracy * E es de 405 y el $E/\sqrt{E}$ de 6  }\label{fig:dense}
+  \caption{ }\label{fig:dense}
 \end{figure}
+
 
 \chapter{Conclusiones y posibilidades de mejora}
 \label{sec:final}
@@ -1155,6 +1224,6 @@ nodos y 1182 aristas. El degeneracy*E de 4728 y el $E/\sqrt{E}$ de 34. El tiempo
 \backmatter
 
 \bibliographystyle{plain}
-\bibliography{../../../../biblio/biblio-new}
+\bibliography{biblio}
 
 \end{document}

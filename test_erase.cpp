@@ -86,7 +86,7 @@
 //        auto tupla = tuple_list[random_arista];
 ////        cout << "borrando arista ";
 ////        cout<< get<0>(tupla)->elem<<" ," << get<1>(tupla)->elem<< endl;
-//        G.removeEdge(get<0>(tupla),get<1>(tupla));
+//        G.remove_edge(get<0>(tupla),get<1>(tupla));
 //        G.invariante_representacion();
 //        tuple_list.erase(tuple_list.begin()+random_arista);
 //    }

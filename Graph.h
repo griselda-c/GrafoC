@@ -266,7 +266,7 @@ namespace tip
          * @param v uno de los vertices de la arista
          * @param w el otro vertice de la arista
          */
-        void removeEdge(const_vertex_iterator  iter_v, const_vertex_iterator  iter_w) {
+        void remove_edge(const_vertex_iterator  iter_v, const_vertex_iterator  iter_w) {
             auto v = to_iterator(iter_v);
             auto w = to_iterator(iter_w);
 

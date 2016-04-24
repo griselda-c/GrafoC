@@ -10,6 +10,7 @@ def as_string(grafo):
     degeneracy = max(nx.core_number(grafo).values())*grafo.size()
     operation = int(grafo.size()*math.sqrt(grafo.size()))
     return '\n'.join(str(v) + ' ' + str(w) for v, w in [(grafo.order(), grafo.size())] + grafo.edges()) +'\n'+str(degeneracy)+' '+str(operation)  
+    #return '\n'.join(str(v) + ' ' + str(w) for v, w in [(grafo.order(), grafo.size())] + grafo.edges()) 
       
      
 
@@ -30,7 +31,9 @@ def generar_grafo(ngraphs,filename,opcion):
 	dense=dense_gnm_random_graph(10+5*i,(100+5*i)*2)
         completo=nx.complete_graph(nodos)
         
-        lista_grafos=[newman,erdos,real,gnp,dense,completo]
+        camino = nx.path_graph(i*200+100)
+        
+        lista_grafos = [newman,erdos,real,gnp,dense,camino]
         
         grabar_grafo(lista_grafos[opcion], filename + '.' + str(i))
 
@@ -45,7 +48,7 @@ if __name__ == '__main__':
     
     print "cantidad de grafos a generar:", ngraphs
     
-    generar_grafo(ngraphs,filename,2)
+    generar_grafo(ngraphs,filename,3)
 
     
    
